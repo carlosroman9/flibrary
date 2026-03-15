@@ -341,7 +341,7 @@ async function analyzeHistory(){
     
 
     function norm(s){return(s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
-    const lnorm=loaned.map(b=>norm(b.ti));
+    const lnorm=loaned.map(b=>norm(b.ti||b.title||''));
 
     console.log('lnorm sample:', lnorm.slice(0,3));
     console.log('DB norm sample:', ALL_BOOKS.slice(0,3).map(b=>norm(b.ti)));

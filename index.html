@@ -341,7 +341,7 @@ async function analyzeHistory(){
     console.log('Parsed loans:', loaned.length, 'First:', JSON.stringify(loaned[0]));
     console.log('DB sample:', ALL_BOOKS[0].ti, '| normalized:', loaned[0] ? loaned[0].title.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim() : 'n/a');
 
-    function norm(s){return(s||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();}
+    function norm(s){return(s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
     const lnorm=loaned.map(b=>norm(b.ti));
 
     const matched=ALL_BOOKS.filter(b=>{

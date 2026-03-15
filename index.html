@@ -343,6 +343,8 @@ async function analyzeHistory(){
     function norm(s){return(s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
     const lnorm=loaned.map(b=>norm(b.ti));
 
+    console.log('lnorm sample:', lnorm.slice(0,3));
+    console.log('DB norm sample:', ALL_BOOKS.slice(0,3).map(b=>norm(b.ti)));
     const matched=ALL_BOOKS.filter(b=>{
       const n=norm(b.ti);
       return lnorm.some(l=>l.length>3&&(n.includes(l.slice(0,15))||l.includes(n.slice(0,15))||n===l));

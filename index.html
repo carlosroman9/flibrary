@@ -192,19 +192,7 @@ function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
 function applyFic(books){return FIC?books.filter(b=>b.fi):books}
 
-function getKey(){return sessionStorage.getItem('ak')}
-function setKey(force){
-  if(!force&&getKey())return getKey();
-  const k=prompt('Enter your Anthropic API key (sk-ant-...):\n\nStored for this browser session only.');
-  if(k&&k.startsWith('sk-')){sessionStorage.setItem('ak',k);updateKeyStatus();return k;}
-  if(k)alert('Invalid key — should start with sk-ant-');
-  return null;
-}
-function updateKeyStatus(){
-  const el=document.getElementById('key-status');
-  if(getKey()){el.textContent='✓ API key set';el.className='key-status set';}
-  else{el.textContent='⚙ Set API key';el.className='key-status';}
-}
+
 function toggleFiction(){FIC=!FIC;document.getElementById('fic-toggle').classList.toggle('on',FIC);}
 
 function buildMoods(){
@@ -429,7 +417,7 @@ async function callClaude(model,prompt,maxTokens){
 }
 
 buildMoods();
-updateKeyStatus();
+
 
 </script>
 </body>

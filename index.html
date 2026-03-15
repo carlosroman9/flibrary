@@ -392,7 +392,7 @@ function openMod(id,isPersonal){
 function doSimilar(id,title){
   closeMod();
   const src=ALL_BOOKS.find(b=>b.id===id);if(!src)return;
-  const st=new Set(src.tags);
+  const st=new Set(src.tg);
   let res=ALL_BOOKS.filter(b=>b.id!==id).map(b=>{const t=new Set(b.tg);return Object.assign({},b,{_score:[...st].filter(tag=>t.has(tag)).length});}).filter(b=>b._score>=2).sort((a,b)=>b._score-a._score);
   CUR=applyFic(res).slice(0,24);
   document.getElementById('atags').innerHTML=`<span class="pill p">Similar to: ${esc(title)}</span>`;

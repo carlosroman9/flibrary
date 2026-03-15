@@ -344,7 +344,7 @@ async function analyzeHistory(){
 
     const matched=ALL_BOOKS.filter(b=>{
       const n=norm(b.ti);
-      return lnorm.some(l=>l.length>4&&(n.includes(l.slice(0,20))||l.includes(n.slice(0,20))));
+      return lnorm.some(l=>l.length>3&&(n.includes(l.slice(0,15))||l.includes(n.slice(0,15))||n===l));
     });
 
     const freq={};
@@ -352,7 +352,7 @@ async function analyzeHistory(){
     const topTags=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,8).map(e=>e[0]);
 
     const candidates=ALL_BOOKS
-      .filter(b=>{const n=norm(b.ti);return!lnorm.some(l=>l.length>4&&(n.includes(l.slice(0,20))||l.includes(n.slice(0,20))));})
+      .filter(b=>{const n=norm(b.ti);return!lnorm.some(l=>l.length>3&&(n.includes(l.slice(0,15))||l.includes(n.slice(0,15))||n===l));})
       .map(b=>{const t=new Set(b.tg);return Object.assign({},b,{_ov:topTags.filter(tag=>t.has(tag)).length});})
       .filter(b=>b._ov>0)
       .sort((a,b)=>b._ov-a._ov)

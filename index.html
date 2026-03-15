@@ -338,13 +338,12 @@ async function analyzeHistory(){
     if(ext==='csv')loaned=parseCSV(await uploadedFile.text());
     else loaned=parseXLSX(await uploadedFile.arrayBuffer());
     if(!loaned.length)throw new Error('Could not read any books from the file.');
-    
+    console.log('Parsed loans:', loaned.length, 'First:', JSON.stringify(loaned[0]));
+    console.log('DB sample:', ALL_BOOKS[0].ti, '| normalized:', loaned[0] ? loaned[0].title.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim() : 'n/a');
 
     function norm(s){return(s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
-    const lnorm=loaned.map(b=>norm(b.ti||b.title||''));
+    const lnorm=loaned.map(b=>norm(b.ti));
 
-    console.log('lnorm sample:', lnorm.slice(0,3));
-    console.log('DB norm sample:', ALL_BOOKS.slice(0,3).map(b=>norm(b.ti)));
     const matched=ALL_BOOKS.filter(b=>{
       const n=norm(b.ti);
       return lnorm.some(l=>l.length>3&&(n.includes(l.slice(0,15))||l.includes(n.slice(0,15))||n===l));
@@ -419,7 +418,7 @@ function doSimilar(id,title){
 function closeMod(){document.getElementById('ov').classList.remove('open');}
 
 async function callClaude(apiKey,model,prompt,maxTokens){
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+  const resp=await fetch('https://anthropic-proxy.roman-carlos09.workers.dev/',{
     method:'POST',
     headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-beta':'prompt-caching-2024-07-31'},
     body:JSON.stringify({model:model,max_tokens:maxTokens,system:[{type:'text',text:'You are a helpful school librarian assistant. Always respond with valid JSON only.',cache_control:{type:'ephemeral'}}],messages:[{role:'user',content:prompt}]})

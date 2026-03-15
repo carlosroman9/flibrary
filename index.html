@@ -342,7 +342,7 @@ async function analyzeHistory(){
     console.log('DB sample:', ALL_BOOKS[0].ti, '| normalized:', loaned[0] ? loaned[0].title.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim() : 'n/a');
 
     function norm(s){return(s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
-    const lnorm=loaned.map(b=>norm(b.ti));
+    const lnorm=loaned.map(b=>norm(b.ti||b.title||""));
 
     const matched=ALL_BOOKS.filter(b=>{
       const n=norm(b.ti);
@@ -354,7 +354,7 @@ async function analyzeHistory(){
     const topTags=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,8).map(e=>e[0]);
 
     const candidates=ALL_BOOKS
-      .filter(b=>{const n=norm(b.ti);return!lnorm.some(l=>l.length>3&&(n.includes(l.slice(0,15))||l.includes(n.slice(0,15))||n===l));})
+      .filter(b=>{const n=norm(b.ti);const cn=norm(b.ti||b.title||"");return!lnorm.some(l=>l.length>3&&(cn.includes(l.slice(0,15))||l.includes(cn.slice(0,15))||cn===l));})
       .map(b=>{const t=new Set(b.tg);return Object.assign({},b,{_ov:topTags.filter(tag=>t.has(tag)).length});})
       .filter(b=>b._ov>0)
       .sort((a,b)=>b._ov-a._ov)

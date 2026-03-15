@@ -271,7 +271,7 @@ async function doFreeSearch(){
   btn.textContent='Thinking...';btn.disabled=true;
   try{
     const prompt=`A middle school student says: "${q}"\nAvailable tags: ${ALL_TAGS.join(', ')}\nWhich 2-6 tags best match? Return JSON only: {"tags":["tag1"],"explanation":"one sentence"}`;
-    const resp=await callClaude(key,'claude-haiku-4-5-20251001',prompt,100);
+    const resp=await callClaude('claude-haiku-4-5-20251001',prompt,100);
     const data=JSON.parse(resp.replace(/```json|```/g,'').trim());
     const mt=new Set(data.tags||[]);
     let res=ALL_BOOKS.filter(b=>{const t=new Set(b.tg);return[...mt].some(tag=>t.has(tag));});
@@ -368,7 +368,7 @@ async function analyzeHistory(){
 
     const prompt=`You are a school librarian helping a middle school student find their next great read.\nStudent recently read: ${histStr}\n${profileSummary}\n\nAvailable books (pre-filtered):\n${candStr}\n\nRespond with valid JSON only:\n{"profile":"2-3 warm sentences about this reader","recommendations":[{"id":<number>,"hook":"one personal sentence why this student will love this book"}]}\nExactly 12 recommendations, hidden gems preferred, valid JSON only.`;
 
-    const resp=await callClaude(key,'claude-sonnet-4-6',prompt,2000);
+    const resp=await callClaude('claude-sonnet-4-6',prompt,2000);
     const result=JSON.parse(resp.replace(/```json|```/g,'').trim());
     const hookMap={};result.recommendations.forEach(r=>hookMap[r.id]=r.hook);
     const recIds=new Set(result.recommendations.map(r=>r.id));
@@ -417,7 +417,7 @@ function doSimilar(id,title){
 
 function closeMod(){document.getElementById('ov').classList.remove('open');}
 
-async function callClaude(apiKey,model,prompt,maxTokens){
+async function callClaude(model,prompt,maxTokens){
   const resp=await fetch('https://anthropic-proxy.roman-carlos09.workers.dev/',{
     method:'POST',
     headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-beta':'prompt-caching-2024-07-31'},

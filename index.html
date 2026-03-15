@@ -368,7 +368,7 @@ async function analyzeHistory(){
 
     const prompt=`You are a school librarian helping a middle school student find their next great read.\nStudent recently read: ${histStr}\n${profileSummary}\n\nAvailable books (pre-filtered):\n${candStr}\n\nRespond with valid JSON only:\n{"profile":"2-3 warm sentences about this reader","recommendations":[{"id":<number>,"hook":"one personal sentence why this student will love this book"}]}\nExactly 12 recommendations, hidden gems preferred, valid JSON only.`;
 
-    const resp=await callClaude(key,'claude-sonnet-4-6',prompt,900);
+    const resp=await callClaude(key,'claude-sonnet-4-6',prompt,2000);
     const result=JSON.parse(resp.replace(/```json|```/g,'').trim());
     const hookMap={};result.recommendations.forEach(r=>hookMap[r.id]=r.hook);
     const recIds=new Set(result.recommendations.map(r=>r.id));

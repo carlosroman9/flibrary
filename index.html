@@ -338,8 +338,7 @@ async function analyzeHistory(){
     if(ext==='csv')loaned=parseCSV(await uploadedFile.text());
     else loaned=parseXLSX(await uploadedFile.arrayBuffer());
     if(!loaned.length)throw new Error('Could not read any books from the file.');
-    console.log('Parsed loans:', loaned.length, 'First:', JSON.stringify(loaned[0]));
-    console.log('DB sample:', ALL_BOOKS[0].ti, '| normalized:', loaned[0] ? loaned[0].title.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim() : 'n/a');
+    
 
     function norm(s){return(s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
     const lnorm=loaned.map(b=>norm(b.ti));

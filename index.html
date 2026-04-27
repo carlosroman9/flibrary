@@ -15,9 +15,10 @@
     body {
       font-family: 'Inter', sans-serif;
       background: #0a100d;
-      color: #f0e8d8;
+      color: #f5eedf;
       min-height: 100vh;
       overflow-x: hidden;
+      font-size: 16px;
     }
 
     /* Animated background particles */
@@ -405,16 +406,16 @@
     }
     .result-body { flex: 1; min-width: 0; }
     .result-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
-    .result-title { font-weight: 500; font-size: 14px; color: #f0e8d8; line-height: 1.3; }
-    .heart-btn { background: none; border: none; cursor: pointer; font-size: 18px; padding: 0; flex-shrink: 0; line-height: 1; transition: transform .2s; }
+    .result-title { font-weight: 500; font-size: 16px; color: #f5eedf; line-height: 1.3; }
+    .heart-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 0; flex-shrink: 0; line-height: 1; transition: transform .2s; }
     .heart-btn:hover { transform: scale(1.2); }
-    .result-meta { font-size: 12px; color: #4a6b55; margin-bottom: 7px; }
-    .result-series { font-style: italic; margin-left: 6px; color: #3a5040; }
+    .result-meta { font-size: 13px; color: #6a8a75; margin-bottom: 7px; }
+    .result-series { font-style: italic; margin-left: 6px; color: #4a6b55; }
     .result-reason {
       font-family: 'Crimson Text', serif;
-      font-size: 14px;
-      color: #8fa898;
-      line-height: 1.5;
+      font-size: 16px;
+      color: #c8bfad;
+      line-height: 1.6;
       font-style: italic;
       border-left: 2px solid #c9922a44;
       padding-left: 10px;
@@ -456,10 +457,101 @@
     .more-btn:hover { background: #c9922a11; border-color: #c9922a; }
     .more-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-    /* Error / empty */
-    .error-msg { font-size: 13px; color: #8b4040; font-style: italic; margin-bottom: 14px; font-family: 'Crimson Text', serif; }
-    .empty-msg { font-size: 15px; color: #4a6b55; font-style: italic; font-family: 'Crimson Text', serif; text-align: center; padding: 2rem 0; }
-    .loading-msg { font-size: 13px; color: #4a6b55; font-style: italic; margin-bottom: 14px; font-family: 'Crimson Text', serif; }
+    .analytics-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-bottom: 1px solid #1a2b22; color: #c8bfad; }
+    .analytics-row span:last-child { color: #c9922a; font-weight: 500; flex-shrink: 0; margin-left: 8px; }
+    .analytics-empty { font-size: 13px; color: #4a6b55; font-style: italic; }
+    .trope-hint { font-size: 13px; color: #6a8a75; font-style: italic; margin-bottom: 12px; font-family: 'Crimson Text', serif; }
+    .trope-chip {
+      padding: 5px 13px;
+      font-size: 13px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1px solid #2a3d30;
+      background: transparent;
+      color: #6a8a75;
+      font-family: 'Inter', sans-serif;
+      transition: all .2s;
+    }
+    .trope-chip:hover { border-color: #c9922a44; color: #c8bfad; }
+    .trope-chip.selected { background: #1a2b22; border-color: #3d7a5a; color: #c8bfad; }
+    .trope-chip.priority { background: #c9922a22; border-color: #c9922a; color: #c9922a; }
+    .profile-note { margin-top: 8px; font-size: 13px; color: #6a8a75; font-style: italic; font-family: 'Crimson Text', serif; }
+    .dropdown-title { color: #f5eedf; font-weight: 500; }
+    .dropdown-author { color: #4a6b55; font-size: 13px; margin-left: 8px; flex-shrink: 0; }
+    .dropdown-item { padding: 9px 14px; font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #1a2b22; transition: background .15s; }
+    .chip { display: flex; align-items: center; gap: 4px; padding: 4px 11px; background: #142019; border: 1px solid #2a3d30; border-radius: 20px; font-size: 13px; color: #c8bfad; }
+    .chip-remove { background: none; border: none; cursor: pointer; color: #4a6b55; padding: 0; font-size: 16px; line-height: 1; }
+    .chip-remove:hover { color: #c9922a; }
+    .chip.gold { border-color: #c9922a44; color: #c9922a; background: #c9922a11; }
+    .error-msg { font-size: 14px; color: #a05050; font-style: italic; margin-bottom: 14px; font-family: 'Crimson Text', serif; }
+    .empty-msg { font-size: 17px; color: #4a6b55; font-style: italic; font-family: 'Crimson Text', serif; text-align: center; padding: 2rem 0; }
+    .loading-msg { font-size: 14px; color: #6a8a75; font-style: italic; margin-bottom: 14px; font-family: 'Crimson Text', serif; }
+    .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: #4a6b55; margin-bottom: 8px; }
+    .field-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: #4a6b55; }
+    .liked-banner { margin-bottom: 16px; padding: 9px 13px; background: #c9922a11; border: 1px solid #c9922a33; border-radius: 8px; font-size: 13px; }
+    .liked-banner strong { color: #c9922a; }
+    .liked-banner span { color: #c8bfad; }
+    .results-title { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: .08em; color: #c9922a; white-space: nowrap; }
+    .results-count { font-size: 11px; color: #4a6b55; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+
+    /* Crystal ball loading */
+    .crystal-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 4rem 0;
+    }
+    .crystal {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #e8f5ee, #1a4a30 40%, #0a1f14 70%, #030d08);
+      box-shadow:
+        0 0 40px #3d9a6044,
+        0 0 80px #3d9a6022,
+        inset 0 0 30px #00000088;
+      position: relative;
+      animation: crystalPulse 3s ease-in-out infinite;
+    }
+    .crystal::before {
+      content: '';
+      position: absolute;
+      top: 14%; left: 18%;
+      width: 35%; height: 25%;
+      background: radial-gradient(ellipse, rgba(255,255,255,.55), transparent);
+      border-radius: 50%;
+      transform: rotate(-30deg);
+      animation: shimmer 2.5s ease-in-out infinite;
+    }
+    .crystal::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent 60%, #c9922a22 70%, transparent 80%);
+      animation: orbit 4s linear infinite;
+    }
+    @keyframes crystalPulse {
+      0%, 100% { box-shadow: 0 0 40px #3d9a6044, 0 0 80px #3d9a6022, inset 0 0 30px #00000088; }
+      50%       { box-shadow: 0 0 60px #c9922a44, 0 0 100px #c9922a22, inset 0 0 30px #00000088; }
+    }
+    @keyframes shimmer {
+      0%, 100% { opacity: .55; transform: rotate(-30deg) scale(1); }
+      50%       { opacity: .85; transform: rotate(-30deg) scale(1.1); }
+    }
+    @keyframes orbit {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    .crystal-text {
+      margin-top: 1.5rem;
+      font-family: 'Crimson Text', serif;
+      font-size: 18px;
+      font-style: italic;
+      color: #6a8a75;
+      animation: textFade 2s ease-in-out infinite;
+    }
+    @keyframes textFade {
+      0%, 100% { opacity: .5; }
+      50%       { opacity: 1; }
+    }
 
     /* Ornamental divider */
     .ornament {
@@ -890,7 +982,10 @@ function App(){
 
     {showAnalytics&&<AnalyticsPanel analytics={analytics}/>}
 
-    {!loaded&&!loadError&&<p className="empty-msg" style={{marginTop:"3rem"}}>The Tiger stirs… loading the catalog</p>}
+    {!loaded&&!loadError&&<div className="crystal-wrap">
+      <div className="crystal"/>
+      <p className="crystal-text">The Tiger stirs… loading the catalog</p>
+    </div>}
     {loadError&&<div style={{background:"#1a0a0a",border:"1px solid #8b404044",borderRadius:8,padding:"1rem",color:"#8b4040",fontSize:13,marginTop:"2rem"}}>
       <strong>Could not load books_fiction.csv.</strong> Make sure the file is uploaded to your GitHub repo.
     </div>}

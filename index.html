@@ -3,30 +3,500 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fletcher Library Book Recommender</title>
+  <title>Fletcher Library — Consult the Tiger</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9f8f6; color: #2d4a3e; min-height: 100vh; }
-    #root { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-    input, textarea, select, button { font-family: inherit; }
-    textarea { line-height: 1.5; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a100d;
+      color: #f0e8d8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background particles */
+    #particles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, #c9922a55, transparent);
+      animation: float linear infinite;
+    }
+    @keyframes float {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(-20px) scale(1); opacity: 0; }
+    }
+
+    #root {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 1.25rem 4rem;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 2.5rem 0 2rem;
+      border-bottom: 1px solid #c9922a44;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .logo-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    .logo-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #c9922a22, transparent 70%);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50%       { transform: scale(1.08); opacity: 1; }
+    }
+    .logo {
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+      position: relative;
+      filter: drop-shadow(0 0 18px #c9922a66);
+    }
+    .title {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      color: #f0e8d8;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-family: 'Crimson Text', serif;
+      font-size: 17px;
+      font-style: italic;
+      color: #c9922a;
+      letter-spacing: .04em;
+    }
+    .analytics-btn {
+      position: absolute;
+      top: 0; right: 0;
+      padding: 6px 13px;
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: transparent;
+      color: #8fa898;
+      border: 1px solid #2a3d30;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .analytics-btn:hover, .analytics-btn.active { background: #1a2b22; color: #c9922a; border-color: #c9922a55; }
+    .title-count {
+      position: absolute;
+      top: 4px; left: 0;
+      font-size: 11px;
+      color: #4a6b55;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* Analytics panel */
+    .analytics-panel {
+      background: #0f1d16;
+      border: 1px solid #c9922a33;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .analytics-stats {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .stat-box {
+      flex: 1;
+      min-width: 60px;
+      background: #142019;
+      border: 1px solid #2a3d30;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-num { font-size: 22px; font-weight: 500; color: #c9922a; }
+    .stat-label { font-size: 9px; color: #4a6b55; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+    .analytics-cols { display: flex; gap: 16px; flex-wrap: wrap; }
+    .analytics-col { flex: 1; min-width: 160px; }
+    .analytics-col-title { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: #4a6b55; margin-bottom: 8px; }
+    .analytics-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; border-bottom: 1px solid #1a2b22; color: #c8bfad; }
+    .analytics-row span:last-child { color: #c9922a; font-weight: 500; flex-shrink: 0; margin-left: 8px; }
+    .analytics-empty { font-size: 12px; color: #4a6b55; font-style: italic; }
+
+    /* Profile bar */
+    .section-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: #4a6b55;
+      margin-bottom: 8px;
+    }
+    .profile-bar { margin-bottom: 20px; }
+    .profile-pills { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .pill {
+      padding: 5px 14px;
+      font-size: 12px;
+      border-radius: 20px;
+      border: 1px solid #2a3d30;
+      background: transparent;
+      color: #8fa898;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all .2s;
+    }
+    .pill:hover { border-color: #c9922a55; color: #c9922a; }
+    .pill.active { background: #c9922a; border-color: #c9922a; color: #0a100d; font-weight: 500; }
+    .pill.active-left { border-radius: 20px 0 0 20px; background: #c9922a; border-color: #c9922a; color: #0a100d; font-weight: 500; border-right: none; }
+    .pill-edit { padding: 5px 9px; border-radius: 0 20px 20px 0; background: #c9922a22; border: 1px solid #c9922a; border-left: none; color: #c9922a; cursor: pointer; font-size: 12px; transition: all .2s; }
+    .pill-edit:hover { background: #c9922a44; }
+    .pill-add { padding: 5px 12px; font-size: 15px; border-radius: 20px; border: 1px dashed #2a3d30; background: transparent; color: #4a6b55; cursor: pointer; line-height: 1; transition: all .2s; }
+    .pill-add:hover { border-color: #c9922a55; color: #c9922a; }
+    .profile-note { margin-top: 8px; font-size: 12px; color: #4a6b55; font-style: italic; font-family: 'Crimson Text', serif; }
+
+    /* Profile editor */
+    .editor {
+      background: #0f1d16;
+      border: 1px solid #c9922a33;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .editor-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .field-group { display: flex; flex-direction: column; gap: 4px; }
+    .field-label { font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: #4a6b55; }
+    .field-input {
+      padding: 7px 11px;
+      font-size: 13px;
+      background: #142019;
+      border: 1px solid #2a3d30;
+      border-radius: 6px;
+      color: #f0e8d8;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .field-input:focus { border-color: #c9922a55; }
+    .field-input::placeholder { color: #3a5040; }
+
+    /* Mode tabs */
+    .tabs { display: flex; border-bottom: 1px solid #1a2b22; margin-bottom: 20px; }
+    .tab {
+      padding: 8px 20px;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #4a6b55;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all .2s;
+    }
+    .tab:hover { color: #8fa898; }
+    .tab.active { color: #c9922a; border-bottom-color: #c9922a; }
+
+    /* Inputs */
+    .input-wrap { margin-bottom: 16px; }
+    .main-input {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 14px;
+      background: #0f1d16;
+      border: 1px solid #2a3d30;
+      border-radius: 8px;
+      color: #f0e8d8;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .main-input:focus { border-color: #c9922a55; }
+    .main-input::placeholder { color: #3a5040; }
+    .main-textarea {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 14px;
+      background: #0f1d16;
+      border: 1px solid #2a3d30;
+      border-radius: 8px;
+      color: #f0e8d8;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      resize: vertical;
+      line-height: 1.6;
+      transition: border-color .2s;
+    }
+    .main-textarea:focus { border-color: #c9922a55; }
+    .main-textarea::placeholder { color: #3a5040; }
+
+    /* Autocomplete dropdown */
+    .dropdown {
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      z-index: 30;
+      background: #0f1d16;
+      border: 1px solid #c9922a33;
+      border-radius: 8px;
+      margin-top: 3px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.6);
+      overflow: hidden;
+    }
+    .dropdown-item {
+      padding: 9px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid #1a2b22;
+      transition: background .15s;
+    }
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover { background: #142019; }
+    .dropdown-title { color: #f0e8d8; font-weight: 500; }
+    .dropdown-author { color: #4a6b55; font-size: 12px; margin-left: 8px; flex-shrink: 0; }
+
+    /* Tropes */
+    .trope-section { margin-bottom: 14px; }
+    .trope-cat { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: #4a6b55; margin-bottom: 8px; }
+    .trope-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .trope-chip {
+      padding: 4px 12px;
+      font-size: 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1px solid #2a3d30;
+      background: transparent;
+      color: #4a6b55;
+      font-family: 'Inter', sans-serif;
+      transition: all .2s;
+    }
+    .trope-chip:hover { border-color: #c9922a44; color: #8fa898; }
+    .trope-chip.selected { background: #1a2b22; border-color: #3d7a5a; color: #8fa898; }
+    .trope-chip.priority { background: #c9922a22; border-color: #c9922a; color: #c9922a; }
+    .trope-hint { font-size: 11px; color: #3a5040; font-style: italic; margin-bottom: 12px; font-family: 'Crimson Text', serif; }
+
+    /* Already read chips */
+    .chips-wrap { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+    .chip {
+      display: flex; align-items: center; gap: 4px;
+      padding: 3px 10px;
+      background: #142019;
+      border: 1px solid #2a3d30;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #8fa898;
+    }
+    .chip-remove { background: none; border: none; cursor: pointer; color: #4a6b55; padding: 0; font-size: 15px; line-height: 1; }
+    .chip-remove:hover { color: #c9922a; }
+    .chip.gold { border-color: #c9922a44; color: #c9922a; background: #c9922a11; }
+
+    /* Liked books banner */
+    .liked-banner {
+      margin-bottom: 16px;
+      padding: 9px 13px;
+      background: #c9922a11;
+      border: 1px solid #c9922a33;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .liked-banner strong { color: #c9922a; }
+    .liked-banner span { color: #8fa898; }
+
+    /* CTA Button */
+    .ask-btn {
+      position: relative;
+      width: 100%;
+      padding: 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #c9922a, #d4651a);
+      color: #0a100d;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 28px;
+      transition: all .2s;
+      box-shadow: 0 4px 20px #c9922a44;
+      overflow: hidden;
+    }
+    .ask-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+      transition: left .5s;
+    }
+    .ask-btn:hover::before { left: 100%; }
+    .ask-btn:hover { box-shadow: 0 6px 28px #c9922a66; }
+    .ask-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Divider */
+    .results-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .results-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      letter-spacing: .08em;
+      color: #c9922a;
+      white-space: nowrap;
+    }
+    .results-line { flex: 1; height: 1px; background: linear-gradient(to right, #c9922a44, transparent); }
+    .results-count { font-size: 10px; color: #4a6b55; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+
+    /* Result cards */
+    .result-card {
+      padding: 16px 0;
+      border-bottom: 1px solid #1a2b22;
+      animation: fadeUp .4s ease both;
+    }
+    .result-card:last-of-type { border-bottom: none; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .result-inner { display: flex; gap: 14px; }
+    .cover {
+      width: 58px; height: 84px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      background: #142019;
+      border: 1px solid #2a3d30;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; opacity: .5;
+      object-fit: cover;
+    }
+    .result-body { flex: 1; min-width: 0; }
+    .result-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
+    .result-title { font-weight: 500; font-size: 14px; color: #f0e8d8; line-height: 1.3; }
+    .heart-btn { background: none; border: none; cursor: pointer; font-size: 18px; padding: 0; flex-shrink: 0; line-height: 1; transition: transform .2s; }
+    .heart-btn:hover { transform: scale(1.2); }
+    .result-meta { font-size: 12px; color: #4a6b55; margin-bottom: 7px; }
+    .result-series { font-style: italic; margin-left: 6px; color: #3a5040; }
+    .result-reason {
+      font-family: 'Crimson Text', serif;
+      font-size: 14px;
+      color: #8fa898;
+      line-height: 1.5;
+      font-style: italic;
+      border-left: 2px solid #c9922a44;
+      padding-left: 10px;
+    }
+    .note-field {
+      width: 100%;
+      margin-top: 10px;
+      padding: 6px 10px;
+      font-size: 12px;
+      background: #0f1d16;
+      border: 1px solid #1a2b22;
+      border-radius: 5px;
+      color: #8fa898;
+      resize: none;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      line-height: 1.5;
+      transition: border-color .2s;
+    }
+    .note-field:focus { border-color: #c9922a33; }
+    .note-field::placeholder { color: #2a3d30; }
+
+    /* More results button */
+    .more-btn {
+      display: block;
+      margin: 20px auto 0;
+      padding: 9px 24px;
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-family: 'Inter', sans-serif;
+      background: transparent;
+      color: #c9922a;
+      border: 1px solid #c9922a55;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .more-btn:hover { background: #c9922a11; border-color: #c9922a; }
+    .more-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Error / empty */
+    .error-msg { font-size: 13px; color: #8b4040; font-style: italic; margin-bottom: 14px; font-family: 'Crimson Text', serif; }
+    .empty-msg { font-size: 15px; color: #4a6b55; font-style: italic; font-family: 'Crimson Text', serif; text-align: center; padding: 2rem 0; }
+    .loading-msg { font-size: 13px; color: #4a6b55; font-style: italic; margin-bottom: 14px; font-family: 'Crimson Text', serif; }
+
+    /* Ornamental divider */
+    .ornament {
+      text-align: center;
+      color: #c9922a44;
+      font-size: 18px;
+      margin: 6px 0 20px;
+      letter-spacing: .3em;
+    }
+
+    /* Editor buttons */
+    .btn-primary { padding: 7px 16px; font-size: 13px; background: #c9922a; color: #0a100d; border: none; border-radius: 6px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; }
+    .btn-secondary { padding: 7px 14px; font-size: 13px; background: transparent; color: #8fa898; border: 1px solid #2a3d30; border-radius: 6px; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .btn-danger { padding: 7px 14px; font-size: 13px; background: transparent; color: #8b4040; border: 1px solid #8b404044; border-radius: 6px; cursor: pointer; font-family: 'Inter', sans-serif; }
   </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
-const CSV_FILE   = "books_fiction.csv";           // must be in the same repo
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const G="#2d4a3e", GL="#e8f0ec", GA="#4a7c68", GOLD="#b07d2a";
-const GRADES = ["6th","7th","8th"];
-const DEFAULT_ANALYTICS = {totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
+<div id="particles"></div>
+<div id="root"></div>
+
+<script>
+// Generate floating particles
+const container = document.getElementById('particles');
+for(let i = 0; i < 18; i++){
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = Math.random()*60+20;
+  p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*20+15}s;animation-delay:${Math.random()*15}s;opacity:0`;
+  container.appendChild(p);
+}
+</script>
+
+<script type="text/babel">
+const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
+const CSV_FILE   = "books_fiction.csv";
+const LOGO_FILE  = "logo.png";
 
 const TROPES = [
   {id:"enemies_to_lovers",label:"Enemies to Lovers",cat:"Romance"},
@@ -108,25 +578,23 @@ const TROPE_KEYWORDS = {
   chosen_one:["chosen","destined","destiny","prophecy","fate","hero"],
 };
 
-const CATS = [...new Set(TROPES.map(t=>t.cat))];
-const STOP = new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
+const CATS=[...new Set(TROPES.map(t=>t.cat))];
+const STOP=new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
+const GRADES=["6th","7th","8th"];
+const DEFAULT_ANALYTICS={totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
 
-// ─── UTILS ────────────────────────────────────────────────────────────────────
-const uid = () => Math.random().toString(36).slice(2,9);
-const tokenize = t => (t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
-const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const uid=()=>Math.random().toString(36).slice(2,9);
+const tokenize=t=>(t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
+const shuffle=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const lsLoad=(k,fb)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}};
+const lsSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
 
-// localStorage helpers
-const lsLoad = (key, fb) => { try { const v=localStorage.getItem(key); return v?JSON.parse(v):fb; } catch { return fb; } };
-const lsSave = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} };
-
-// ─── SEARCH LOGIC ─────────────────────────────────────────────────────────────
 function getCandidates(books,kws,priorityKws=[],likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),doShuffle=false){
   const kSet=new Set(kws),pSet=new Set(priorityKws),lSet=new Set(likedKws);
   let pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
   let scored=pool.map(b=>{
     const toks=new Set(tokenize(`${b.title} ${b.subjects} ${b.summary}`));
-    return {...b,_s:[...kSet].filter(k=>toks.has(k)).length+[...pSet].filter(k=>toks.has(k)).length*3+[...lSet].filter(k=>toks.has(k)).length*2};
+    return{...b,_s:[...kSet].filter(k=>toks.has(k)).length+[...pSet].filter(k=>toks.has(k)).length*3+[...lSet].filter(k=>toks.has(k)).length*2};
   }).filter(b=>b._s>0);
   if(!scored.length) scored=pool;
   scored=doShuffle?shuffle(scored):scored.sort((a,b)=>b._s-a._s);
@@ -135,185 +603,158 @@ function getCandidates(books,kws,priorityKws=[],likedKws=[],n=70,excl=null,alrea
 
 async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[]){
   const exclNote=excluded.length?`\n\nDo NOT recommend: ${excluded.join(", ")}`:"";
-  const prioNote=priorityLabel?`\n\nMust-have element: "${priorityLabel}" — every pick MUST clearly feature this.`:"";
-  const likedNote=likedTitles.length?`\n\nThis student has loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
+  const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.`:"";
+  const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
   const list=candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.summary||"").slice(0,200)}`).join("\n\n");
   const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({      model:"claude-sonnet-4-6",max_tokens:1000,
+    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
       system:"You are a school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",
       messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
   const data=await res.json();
-  console.log("API response:", JSON.stringify(data));
-  if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
-  if(!data.content) throw new Error("No content in response: "+JSON.stringify(data));
   return JSON.parse((data.content?.[0]?.text||"[]").replace(/```json|```/g,"").trim());
 }
 
-// ─── COMPONENTS ───────────────────────────────────────────────────────────────
 function CoverImg({isbn}){
-  const [failed,setFailed]=React.useState(false);
-  if(!isbn||failed) return <div style={{width:54,height:78,background:GL,borderRadius:3,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",border:`1px solid ${G}22`,fontSize:22,opacity:.5}}>📖</div>;
-  return <img src={`https://covers.openlibrary.org/b/isbn/${isbn.replace(/[^0-9X]/g,"")}-M.jpg`} alt="" onError={()=>setFailed(true)} style={{width:54,height:78,objectFit:"cover",borderRadius:3,flexShrink:0}}/>;
+  const[failed,setFailed]=React.useState(false);
+  if(!isbn||failed) return <div className="cover">📖</div>;
+  return <img className="cover" src={`https://covers.openlibrary.org/b/isbn/${isbn.replace(/[^0-9X]/g,"")}-M.jpg`} alt="" onError={()=>setFailed(true)}/>;
 }
 
 function NoteField({title}){
   const key=`note:${title}`;
-  const [note,setNote]=React.useState(()=>localStorage.getItem(key)||"");
-  const onChange=val=>{setNote(val);localStorage.setItem(key,val);};
-  return <textarea value={note} onChange={e=>onChange(e.target.value)} placeholder="Librarian note…" rows={1}
-    style={{width:"100%",marginTop:8,padding:"5px 8px",fontSize:12,border:`1px solid ${G}28`,borderRadius:4,background:`${GL}99`,color:G,resize:"none",outline:"none",lineHeight:1.5}}
+  const[note,setNote]=React.useState(()=>localStorage.getItem(key)||"");
+  const onChange=v=>{setNote(v);localStorage.setItem(key,v);};
+  return <textarea className="note-field" value={note} onChange={e=>onChange(e.target.value)} placeholder="Librarian's note…" rows={1}
     onFocus={e=>e.target.rows=3} onBlur={e=>{if(!note)e.target.rows=1;}}/>;
 }
 
-function BookSearch({books,exclude,onSelect,placeholder="Type a title…"}){
-  const [inp,setInp]=React.useState("");
-  const [sugg,setSugg]=React.useState([]);
-  const onChange=val=>{setInp(val);if(val.length>1)setSugg(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())&&!exclude.has(b.title)).slice(0,5));else setSugg([]);};
+function BookSearch({books,exclude,onSelect,placeholder}){
+  const[inp,setInp]=React.useState("");
+  const[sugg,setSugg]=React.useState([]);
+  const onChange=v=>{setInp(v);if(v.length>1)setSugg(books.filter(b=>(b.title||"").toLowerCase().includes(v.toLowerCase())&&!exclude.has(b.title)).slice(0,5));else setSugg([]);};
   const pick=b=>{onSelect(b);setInp("");setSugg([]);};
-  return(
-    <div style={{position:"relative"}}>
-      <input value={inp} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
-        style={{width:"100%",padding:"7px 11px",fontSize:13,border:`1px solid ${G}44`,borderRadius:6,background:"#fff",color:G,outline:"none"}}/>
-      {sugg.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:30,background:"#fff",border:`1px solid ${G}44`,borderRadius:6,marginTop:2,boxShadow:"0 4px 16px rgba(0,0,0,.1)"}}>
-        {sugg.map((b,i)=><div key={i} onClick={()=>pick(b)}
-          style={{padding:"7px 11px",fontSize:13,cursor:"pointer",borderBottom:i<sugg.length-1?`1px solid ${G}14`:"none",display:"flex",justifyContent:"space-between"}}
-          onMouseEnter={e=>e.currentTarget.style.background=GL} onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
-          <span style={{color:G,fontWeight:500}}>{b.title}</span>
-          <span style={{color:GA,fontSize:12}}>{b.author}</span>
-        </div>)}
-      </div>}
-    </div>
-  );
+  return <div style={{position:"relative"}}>
+    <input className="field-input" style={{width:"100%"}} value={inp} onChange={e=>onChange(e.target.value)} placeholder={placeholder||"Type a title…"}/>
+    {sugg.length>0&&<div className="dropdown">
+      {sugg.map((b,i)=><div key={i} className="dropdown-item" onClick={()=>pick(b)}>
+        <span className="dropdown-title">{b.title}</span>
+        <span className="dropdown-author">{b.author}</span>
+      </div>)}
+    </div>}
+  </div>;
 }
 
-function ChipList({items,onRemove,color=G}){
+function ChipList({items,onRemove,gold}){
   if(!items.length) return null;
-  return <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:7}}>
-    {items.map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:4,padding:"3px 8px",background:GL,border:`1px solid ${color}33`,borderRadius:20,fontSize:12,color}}>
-      <span>{t}</span><button onClick={()=>onRemove(t)} style={{background:"none",border:"none",cursor:"pointer",color:GA,padding:0,fontSize:14,lineHeight:1}}>×</button>
+  return <div className="chips-wrap">
+    {items.map((t,i)=><div key={i} className={gold?"chip gold":"chip"}>
+      <span>{t}</span><button className="chip-remove" onClick={()=>onRemove(t)}>×</button>
     </div>)}
   </div>;
 }
 
 function ProfileEditor({profile,books,onSave,onDelete,onCancel}){
   const isNew=!profile.id;
-  const [initials,setInitials]=React.useState(profile.initials||"");
-  const [grade,setGrade]=React.useState(profile.grade||"6th");
-  const [notes,setNotes]=React.useState(profile.notes||"");
-  const [liked,setLiked]=React.useState(profile.likedBooks||[]);
-  const [read,setRead]=React.useState(profile.alreadyRead||[]);
+  const[initials,setInitials]=React.useState(profile.initials||"");
+  const[grade,setGrade]=React.useState(profile.grade||"6th");
+  const[notes,setNotes]=React.useState(profile.notes||"");
+  const[liked,setLiked]=React.useState(profile.likedBooks||[]);
+  const[read,setRead]=React.useState(profile.alreadyRead||[]);
   const save=()=>{if(!initials.trim()){alert("Please enter initials.");return;}onSave({...profile,id:profile.id||uid(),initials:initials.trim().toUpperCase(),grade,notes,likedBooks:liked,alreadyRead:read});};
-  return(
-    <div style={{background:GL,border:`1px solid ${G}33`,borderRadius:8,padding:"14px 16px",marginBottom:16}}>
-      <div style={{display:"flex",gap:10,marginBottom:12,flexWrap:"wrap"}}>
-        <div style={{flex:"0 0 80px"}}>
-          <label style={{display:"block",fontSize:10,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:4}}>Initials</label>
-          <input value={initials} onChange={e=>setInitials(e.target.value)} maxLength={5} placeholder="A.R."
-            style={{width:"100%",padding:"7px 10px",fontSize:14,fontWeight:500,border:`1px solid ${G}44`,borderRadius:6,background:"#fff",color:G,textAlign:"center",outline:"none"}}/>
-        </div>
-        <div style={{flex:"0 0 90px"}}>
-          <label style={{display:"block",fontSize:10,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:4}}>Grade</label>
-          <select value={grade} onChange={e=>setGrade(e.target.value)}
-            style={{width:"100%",padding:"7px 8px",fontSize:13,border:`1px solid ${G}44`,borderRadius:6,background:"#fff",color:G,outline:"none"}}>
-            {GRADES.map(g=><option key={g}>{g}</option>)}
-          </select>
-        </div>
-        <div style={{flex:1,minWidth:140}}>
-          <label style={{display:"block",fontSize:10,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:4}}>Reading preferences</label>
-          <input value={notes} onChange={e=>setNotes(e.target.value)} placeholder="e.g. loves fantasy, avoids romance…"
-            style={{width:"100%",padding:"7px 10px",fontSize:13,border:`1px solid ${G}44`,borderRadius:6,background:"#fff",color:G,outline:"none"}}/>
-        </div>
+  return <div className="editor">
+    <div className="editor-row">
+      <div className="field-group" style={{flex:"0 0 76px"}}>
+        <label className="field-label">Initials</label>
+        <input className="field-input" value={initials} onChange={e=>setInitials(e.target.value)} maxLength={5} placeholder="A.R." style={{textAlign:"center",fontWeight:500}}/>
       </div>
-      <div style={{marginBottom:10}}>
-        <label style={{display:"block",fontSize:10,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:5}}>Liked books</label>
-        <BookSearch books={books} exclude={new Set(liked)} onSelect={b=>setLiked(prev=>[...prev,b.title])} placeholder="Add a book they love…"/>
-        <ChipList items={liked} onRemove={t=>setLiked(prev=>prev.filter(x=>x!==t))} color={GOLD}/>
+      <div className="field-group" style={{flex:"0 0 86px"}}>
+        <label className="field-label">Grade</label>
+        <select className="field-input" value={grade} onChange={e=>setGrade(e.target.value)} style={{background:"#142019"}}>
+          {GRADES.map(g=><option key={g}>{g}</option>)}
+        </select>
       </div>
-      <div style={{marginBottom:14}}>
-        <label style={{display:"block",fontSize:10,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:5}}>Already read</label>
-        <BookSearch books={books} exclude={new Set(read)} onSelect={b=>setRead(prev=>[...prev,b.title])} placeholder="Add a book they've read…"/>
-        <ChipList items={read} onRemove={t=>setRead(prev=>prev.filter(x=>x!==t))}/>
-      </div>
-      <div style={{display:"flex",gap:8,justifyContent:"space-between"}}>
-        <div style={{display:"flex",gap:8}}>
-          <button onClick={save} style={{padding:"7px 16px",fontSize:13,background:G,color:"#fff",border:"none",borderRadius:6,cursor:"pointer"}}>{isNew?"Create profile":"Save changes"}</button>
-          <button onClick={onCancel} style={{padding:"7px 14px",fontSize:13,background:"#fff",color:GA,border:`1px solid ${G}44`,borderRadius:6,cursor:"pointer"}}>Cancel</button>
-        </div>
-        {!isNew&&<button onClick={()=>onDelete(profile.id)} style={{padding:"7px 14px",fontSize:13,background:"#fff",color:"#8b2e2e",border:"1px solid #8b2e2e44",borderRadius:6,cursor:"pointer"}}>Delete</button>}
+      <div className="field-group" style={{flex:1,minWidth:130}}>
+        <label className="field-label">Reading preferences</label>
+        <input className="field-input" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="loves fantasy, avoids romance…"/>
       </div>
     </div>
-  );
+    <div style={{marginBottom:10}}>
+      <label className="field-label" style={{display:"block",marginBottom:5}}>Liked books</label>
+      <BookSearch books={books} exclude={new Set(liked)} onSelect={b=>setLiked(prev=>[...prev,b.title])} placeholder="Add a book they love…"/>
+      <ChipList items={liked} onRemove={t=>setLiked(prev=>prev.filter(x=>x!==t))} gold/>
+    </div>
+    <div style={{marginBottom:14}}>
+      <label className="field-label" style={{display:"block",marginBottom:5}}>Already read</label>
+      <BookSearch books={books} exclude={new Set(read)} onSelect={b=>setRead(prev=>[...prev,b.title])} placeholder="Add a book they've read…"/>
+      <ChipList items={read} onRemove={t=>setRead(prev=>prev.filter(x=>x!==t))}/>
+    </div>
+    <div style={{display:"flex",gap:8,justifyContent:"space-between"}}>
+      <div style={{display:"flex",gap:8}}>
+        <button className="btn-primary" onClick={save}>{isNew?"Create profile":"Save changes"}</button>
+        <button className="btn-secondary" onClick={onCancel}>Cancel</button>
+      </div>
+      {!isNew&&<button className="btn-danger" onClick={()=>onDelete(profile.id)}>Delete</button>}
+    </div>
+  </div>;
 }
 
 function AnalyticsPanel({analytics}){
   const topTropes=Object.entries(analytics.tropeSearches||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const topBooks=Object.entries(analytics.recommendedBooks||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const sm=analytics.searchModes||{};
-  return(
-    <div style={{background:GL,border:`1px solid ${G}33`,borderRadius:8,padding:"14px 16px",marginBottom:16}}>
-      <div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}>
-        {[["Total",analytics.totalSearches||0],["Find Similar",sm.similar||0],["By Trope",sm.tropes||0],["Describe It",sm.freetext||0]].map(([l,v])=>(
-          <div key={l} style={{flex:1,minWidth:60,background:"#fff",borderRadius:6,padding:"8px 10px",border:`1px solid ${G}22`,textAlign:"center"}}>
-            <div style={{fontSize:20,fontWeight:500,color:G}}>{v}</div>
-            <div style={{fontSize:10,color:GA,textTransform:"uppercase",letterSpacing:".05em"}}>{l}</div>
-          </div>
-        ))}
+  return <div className="analytics-panel">
+    <div className="analytics-stats">
+      {[["Total",analytics.totalSearches||0],["Similar",sm.similar||0],["Trope",sm.tropes||0],["Describe",sm.freetext||0]].map(([l,v])=>(
+        <div key={l} className="stat-box"><div className="stat-num">{v}</div><div className="stat-label">{l}</div></div>
+      ))}
+    </div>
+    <div className="analytics-cols">
+      <div className="analytics-col">
+        <div className="analytics-col-title">Top tropes</div>
+        {topTropes.length?topTropes.map(([id,n])=>{
+          const label=TROPES.find(t=>t.id===id)?.label||id;
+          return <div key={id} className="analytics-row"><span>{label}</span><span>{n}</span></div>;
+        }):<span className="analytics-empty">No data yet</span>}
       </div>
-      <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
-        <div style={{flex:1,minWidth:180}}>
-          <div style={{fontSize:10,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:7}}>Top tropes</div>
-          {topTropes.length?topTropes.map(([id,n])=>{
-            const label=TROPES.find(t=>t.id===id)?.label||id;
-            return <div key={id} style={{display:"flex",justifyContent:"space-between",fontSize:12,color:G,padding:"3px 0",borderBottom:`1px solid ${G}12`}}>
-              <span>{label}</span><span style={{color:GA,fontWeight:500}}>{n}</span>
-            </div>;
-          }):<span style={{fontSize:12,color:GA,fontStyle:"italic"}}>No data yet</span>}
-        </div>
-        <div style={{flex:1,minWidth:180}}>
-          <div style={{fontSize:10,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:7}}>Top recommended</div>
-          {topBooks.length?topBooks.map(([title,n])=>(
-            <div key={title} style={{display:"flex",justifyContent:"space-between",fontSize:12,color:G,padding:"3px 0",borderBottom:`1px solid ${G}12`}}>
-              <span style={{flex:1,marginRight:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{title}</span>
-              <span style={{color:GA,fontWeight:500,flexShrink:0}}>{n}</span>
-            </div>
-          )):<span style={{fontSize:12,color:GA,fontStyle:"italic"}}>No data yet</span>}
-        </div>
+      <div className="analytics-col">
+        <div className="analytics-col-title">Top recommended</div>
+        {topBooks.length?topBooks.map(([title,n])=>(
+          <div key={title} className="analytics-row">
+            <span style={{flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:8}}>{title}</span>
+            <span>{n}</span>
+          </div>
+        )):<span className="analytics-empty">No data yet</span>}
       </div>
     </div>
-  );
+  </div>;
 }
 
-// ─── MAIN APP ─────────────────────────────────────────────────────────────────
 function App(){
-  const [books,setBooks]=React.useState([]);
-  const [bookCount,setBookCount]=React.useState(0);
-  const [loadError,setLoadError]=React.useState(false);
-  const [profiles,setProfiles]=React.useState(()=>lsLoad("profiles",[]));
-  const [activeProfileId,setActiveProfileId]=React.useState(null);
-  const [editing,setEditing]=React.useState(null);
-  const [showAnalytics,setShowAnalytics]=React.useState(false);
-  const [analytics,setAnalytics]=React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
-  const [mode,setMode]=React.useState("similar");
-  const [query,setQuery]=React.useState("");
-  const [selTropes,setSelTropes]=React.useState(new Set());
-  const [priorityTrope,setPriorityTrope]=React.useState(null);
-  const [alreadyRead,setAlreadyRead]=React.useState(new Set());
-  const [results,setResults]=React.useState(null);
-  const [loading,setLoading]=React.useState(false);
-  const [loadingMore,setLoadingMore]=React.useState(false);
-  const [error,setError]=React.useState("");
-  const [suggestions,setSuggestions]=React.useState([]);
-  const [refBook,setRefBook]=React.useState(null);
-  const [shownTitles,setShownTitles]=React.useState(new Set());
+  const[books,setBooks]=React.useState([]);
+  const[bookCount,setBookCount]=React.useState(0);
+  const[loadError,setLoadError]=React.useState(false);
+  const[profiles,setProfiles]=React.useState(()=>lsLoad("profiles",[]));
+  const[activeProfileId,setActiveProfileId]=React.useState(null);
+  const[editing,setEditing]=React.useState(null);
+  const[showAnalytics,setShowAnalytics]=React.useState(false);
+  const[analytics,setAnalytics]=React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
+  const[mode,setMode]=React.useState("similar");
+  const[query,setQuery]=React.useState("");
+  const[selTropes,setSelTropes]=React.useState(new Set());
+  const[priorityTrope,setPriorityTrope]=React.useState(null);
+  const[alreadyRead,setAlreadyRead]=React.useState(new Set());
+  const[results,setResults]=React.useState(null);
+  const[loading,setLoading]=React.useState(false);
+  const[loadingMore,setLoadingMore]=React.useState(false);
+  const[error,setError]=React.useState("");
+  const[suggestions,setSuggestions]=React.useState([]);
+  const[refBook,setRefBook]=React.useState(null);
+  const[shownTitles,setShownTitles]=React.useState(new Set());
   const lastSearch=React.useRef(null);
 
-  // Auto-load CSV from repo
   React.useEffect(()=>{
-    fetch(CSV_FILE)
-      .then(r=>{if(!r.ok)throw new Error("Not found");return r.text();})
-      .then(text=>{
-        Papa.parse(text,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);}});
-      })
+    fetch(CSV_FILE).then(r=>{if(!r.ok)throw new Error();return r.text();})
+      .then(text=>{Papa.parse(text,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);}});})
       .catch(()=>setLoadError(true));
   },[]);
 
@@ -330,8 +771,7 @@ function App(){
     if(!activeProfile) return;
     const liked=activeProfile.likedBooks||[];
     const updated=liked.includes(title)?liked.filter(t=>t!==title):[...liked,title];
-    const newProfiles=profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p);
-    saveProfiles(newProfiles);
+    saveProfiles(profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p));
   };
 
   const trackSearch=(m,tropes=[])=>{
@@ -408,7 +848,7 @@ function App(){
       lastSearch.current=params;
       await runSearch(params,new Set());
       trackSearch(mode,mode==="tropes"?[...selTropes]:[]);
-    }catch(e){setError("Error: "+e.message);}
+    }catch(e){setError("The Tiger is resting — please try again.");}
     setLoading(false);
   };
 
@@ -416,7 +856,7 @@ function App(){
     if(!lastSearch.current) return;
     setLoadingMore(true);
     try{await runSearch(lastSearch.current,shownTitles,true,true);}
-    catch{setError("Something went wrong — please try again.");}
+    catch{setError("The Tiger is resting — please try again.");}
     setLoadingMore(false);
   };
 
@@ -434,164 +874,145 @@ function App(){
   const loaded=bookCount>0;
   const modes=[{id:"similar",label:"Find Similar"},{id:"tropes",label:"By Trope"},{id:"freetext",label:"Describe It"}];
 
-  return(
-    <div>
-      {/* Header */}
-      <div style={{borderBottom:`2px solid ${G}`,paddingBottom:12,marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
-        <div>
-          <h1 style={{fontFamily:"Georgia,serif",fontWeight:400,fontSize:24,color:G}}>Fletcher Library</h1>
-          <p style={{fontSize:13,color:GA,fontStyle:"italic",marginTop:2}}>Book Recommendation Tool</p>
+  return <div>
+    {/* Header */}
+    <div className="header">
+      {loaded&&<span className="title-count">{bookCount.toLocaleString()} titles</span>}
+      <button className={`analytics-btn${showAnalytics?" active":""}`} onClick={()=>{setShowAnalytics(p=>!p);setEditing(null);}}>
+        {showAnalytics?"Close":"Ledger"}
+      </button>
+      <div className="logo-wrap">
+        <img className="logo" src={LOGO_FILE} alt="Fletcher Library Tiger"/>
+      </div>
+      <h1 className="title">Consult the Library Tiger</h1>
+      <p className="subtitle">Seek your next great read</p>
+    </div>
+
+    {showAnalytics&&<AnalyticsPanel analytics={analytics}/>}
+
+    {!loaded&&!loadError&&<p className="empty-msg" style={{marginTop:"3rem"}}>The Tiger stirs… loading the catalog</p>}
+    {loadError&&<div style={{background:"#1a0a0a",border:"1px solid #8b404044",borderRadius:8,padding:"1rem",color:"#8b4040",fontSize:13,marginTop:"2rem"}}>
+      <strong>Could not load books_fiction.csv.</strong> Make sure the file is uploaded to your GitHub repo.
+    </div>}
+
+    {loaded&&<>
+      {/* Profile bar */}
+      <div className="profile-bar">
+        <div className="section-label">Student profile</div>
+        <div className="profile-pills">
+          <button className={`pill${!activeProfileId?" active":""}`} onClick={()=>selectProfile(null)}>No profile</button>
+          {profiles.map(p=><div key={p.id} style={{display:"flex",alignItems:"center"}}>
+            <button className={`pill${activeProfileId===p.id?" active-left":""}`} onClick={()=>selectProfile(p.id)}>
+              {p.initials} <span style={{fontSize:10,opacity:.7}}>{p.grade}</span>
+            </button>
+            {activeProfileId===p.id&&<button className="pill-edit" onClick={()=>setEditing(editing?.id===p.id?null:p)}>✎</button>}
+          </div>)}
+          {profiles.length<10&&<button className="pill-add" onClick={()=>setEditing({initials:"",grade:"6th",notes:"",likedBooks:[],alreadyRead:[]})}>+</button>}
         </div>
-        <div style={{display:"flex",gap:8,alignItems:"center"}}>
-          {loaded&&<span style={{fontSize:11,color:GA,letterSpacing:".04em",textTransform:"uppercase"}}>{bookCount.toLocaleString()} titles</span>}
-          <button onClick={()=>{setShowAnalytics(p=>!p);setEditing(null);}} style={{padding:"5px 12px",fontSize:12,background:showAnalytics?G:"#fff",color:showAnalytics?"#fff":GA,border:`1px solid ${G}55`,borderRadius:6,cursor:"pointer"}}>
-            {showAnalytics?"Hide analytics":"Analytics"}
-          </button>
-        </div>
+        {activeProfile?.notes&&<p className="profile-note">"{activeProfile.notes}"</p>}
       </div>
 
-      {showAnalytics&&<AnalyticsPanel analytics={analytics}/>}
+      {editing&&<ProfileEditor profile={editing} books={books} onSave={saveProfile} onDelete={deleteProfile} onCancel={()=>setEditing(null)}/>}
 
-      {/* Loading state */}
-      {!loaded&&!loadError&&<p style={{color:GA,fontStyle:"italic",fontSize:14}}>Loading catalog…</p>}
-      {loadError&&<div style={{background:"#fdf0f0",border:"1px solid #e0b0b0",borderRadius:8,padding:"1rem",color:"#8b2e2e",fontSize:13}}>
-        <strong>Could not load books_fiction.csv.</strong> Make sure the file is in the same folder as index.html in your GitHub repo.
-      </div>}
+      {!editing&&<>
+        <div className="ornament">✦ ✦ ✦</div>
 
-      {loaded&&(
-        <>
-          {/* Profile bar */}
-          <div style={{marginBottom:16}}>
-            <div style={{fontSize:10,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:7}}>Student profile</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6,alignItems:"center"}}>
-              <button onClick={()=>selectProfile(null)} style={{padding:"5px 13px",fontSize:12,borderRadius:20,border:`1px solid ${!activeProfileId?G:G+"44"}`,background:!activeProfileId?G:"#fff",color:!activeProfileId?"#fff":GA,cursor:"pointer"}}>
-                No profile
-              </button>
-              {profiles.map(p=>(
-                <div key={p.id} style={{display:"flex",alignItems:"center"}}>
-                  <button onClick={()=>selectProfile(p.id)} style={{padding:"5px 13px",fontSize:12,fontWeight:500,borderRadius:activeProfileId===p.id?"20px 0 0 20px":"20px",border:`1px solid ${activeProfileId===p.id?G:G+"44"}`,borderRight:activeProfileId===p.id?"none":undefined,background:activeProfileId===p.id?G:"#fff",color:activeProfileId===p.id?"#fff":GA,cursor:"pointer"}}>
-                    {p.initials} <span style={{fontSize:10,opacity:.7}}>{p.grade}</span>
-                  </button>
-                  {activeProfileId===p.id&&<button onClick={()=>setEditing(editing?.id===p.id?null:p)} style={{padding:"5px 8px",fontSize:12,borderRadius:"0 20px 20px 0",border:`1px solid ${G}`,borderLeft:"none",background:G,color:"#fff",cursor:"pointer"}}>✎</button>}
-                </div>
-              ))}
-              {profiles.length<10&&<button onClick={()=>setEditing({initials:"",grade:"6th",notes:"",likedBooks:[],alreadyRead:[]})} style={{padding:"5px 11px",fontSize:14,borderRadius:20,border:`1px solid ${G}44`,background:"#fff",color:GA,cursor:"pointer",lineHeight:1}}>+</button>}
+        {/* Mode tabs */}
+        <div className="tabs">
+          {modes.map(m=><button key={m.id} className={`tab${mode===m.id?" active":""}`} onClick={()=>switchMode(m.id)}>{m.label}</button>)}
+        </div>
+
+        {/* Find Similar */}
+        {mode==="similar"&&<div className="input-wrap" style={{position:"relative"}}>
+          <div className="section-label">Book title</div>
+          <input className="main-input" value={query} onChange={e=>onQueryChange(e.target.value)} placeholder="Start typing a title…"/>
+          {suggestions.length>0&&<div className="dropdown">
+            {suggestions.map((b,i)=><div key={i} className="dropdown-item" onClick={()=>{setRefBook(b);setQuery(b.title);setSuggestions([]);}}>
+              <span className="dropdown-title">{b.title}</span>
+              <span className="dropdown-author">{b.author}</span>
+            </div>)}
+          </div>}
+        </div>}
+
+        {/* Describe It */}
+        {mode==="freetext"&&<div className="input-wrap">
+          <div className="section-label">Describe what the student wants</div>
+          <textarea className="main-textarea" value={query} onChange={e=>setQuery(e.target.value)} rows={3}
+            placeholder='e.g. "A fantasy where the character has powers and solves a murder mystery"'/>
+        </div>}
+
+        {/* Tropes */}
+        {mode==="tropes"&&<div className="input-wrap">
+          <p className="trope-hint">Click once to select · click again to mark as must-have (★)</p>
+          {CATS.map(cat=><div key={cat} className="trope-section">
+            <div className="trope-cat">{cat}</div>
+            <div className="trope-chips">
+              {TROPES.filter(t=>t.cat===cat).map(t=>{
+                const on=selTropes.has(t.id),isPrio=priorityTrope===t.id;
+                return <button key={t.id} onClick={()=>toggleTrope(t.id)}
+                  className={`trope-chip${isPrio?" priority":on?" selected":""}`}>
+                  {isPrio?"★ ":""}{t.label}
+                </button>;
+              })}
             </div>
-            {activeProfile?.notes&&<p style={{margin:"7px 0 0",fontSize:12,color:GA,fontStyle:"italic"}}>Note: {activeProfile.notes}</p>}
+          </div>)}
+        </div>}
+
+        {/* Already read */}
+        <div className="input-wrap">
+          <div className="section-label">Already read</div>
+          <BookSearch books={books} exclude={alreadyRead} onSelect={b=>setAlreadyRead(prev=>new Set([...prev,b.title]))} placeholder="Add a book to exclude…"/>
+          <ChipList items={[...alreadyRead]} onRemove={t=>setAlreadyRead(prev=>{const n=new Set(prev);n.delete(t);return n;})}/>
+        </div>
+
+        {activeProfile?.likedBooks?.length>0&&<div className="liked-banner">
+          <strong>❤ Liked books influencing results: </strong>
+          <span>{activeProfile.likedBooks.join(", ")}</span>
+        </div>}
+
+        {error&&<p className="error-msg">{error}</p>}
+        {loading&&<p className="loading-msg">The Tiger searches the stacks…</p>}
+
+        <button className="ask-btn" onClick={search} disabled={loading||loadingMore}>
+          {loading?"Consulting the Tiger…":"Ask the Tiger"}
+        </button>
+
+        {results&&results.length>0&&<div>
+          <div className="results-header">
+            <span className="results-title">The Tiger Recommends</span>
+            <div className="results-line"/>
+            <span className="results-count">{results.length} titles</span>
           </div>
-
-          {editing&&<ProfileEditor profile={editing} books={books} onSave={saveProfile} onDelete={deleteProfile} onCancel={()=>setEditing(null)}/>}
-
-          {!editing&&(
-            <>
-              <div style={{display:"flex",borderBottom:`1px solid ${G}30`,marginBottom:18}}>
-                {modes.map(m=><button key={m.id} onClick={()=>switchMode(m.id)} style={{padding:"7px 18px",fontSize:13,background:"none",border:"none",cursor:"pointer",color:mode===m.id?G:GA,fontWeight:mode===m.id?500:400,borderBottom:mode===m.id?`2px solid ${G}`:"2px solid transparent",marginBottom:-1}}>{m.label}</button>)}
-              </div>
-
-              {mode==="similar"&&(
-                <div style={{position:"relative",marginBottom:14}}>
-                  <label style={{display:"block",fontSize:11,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:5}}>Book title</label>
-                  <input value={query} onChange={e=>onQueryChange(e.target.value)} placeholder="Start typing a title…"
-                    style={{width:"100%",padding:"9px 13px",fontSize:14,border:`1px solid ${G}55`,borderRadius:6,background:"#fff",color:G,outline:"none"}}/>
-                  {suggestions.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:"#fff",border:`1px solid ${G}44`,borderRadius:6,marginTop:2,boxShadow:"0 4px 16px rgba(0,0,0,.08)"}}>
-                    {suggestions.map((b,i)=><div key={i} onClick={()=>{setRefBook(b);setQuery(b.title);setSuggestions([]);}}
-                      style={{padding:"8px 13px",fontSize:13,cursor:"pointer",borderBottom:i<suggestions.length-1?`1px solid ${G}18`:"none",display:"flex",justifyContent:"space-between",alignItems:"baseline"}}
-                      onMouseEnter={e=>e.currentTarget.style.background=GL} onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
-                      <span style={{color:G,fontWeight:500}}>{b.title}</span>
-                      <span style={{color:GA,fontSize:12,marginLeft:8}}>{b.author}</span>
-                    </div>)}
-                  </div>}
-                </div>
-              )}
-
-              {mode==="freetext"&&(
-                <div style={{marginBottom:14}}>
-                  <label style={{display:"block",fontSize:11,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:5}}>Describe what the student wants</label>
-                  <textarea value={query} onChange={e=>setQuery(e.target.value)} placeholder='e.g. "A fantasy where the character has powers and solves a murder mystery"'
-                    rows={3} style={{width:"100%",padding:"9px 13px",fontSize:14,border:`1px solid ${G}55`,borderRadius:6,background:"#fff",color:G,resize:"vertical",outline:"none"}}/>
-                </div>
-              )}
-
-              {mode==="tropes"&&(
-                <div style={{marginBottom:14}}>
-                  <p style={{fontSize:12,color:GA,margin:"0 0 10px",fontStyle:"italic"}}>Click once to select · click again to mark as must-have (gold ★)</p>
-                  {CATS.map(cat=>(
-                    <div key={cat} style={{marginBottom:13}}>
-                      <div style={{fontSize:10,fontWeight:500,textTransform:"uppercase",letterSpacing:".08em",color:GA,marginBottom:6}}>{cat}</div>
-                      <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                        {TROPES.filter(t=>t.cat===cat).map(t=>{
-                          const on=selTropes.has(t.id),isPrio=priorityTrope===t.id;
-                          return <button key={t.id} onClick={()=>toggleTrope(t.id)} style={{padding:"4px 11px",fontSize:12,borderRadius:20,cursor:"pointer",border:`1px solid ${isPrio?GOLD:on?G:G+"44"}`,background:isPrio?GOLD:on?G:"#fff",color:isPrio||on?"#fff":GA}}>
-                            {isPrio?"★ ":""}{t.label}
-                          </button>;
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div style={{marginBottom:14}}>
-                <label style={{display:"block",fontSize:11,textTransform:"uppercase",letterSpacing:".07em",color:GA,marginBottom:5}}>Already read</label>
-                <BookSearch books={books} exclude={alreadyRead} onSelect={b=>setAlreadyRead(prev=>new Set([...prev,b.title]))} placeholder="Add a book to exclude…"/>
-                <ChipList items={[...alreadyRead]} onRemove={t=>setAlreadyRead(prev=>{const n=new Set(prev);n.delete(t);return n;})}/>
-              </div>
-
-              {activeProfile?.likedBooks?.length>0&&(
-                <div style={{marginBottom:14,padding:"8px 12px",background:GL,borderRadius:6,border:`1px solid ${GOLD}44`}}>
-                  <span style={{fontSize:12,color:GOLD,fontWeight:500}}>❤ Liked books influencing results: </span>
-                  <span style={{fontSize:12,color:GA}}>{activeProfile.likedBooks.join(", ")}</span>
-                </div>
-              )}
-
-              {error&&<p style={{fontSize:13,color:"#8b2e2e",marginBottom:12,fontStyle:"italic"}}>{error}</p>}
-
-              <button onClick={search} disabled={loading||loadingMore} style={{padding:"9px 24px",fontSize:13,letterSpacing:".04em",textTransform:"uppercase",background:G,color:"#fff",border:"none",borderRadius:6,cursor:loading?"not-allowed":"pointer",opacity:loading?.65:1,fontWeight:500,marginBottom:22}}>
-                {loading?"Searching the stacks…":"Find Books"}
-              </button>
-
-              {results&&results.length>0&&(
-                <div>
-                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-                    <span style={{fontFamily:"Georgia,serif",fontSize:15,color:G,fontStyle:"italic"}}>Recommendations</span>
-                    <div style={{flex:1,borderTop:`1px solid ${G}22`}}/>
-                    <span style={{fontSize:11,color:GA,textTransform:"uppercase",letterSpacing:".05em"}}>{results.length} titles</span>
+          {results.map((b,i)=>{
+            const isLiked=activeProfile?.likedBooks?.includes(b.title);
+            return <div key={`${b.title}-${i}`} className="result-card" style={{animationDelay:`${i*0.07}s`}}>
+              <div className="result-inner">
+                <CoverImg isbn={b.isbn}/>
+                <div className="result-body">
+                  <div className="result-title-row">
+                    <span className="result-title">{b.title}</span>
+                    {activeProfile&&<button className="heart-btn" onClick={()=>toggleHeart(b.title)} style={{color:isLiked?"#e05030":"#2a3d30"}}>
+                      {isLiked?"♥":"♡"}
+                    </button>}
                   </div>
-                  {results.map((b,i)=>{
-                    const isLiked=activeProfile?.likedBooks?.includes(b.title);
-                    return(
-                      <div key={`${b.title}-${i}`} style={{padding:"13px 0",borderBottom:i<results.length-1?`1px solid ${G}14`:"none"}}>
-                        <div style={{display:"flex",gap:13}}>
-                          <CoverImg isbn={b.isbn}/>
-                          <div style={{flex:1,minWidth:0}}>
-                            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:8}}>
-                              <div style={{fontWeight:500,fontSize:14,color:G,lineHeight:1.3}}>{b.title}</div>
-                              {activeProfile&&<button onClick={()=>toggleHeart(b.title)} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:isLiked?"#c0392b":`${G}55`,padding:0,flexShrink:0,lineHeight:1}}>{isLiked?"♥":"♡"}</button>}
-                            </div>
-                            <div style={{fontSize:12,color:GA,marginBottom:5}}>
-                              {b.author}{b.series?<span style={{marginLeft:6,color:`${G}88`,fontStyle:"italic"}}>· {b.series}</span>:""}
-                            </div>
-                            <div style={{fontSize:13,color:GA,lineHeight:1.5,fontStyle:"italic",borderLeft:`2px solid ${G}33`,paddingLeft:8}}>{b.reason}</div>
-                          </div>
-                        </div>
-                        <NoteField title={b.title}/>
-                      </div>
-                    );
-                  })}
-                  <div style={{textAlign:"center",marginTop:18}}>
-                    <button onClick={searchMore} disabled={loading||loadingMore} style={{padding:"8px 22px",fontSize:13,background:"#fff",color:G,border:`1px solid ${G}88`,borderRadius:6,cursor:loadingMore?"not-allowed":"pointer",opacity:loadingMore?.65:1}}>
-                      {loadingMore?"Finding more…":"Show more results"}
-                    </button>
+                  <div className="result-meta">
+                    {b.author}{b.series&&<span className="result-series">· {b.series}</span>}
                   </div>
+                  <div className="result-reason">{b.reason}</div>
                 </div>
-              )}
-              {results&&results.length===0&&<p style={{fontSize:13,color:GA,fontStyle:"italic"}}>No recommendations found — try different terms.</p>}
-            </>
-          )}
-        </>
-      )}
-    </div>
-  );
+              </div>
+              <NoteField title={b.title}/>
+            </div>;
+          })}
+          <button className="more-btn" onClick={searchMore} disabled={loading||loadingMore}>
+            {loadingMore?"The Tiger searches deeper…":"Show more results"}
+          </button>
+        </div>}
+
+        {results&&results.length===0&&<p className="empty-msg">The Tiger sees nothing — seek differently.</p>}
+      </>}
+    </>}
+  </div>;
 }
 
 ReactDOM.render(<App/>, document.getElementById("root"));

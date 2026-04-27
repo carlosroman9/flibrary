@@ -139,7 +139,7 @@ async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTit
   const likedNote=likedTitles.length?`\n\nThis student has loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
   const list=candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.summary||"").slice(0,200)}`).join("\n\n");
   const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
+    body:JSON.stringify({      model:"claude-sonnet-4-6",max_tokens:1000,
       system:"You are a school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",
       messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
   const data=await res.json();

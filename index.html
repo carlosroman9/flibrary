@@ -143,6 +143,9 @@ async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTit
       system:"You are a school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",
       messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
   const data=await res.json();
+  console.log("API response:", JSON.stringify(data));
+  if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
+  if(!data.content) throw new Error("No content in response: "+JSON.stringify(data));
   return JSON.parse((data.content?.[0]?.text||"[]").replace(/```json|```/g,"").trim());
 }
 
@@ -405,7 +408,7 @@ function App(){
       lastSearch.current=params;
       await runSearch(params,new Set());
       trackSearch(mode,mode==="tropes"?[...selTropes]:[]);
-    }catch{setError("Something went wrong — please try again.");}
+    }catch(e){setError("Error: "+e.message);}
     setLoading(false);
   };
 

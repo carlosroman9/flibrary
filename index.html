@@ -650,14 +650,13 @@ function PixelTiger(){
     return()=>clearInterval(iv);
   },[]);
   const data=FRAMES[fr];
-  return(
-    <svg width={18*SC} height={25*SC} style={{flexShrink:0,display:'block',border:'1px solid #c9922a22'}} shapeRendering="crispEdges">
-      {data.map((row,y)=>row.map((ci,x)=>ci&&C[ci]
-        ?<rect key={`${x}-${y}`} x={x*SC} y={y*SC} width={SC} height={SC} fill={C[ci]}/>
-        :null
-      ))}
-    </svg>
-  );
+  let rects='';
+  data.forEach((row,y)=>row.forEach((ci,x)=>{
+    if(ci&&C[ci]) rects+=`<rect x="${x*SC}" y="${y*SC}" width="${SC}" height="${SC}" fill="${C[ci]}"/>`;
+  }));
+  const svgStr=`<svg xmlns="http://www.w3.org/2000/svg" width="${18*SC}" height="${25*SC}" shape-rendering="crispEdges">${rects}</svg>`;
+  const src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgStr);
+  return <img src={src} width={18*SC} height={25*SC} style={{flexShrink:0,imageRendering:'pixelated',display:'block'}}/>;
 }
 
 function TypewriterLoading({text}){

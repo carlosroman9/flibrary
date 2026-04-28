@@ -600,11 +600,9 @@ function AnalyticsPanel({analytics}){
 }
 
 function PixelTiger(){
-  const cvs=React.useRef(null);
+  const [fr,setFr]=React.useState(0);
   const SC=6;
-  // Color palette: index → hex
-  const C=[null,'#0f0805','#e8751a','#c06010','#f8f0dc','#1a1208','#c9922a','#2d2015','#4a3020','#d06828','#f0e0c0','#ddc080','#1f0f03','#8a6030'];
-  // Frame 1: cup at rest (held at belly)
+  const C=[null,'#0f0805','#e8751a','#c06010','#f8f0dc','#1a1208','#c9922a','#2d2015','#4a3020','#d06828','#f0e0c0','#ddc080','#1f0f03'];
   const F1=[
     [0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
     [0,0,0,1,5,5,5,5,5,5,5,5,1,0,0,0,0,0],
@@ -632,7 +630,6 @@ function PixelTiger(){
     [0,0,1,1,7,1,0,0,1,7,1,1,0,0,0,0,0,0],
     [0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,0],
   ];
-  // Frame 2: cup raised toward mouth
   const F2=F1.map((r,i)=>{
     if(i===15)return[0,0,1,7,7,11,11,7,7,7,7,7,7,1,0,0,0,0];
     if(i===16)return[0,1,7,11,12,12,11,7,7,7,7,7,7,1,0,0,0,0];
@@ -642,29 +639,25 @@ function PixelTiger(){
     if(i===20)return[0,1,7,7,7,7,7,7,7,7,7,7,7,1,0,0,0,0];
     return r;
   });
-  // Frame 3: blink (eyes closed)
   const F3=F1.map((r,i)=>{
     if(i===8)return[0,0,1,2,1,1,2,2,2,2,1,1,2,1,0,0,0,0];
-    if(i===9)return F1[8];
+    if(i===9)return[0,0,1,2,1,1,2,2,2,2,1,1,2,1,0,0,0,0];
     return r;
   });
   const FRAMES=[F1,F1,F1,F1,F2,F2,F2,F2,F1,F1,F3];
   React.useEffect(()=>{
-    const canvas=cvs.current;if(!canvas)return;
-    const ctx=canvas.getContext('2d');
-    canvas.width=18*SC;canvas.height=25*SC;
-    let fr=0;
-    const draw=()=>{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      FRAMES[fr].forEach((row,y)=>row.forEach((ci,x)=>{
-        if(ci&&C[ci]){ctx.fillStyle=C[ci];ctx.fillRect(x*SC,y*SC,SC,SC);}
-      }));
-    };
-    draw();
-    const iv=setInterval(()=>{fr=(fr+1)%FRAMES.length;draw();},400);
+    const iv=setInterval(()=>setFr(f=>(f+1)%FRAMES.length),400);
     return()=>clearInterval(iv);
   },[]);
-  return <canvas ref={cvs} style={{imageRendering:'pixelated',flexShrink:0,opacity:.95}}/>;
+  const data=FRAMES[fr];
+  return(
+    <svg width={18*SC} height={25*SC} style={{flexShrink:0}} shapeRendering="crispEdges">
+      {data.map((row,y)=>row.map((ci,x)=>ci&&C[ci]
+        ?<rect key={`${x}-${y}`} x={x*SC} y={y*SC} width={SC} height={SC} fill={C[ci]}/>
+        :null
+      ))}
+    </svg>
+  );
 }
 
 function TypewriterLoading({text}){

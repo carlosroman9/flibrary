@@ -62,24 +62,22 @@
       z-index: 20;
       pointer-events: none;
       user-select: none;
-      opacity: .96;
     }
 
     .tiger-detective-sprite {
-      width: 140px;
-      height: 235px;
-      background-image: url("images/tiger_detective_drinking_sprite_sheet_clean.png");
+      width: 145px;
+      height: 242px;
+      background-image: url("images/tiger_detective_drinking_sprite_sheet_locked.png");
       background-repeat: no-repeat;
-      background-size: 800% 100%;
-      background-position: 0 0;
+      background-size: 1164px 242px;
       image-rendering: pixelated;
       filter: drop-shadow(0 0 10px rgba(201,146,42,.22));
-      animation: tigerDrink 1.35s steps(8) infinite;
+      animation: tigerDrink 1.4s steps(8) infinite;
     }
 
     @keyframes tigerDrink {
       from { background-position: 0 0; }
-      to   { background-position: 100% 0; }
+      to   { background-position: -1018px 0; }
     }
 
     /* ── HEADER ── */
@@ -273,7 +271,11 @@
       .tab { padding:8px 14px; font-size:11px; }
       .ask-btn { font-size:14px; padding:13px; }
       .tiger-detective-wrap { bottom:12px; right:12px; }
-      .tiger-detective-sprite { width:96px; height:161px; }
+      .tiger-detective-sprite {
+        width: 99px;
+        height: 165px;
+        background-size: 792px 165px;
+      }
       .result-card { padding:12px; }
       .result-title { font-size:15px; }
       .editor-row { flex-direction:column; }

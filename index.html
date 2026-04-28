@@ -83,11 +83,6 @@
     /* ── HEADER ── */
     .header { padding:2.5rem 0 0; margin-bottom:2rem; position:relative; }
     .header-inner { display:flex; align-items:center; gap:1.5rem; padding-bottom:1rem; border-bottom:3px double var(--amber); }
-    .logo-badge { position:relative; flex-shrink:0; }
-    .logo-badge img { width:100px; height:100px; object-fit:contain; filter:sepia(.6) contrast(1.1); animation:tigerBreath 4s ease-in-out infinite; }
-    .logo-badge::after { content:''; position:absolute; inset:-4px; border:2px solid var(--amber); border-radius:50%; opacity:0; animation:eyeGlow 4s ease-in-out infinite; }
-    @keyframes tigerBreath { 0%,100%{transform:scale(1);filter:sepia(.6) contrast(1.1)} 50%{transform:scale(1.03);filter:sepia(.3) contrast(1.2) drop-shadow(0 0 8px #c9922a88)} }
-    @keyframes eyeGlow { 0%,40%,100%{opacity:0;transform:scale(1)} 60%,80%{opacity:1;transform:scale(1.05)} }
     .header-text { flex:1; }
     .case-label { font-family:'Special Elite',serif; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--amber); margin-bottom:4px; }
     .title { font-family:'Playfair Display',serif; font-size:34px; font-weight:900; color:var(--text); line-height:1; margin-bottom:6px; letter-spacing:.02em; }
@@ -292,7 +287,6 @@
 <script type="text/babel">
 const WORKER_URL="https://anthropic-proxy.roman-carlos09.workers.dev";
 const CSV_FILE="books_fiction.csv";
-const LOGO_FILE="logo.png";
 const ROMAN=["I","II","III","IV","V","VI","VII","VIII","IX","X"];
 
 const TROPES=[
@@ -783,7 +777,6 @@ function App(){
   return <div>
     <div className="header">
       <div className="header-inner">
-        <div className="logo-badge"><img src={LOGO_FILE} alt="Fletcher Library"/></div>
         <div className="header-text">
           <div className="case-label">Fletcher Middle School Library</div>
           <h1 className="title">The Fletcher Library Archives</h1>

@@ -601,8 +601,14 @@ function AnalyticsPanel({analytics}){
 
 function PixelTiger(){
   const[f,setF]=React.useState(0);
-  React.useEffect(()=>{const iv=setInterval(()=>setF(x=>1-x),1200);return()=>clearInterval(iv);},[]);
-  const sip=f===1;
+  React.useEffect(()=>{const iv=setInterval(()=>setF(x=>1-x),800);return()=>clearInterval(iv);},[]);
+  return React.createElement('div',{style:{
+    width:108,height:150,flexShrink:0,display:'flex',
+    alignItems:'center',justifyContent:'center',
+    fontSize:f?58:52,transition:'font-size 0.6s ease',
+    filter:'sepia(0.3) drop-shadow(0 0 8px #c9922a66)'
+  }},'🐯');
+}
   return React.createElement('div',{style:{flexShrink:0,width:90,display:'flex',flexDirection:'column',alignItems:'center',gap:0,filter:'drop-shadow(0 0 6px #c9922a44)',animation:'tigerBreath 4s ease-in-out infinite'}},
     // Hat
     React.createElement('div',{style:{width:52,height:18,background:'#1a1208',borderRadius:'4px 4px 0 0',border:'2px solid #0f0805',position:'relative',zIndex:2}},

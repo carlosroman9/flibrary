@@ -651,7 +651,7 @@ function PixelTiger(){
   },[]);
   const data=FRAMES[fr];
   return(
-    <svg width={18*SC} height={25*SC} style={{flexShrink:0}} shapeRendering="crispEdges">
+    <svg width={18*SC} height={25*SC} style={{flexShrink:0,display:'block',border:'1px solid #c9922a22'}} shapeRendering="crispEdges">
       {data.map((row,y)=>row.map((ci,x)=>ci&&C[ci]
         ?<rect key={`${x}-${y}`} x={x*SC} y={y*SC} width={SC} height={SC} fill={C[ci]}/>
         :null

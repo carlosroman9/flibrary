@@ -600,64 +600,14 @@ function AnalyticsPanel({analytics}){
 }
 
 function PixelTiger(){
-  const [fr,setFr]=React.useState(0);
-  const SC=6;
-  const C=[null,'#0f0805','#e8751a','#c06010','#f8f0dc','#1a1208','#c9922a','#2d2015','#4a3020','#d06828','#f0e0c0','#ddc080','#1f0f03'];
-  const F1=[
-    [0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
-    [0,0,0,1,5,5,5,5,5,5,5,5,1,0,0,0,0,0],
-    [0,0,0,1,5,5,6,6,6,6,5,5,1,0,0,0,0,0],
-    [0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
-    [0,0,0,1,2,2,2,2,2,2,2,2,1,0,0,0,0,0],
-    [0,0,1,2,2,1,2,2,2,2,1,2,2,1,0,0,0,0],
-    [0,0,1,2,2,2,2,2,2,2,2,2,2,1,0,0,0,0],
-    [0,0,1,2,3,2,2,2,2,2,2,3,2,1,0,0,0,0],
-    [0,0,1,2,10,10,2,2,2,2,10,10,2,1,0,0,0,0],
-    [0,0,1,2,10,1,2,2,2,2,10,1,2,1,0,0,0,0],
-    [0,0,1,2,2,2,2,9,9,2,2,2,2,1,0,0,0,0],
-    [0,0,1,2,4,4,4,4,4,4,4,4,2,1,0,0,0,0],
-    [0,0,0,1,1,2,2,2,2,2,2,1,1,0,0,0,0,0],
-    [0,0,0,1,7,7,7,7,7,7,7,7,1,0,0,0,0,0],
-    [0,0,1,7,7,7,4,4,4,4,7,7,7,1,0,0,0,0],
-    [0,0,1,7,7,7,4,6,4,4,7,7,7,1,0,0,0,0],
-    [0,1,7,7,7,7,7,7,7,7,7,7,7,1,0,0,0,0],
-    [0,1,7,7,11,11,7,7,7,7,7,7,7,1,0,0,0,0],
-    [0,1,7,11,12,12,11,7,7,7,7,7,7,1,0,0,0,0],
-    [0,1,7,11,12,12,11,7,7,7,7,7,7,1,0,0,0,0],
-    [0,1,7,7,11,11,7,7,7,7,7,7,7,1,0,0,0,0],
-    [0,1,7,7,7,7,1,7,7,7,1,0,0,0,0,0,0,0],
-    [0,1,7,7,7,7,1,7,7,7,1,0,0,0,0,0,0,0],
-    [0,0,1,1,7,1,0,0,1,7,1,1,0,0,0,0,0,0],
-    [0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,0],
-  ];
-  const F2=F1.map((r,i)=>{
-    if(i===15)return[0,0,1,7,7,11,11,7,7,7,7,7,7,1,0,0,0,0];
-    if(i===16)return[0,1,7,11,12,12,11,7,7,7,7,7,7,1,0,0,0,0];
-    if(i===17)return[0,1,7,11,12,12,11,7,7,7,7,7,7,1,0,0,0,0];
-    if(i===18)return[0,1,7,7,11,11,7,7,7,7,7,7,7,1,0,0,0,0];
-    if(i===19)return[0,1,7,7,7,7,7,7,7,7,7,7,7,1,0,0,0,0];
-    if(i===20)return[0,1,7,7,7,7,7,7,7,7,7,7,7,1,0,0,0,0];
-    return r;
-  });
-  const F3=F1.map((r,i)=>{
-    if(i===8)return[0,0,1,2,1,1,2,2,2,2,1,1,2,1,0,0,0,0];
-    if(i===9)return[0,0,1,2,1,1,2,2,2,2,1,1,2,1,0,0,0,0];
-    return r;
-  });
-  const FRAMES=[F1,F1,F1,F1,F2,F2,F2,F2,F1,F1,F3];
-  React.useEffect(()=>{
-    const iv=setInterval(()=>setFr(f=>(f+1)%FRAMES.length),400);
-    return()=>clearInterval(iv);
-  },[]);
-  const data=FRAMES[fr];
-  return(
-    <svg width={18*SC} height={25*SC} style={{flexShrink:0}} shapeRendering="crispEdges">
-      {data.map((row,y)=>row.map((ci,x)=>ci&&C[ci]
-        ?<rect key={`${x}-${y}`} x={x*SC} y={y*SC} width={SC} height={SC} fill={C[ci]}/>
-        :null
-      ))}
-    </svg>
-  );
+  const[f,setF]=React.useState(0);
+  React.useEffect(()=>{const iv=setInterval(()=>setF(x=>1-x),800);return()=>clearInterval(iv);},[]);
+  return React.createElement('div',{style:{
+    width:108,height:150,flexShrink:0,display:'flex',
+    alignItems:'center',justifyContent:'center',
+    fontSize:f?52:46,transition:'font-size 0.4s',
+    filter:'sepia(0.4) drop-shadow(0 0 6px #c9922a88)'
+  }},'🐯');
 }
 
 function TypewriterLoading({text}){
@@ -829,7 +779,7 @@ function App(){
         <div className="logo-badge"><img src={LOGO_FILE} alt="Fletcher Library"/></div>
         <div className="header-text">
           <div className="case-label">Fletcher Middle School Library</div>
-          <h1 className="title">The Fletcher Library Files</h1>
+          <h1 className="title">The Fletcher Library Archives</h1>
           <p className="subtitle">Cross-reference the stacks. Find your next book.</p>
         </div>
       </div>

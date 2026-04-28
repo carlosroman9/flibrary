@@ -54,8 +54,8 @@
 
     #root { max-width:740px; margin:0 auto; padding:0 1.5rem 5rem; }
 
-    /* ── DETECTIVE CAT DECORATION ── */
-    .detective-cat-wrap {
+    /* ── TIGER DETECTIVE DECORATION ── */
+    .tiger-detective-wrap {
       position: fixed;
       bottom: 24px;
       right: 24px;
@@ -64,7 +64,7 @@
       user-select: none;
     }
 
-    .detective-cat-img {
+    .tiger-detective-img {
       width: 150px;
       height: auto;
       display: block;
@@ -262,8 +262,8 @@
       .tabs { overflow-x:auto; }
       .tab { padding:8px 14px; font-size:11px; }
       .ask-btn { font-size:14px; padding:13px; }
-      .detective-cat-wrap { bottom:12px; right:12px; }
-      .detective-cat-img { width:105px; }
+      .tiger-detective-wrap { bottom:12px; right:12px; }
+      .tiger-detective-img { width:105px; }
       .result-card { padding:12px; }
       .result-title { font-size:15px; }
       .editor-row { flex-direction:column; }
@@ -273,14 +273,14 @@
 </head>
 <body>
 <div id="root"></div>
-<div class="detective-cat-wrap" aria-hidden="true">
-  <img class="detective-cat-img" src="images/detective_cat_coffee_loop_apng_slow.png" alt=""/>
-</div>
+<div class="tiger-detective-wrap" aria-hidden="true">
+  <img class="tiger-detective-img" src="images/tiger_detective_clean_drinking_loop.png" alt=""/>
 </div>
 
 <script type="text/babel">
 const WORKER_URL="https://anthropic-proxy.roman-carlos09.workers.dev";
 const CSV_FILE="books_fiction.csv";
+const LOGO_FILE="logo.png";
 const ROMAN=["I","II","III","IV","V","VI","VII","VIII","IX","X"];
 
 const TROPES=[
@@ -771,6 +771,7 @@ function App(){
   return <div>
     <div className="header">
       <div className="header-inner">
+        <div className="logo-badge"><img src={LOGO_FILE} alt="Fletcher Library"/></div>
         <div className="header-text">
           <div className="case-label">Fletcher Middle School Library</div>
           <h1 className="title">The Fletcher Library Archives</h1>

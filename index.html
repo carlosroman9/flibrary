@@ -359,12 +359,29 @@ async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTit
   const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.`:"";
   const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
   const list=candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.summary||"").slice(0,200)}`).join("\n\n");
+
   const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
       system:"You are a school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",
       messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
-  const data=await res.json();
-  return JSON.parse((data.content?.[0]?.text||"[]").replace(/```json|```/g,"").trim());
+
+  const raw=await res.text();
+  if(!res.ok){
+    console.error("Claude worker error:",res.status,raw);
+    throw new Error(`Claude worker returned ${res.status}`);
+  }
+
+  let data;
+  try{ data=JSON.parse(raw); }
+  catch(err){
+    console.error("Worker did not return JSON:",raw);
+    throw err;
+  }
+
+  const text=data.content?.[0]?.text||"[]";
+  const cleaned=text.replace(/```json|```/g,"").trim();
+  const jsonText=(cleaned.match(/\[[\s\S]*\]/)||[cleaned])[0];
+  return JSON.parse(jsonText);
 }
 
 function CoverImg({isbn}){
@@ -870,7 +887,9 @@ function App(){
   </div>;
 }
 
-ReactDOM.render(<App/>, document.getElementById("root"));
+const rootEl=document.getElementById("root");
+if(ReactDOM.createRoot){ ReactDOM.createRoot(rootEl).render(<App/>); }
+else{ ReactDOM.render(<App/>, rootEl); }
 </script>
 </body>
 </html>

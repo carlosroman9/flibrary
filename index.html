@@ -55,10 +55,7 @@
     #root { max-width:740px; margin:0 auto; padding:0 1.5rem 5rem; }
 
     /* ── COFFEE WRAP ── */
-    .coffee-wrap { position:fixed; bottom:32px; right:32px; z-index:0; pointer-events:none; user-select:none; transition:opacity .4s ease; }
-    .coffee-wrap.hidden { opacity:0; }
-    .reading-wrap { position:fixed; bottom:32px; right:32px; z-index:0; pointer-events:none; user-select:none; opacity:0; transition:opacity .4s ease; }
-    .reading-wrap.visible { opacity:1; }
+    .coffee-wrap { position:fixed; bottom:32px; right:32px; z-index:0; pointer-events:none; user-select:none; }
 
     /* ── HEADER ── */
     .header { padding:2.5rem 0 0; margin-bottom:2rem; position:relative; }
@@ -282,11 +279,8 @@
 </head>
 <body>
 <div id="root"></div>
-<div class="coffee-wrap" id="coffee-tiger">
+<div class="coffee-wrap">
   <img src="images/detective_cat_coffee_loop_apng_slow.png" alt="" style="width:120px;opacity:0.85;"/>
-</div>
-<div class="reading-wrap" id="reading-tiger">
-  <img src="images/reading.png" alt="" style="width:120px;opacity:0.85;"/>
 </div>
 
 <script type="text/babel">

@@ -243,7 +243,6 @@
 
 <!-- Corner tigers -->
 <img id="coffee-tiger" class="tiger-corner visible" src="images/detective_cat_coffee_loop_apng_slow.png" alt=""/>
-<img id="reading-tiger" class="tiger-corner hidden" src="images/reading.png" alt=""/>
 
 <script type="text/babel">
 const WORKER_URL="https://anthropic-proxy.roman-carlos09.workers.dev";
@@ -342,14 +341,13 @@ const shuffle=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.
 const lsLoad=(k,fb)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}};
 const lsSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
 
-// Tiger swap — pure DOM, outside React
-function setTigers(searching){
+// Coffee tiger visibility during loading
+function setCoffeeTigerVisible(visible){
   const coffee=document.getElementById('coffee-tiger');
-  const reading=document.getElementById('reading-tiger');
-  if(!coffee||!reading) return;
-  if(searching){ coffee.className='tiger-corner hidden'; reading.className='tiger-corner visible'; }
-  else { coffee.className='tiger-corner visible'; reading.className='tiger-corner hidden'; }
+  if(!coffee) return;
+  coffee.className = visible ? 'tiger-corner visible' : 'tiger-corner hidden';
 }
+
 
 function getCandidates(books,kws,priorityKws=[],likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),doShuffle=false){
   const kSet=new Set(kws),pSet=new Set(priorityKws),lSet=new Set(likedKws);
@@ -653,8 +651,8 @@ function App(){
       .catch(()=>setLoadError(true));
   },[]);
 
-  // Tiger swap
-  React.useEffect(()=>{setTigers(loading||loadingMore);},[loading,loadingMore]);
+  // Hide the corner coffee tiger while the loading video is showing.
+  React.useEffect(()=>{setCoffeeTigerVisible(!(loading||loadingMore));},[loading,loadingMore]);
 
   const saveProfiles=p=>{setProfiles(p);lsSave("profiles",p);};
   const saveAnalytics=a=>{setAnalytics(a);lsSave("analytics",a);};

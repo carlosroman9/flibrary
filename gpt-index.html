@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fletcher ReaderMatch — Bespoke Engine v2</title>
+  <title>Fletcher ReaderMatch — Custom Font v4</title>
   <link rel="icon" href="logo.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -11,6 +11,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
+
+@font-face {
+  font-family: "SNF Little Star";
+  src: url("snflittlestar%20(1).ttf") format("truetype"),
+       url("snflittlestar (1).ttf") format("truetype"),
+       url("snflittlestar.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --display-font: "SNF Little Star", Cinzel, serif;
+}
+
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -168,10 +183,10 @@ body::after {
 }
 
 .seal img { width: 82%; height: 82%; object-fit: contain; filter: drop-shadow(0 7px 12px rgba(0,0,0,.4)); }
-.seal-fallback { font-family: Cinzel, serif; font-size: 52px; font-weight: 800; color: var(--gold2); display: none; }
+.seal-fallback { font-family: var(--display-font); font-size: 52px; font-weight: 800; color: var(--gold2); display: none; }
 
 .school-title {
-  font-family: Cinzel, serif;
+  font-family: var(--display-font);
   font-size: 16px;
   font-weight: 800;
   letter-spacing: .16em;
@@ -299,7 +314,7 @@ body::after {
 .hdr-brand { flex: 1; min-width: 0; }
 .hdr-title {
   margin: 0;
-  font-family: Cinzel, serif;
+  font-family: var(--display-font);
   font-size: clamp(26px,3vw,46px);
   letter-spacing: .13em;
   line-height: 1;
@@ -309,7 +324,7 @@ body::after {
 .hdr-sub {
   margin-top: 8px;
   color: var(--muted);
-  font-family: Cinzel, serif;
+  font-family: var(--display-font);
   font-size: 11px;
   letter-spacing: .32em;
   text-transform: uppercase;
@@ -403,7 +418,7 @@ body::after {
 }
 
 .card-title, .editor-title {
-  font-family: Cinzel, serif;
+  font-family: var(--display-font);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: .16em;
@@ -430,7 +445,7 @@ body::after {
 
 .stats-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
 .stat-box { flex:1; min-width:100px; background:rgba(244,231,198,.045); border:1px solid var(--line2); border-radius:18px; padding:15px 12px; text-align:center; }
-.stat-n { font-family:Cinzel,serif; font-size:28px; font-weight:800; color:var(--gold2); line-height:1; }
+.stat-n { font-family:var(--display-font); font-size:28px; font-weight:800; color:var(--gold2); line-height:1; }
 .stat-l { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-top:4px; }
 .stat-cols { display:flex; gap:20px; flex-wrap:wrap; }
 .stat-col { flex:1; min-width:170px; }
@@ -441,7 +456,7 @@ body::after {
 
 .section { margin-bottom:20px; }
 .sec-label {
-  font-family:Cinzel,serif;
+  font-family:var(--display-font);
   font-size:12px;
   font-weight:800;
   letter-spacing:.16em;
@@ -535,7 +550,7 @@ body::after {
 .tab {
   min-height:96px;
   padding:18px;
-  font-family:Cinzel,serif;
+  font-family:var(--display-font);
   font-size:13px;
   font-weight:800;
   letter-spacing:.12em;
@@ -573,7 +588,7 @@ body::after {
 .dd-author { color:var(--muted); font-size:13px; flex-shrink:0; font-style:italic; font-family:Cormorant Garamond,serif; }
 
 .trope-sec { margin-bottom:16px; }
-.trope-cat { font-family:Cinzel,serif; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.16em; color:var(--gold2); margin-bottom:8px; }
+.trope-cat { font-family:var(--display-font); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.16em; color:var(--gold2); margin-bottom:8px; }
 .trope-chips { display:flex; flex-wrap:wrap; gap:7px; }
 .tchip {
   padding:7px 14px;
@@ -612,7 +627,7 @@ body::after {
   width:100%;
   height:58px;
   padding:14px;
-  font-family:Cinzel,serif;
+  font-family:var(--display-font);
   font-size:14px;
   font-weight:900;
   letter-spacing:.12em;
@@ -630,7 +645,7 @@ body::after {
 .search-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
 
 .results-hdr { display:flex; align-items:center; gap:14px; margin:27px 0 15px; }
-.results-title { font-family:Cinzel,serif; font-size:15px; font-weight:900; letter-spacing:.16em; text-transform:uppercase; color:var(--gold2); white-space:nowrap; }
+.results-title { font-family:var(--display-font); font-size:15px; font-weight:900; letter-spacing:.16em; text-transform:uppercase; color:var(--gold2); white-space:nowrap; }
 .results-line { flex:1; height:1px; background:linear-gradient(to right,var(--line),transparent); }
 .results-count { font-size:12px; font-weight:800; color:var(--muted); white-space:nowrap; }
 
@@ -662,7 +677,7 @@ body::after {
   font-weight:900;
   color:#090805;
   margin-bottom:12px;
-  font-family:Cinzel,serif;
+  font-family:var(--display-font);
 }
 .rinner { display:flex; gap:16px; }
 .cover {
@@ -832,7 +847,7 @@ body::after {
 .interpretation-title,
 .review-title {
   position: relative;
-  font-family: Cinzel, serif;
+  font-family: var(--display-font);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: .16em;
@@ -911,7 +926,7 @@ body::after {
 
 .interpretation-col h4 {
   margin: 0 0 8px;
-  font-family: Cinzel, serif;
+  font-family: var(--display-font);
   color: var(--gold2);
   font-size: 11px;
   letter-spacing: .12em;
@@ -1046,6 +1061,266 @@ body::after {
   .system-grid { grid-template-columns: 1fr; }
 }
 
+
+/* ── V3 WORKING NAVIGATION PANELS ─────────────────────────────────────── */
+.side-nav a[data-view] { user-select: none; }
+
+.view-panel {
+  display: none;
+  animation: fadeUp .28s ease both;
+}
+
+.view-panel.active {
+  display: block;
+}
+
+.utility-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.utility-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.utility-card h3 {
+  margin: 0 0 8px;
+  font-family: var(--display-font);
+  color: var(--gold2);
+  font-size: 13px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.utility-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.saved-list-card {
+  background: linear-gradient(145deg,rgba(19,17,12,.92),rgba(12,10,7,.9));
+  border: 1px solid rgba(214,170,61,.24);
+  border-radius: 22px;
+  padding: 18px;
+  margin-bottom: 12px;
+  box-shadow: var(--sh-sm);
+}
+
+.saved-list-title {
+  font-family: Cormorant Garamond, serif;
+  font-size: 24px;
+  color: var(--cream);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.saved-list-meta {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 5px;
+}
+
+.saved-list-books {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.saved-book-pill {
+  border: 1px solid rgba(214,170,61,.22);
+  border-radius: 999px;
+  background: rgba(214,170,61,.08);
+  color: var(--paper);
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.settings-list {
+  display: grid;
+  gap: 10px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  background: rgba(244,231,198,.045);
+  padding: 13px 14px;
+}
+
+.setting-label {
+  color: var(--cream);
+  font-weight: 850;
+  font-size: 13px;
+}
+
+.setting-help {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.setting-toggle {
+  min-width: 56px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,.22);
+  padding: 3px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.setting-toggle::after {
+  content: "";
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: all .15s ease;
+}
+
+.setting-toggle.on {
+  background: linear-gradient(135deg,var(--gold2),var(--gold));
+  border-color: var(--gold2);
+}
+
+.setting-toggle.on::after {
+  transform: translateX(24px);
+  background: #090805;
+}
+
+.profile-directory {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 14px;
+}
+
+.profile-directory-card {
+  border: 1px solid rgba(214,170,61,.24);
+  border-radius: 22px;
+  background: var(--panel);
+  padding: 18px;
+  box-shadow: var(--sh-sm);
+}
+
+.profile-directory-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg,var(--gold2),var(--gold));
+  color: #090805;
+  font-family: var(--display-font);
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.profile-directory-card h3 {
+  margin: 0;
+  font-family: Cormorant Garamond, serif;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.profile-directory-card p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.profile-mini-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.profile-mini-tags span {
+  border: 1px solid rgba(214,170,61,.22);
+  border-radius: 999px;
+  color: var(--paper);
+  background: rgba(214,170,61,.08);
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.empty-panel {
+  border: 1px dashed rgba(214,170,61,.28);
+  border-radius: 24px;
+  padding: 30px;
+  text-align: center;
+  color: var(--muted);
+  font-family: Cormorant Garamond, serif;
+  font-size: 20px;
+}
+
+@media(max-width: 980px) {
+  .utility-grid,
+  .profile-directory {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ── CUSTOM FLETCHER DISPLAY FONT TUNING ─────────────────────────────── */
+.hdr-title,
+.school-title,
+.card-title,
+.editor-title,
+.panel-title,
+.results-title,
+.system-title,
+.interpretation-title,
+.review-title,
+.tab,
+.search-btn,
+.find-btn,
+.side-nav a,
+.saved-list-title {
+  letter-spacing: .06em;
+}
+
+.hdr-title {
+  font-size: clamp(32px, 4vw, 58px);
+}
+
+.school-title {
+  font-size: 22px;
+}
+
+.hdr-sub,
+.school-sub {
+  font-family: Cormorant Garamond, serif;
+  letter-spacing: .18em;
+}
+
+.rtitle,
+.book-title,
+.welcome h2,
+.empty-title,
+.saved-list-title,
+.profile-directory-card h3 {
+  font-family: Cormorant Garamond, serif;
+}
+
 </style>
 </head>
 <body>
@@ -1061,12 +1336,12 @@ body::after {
       </div>
 
       <nav class="side-nav" aria-label="Main navigation">
-        <a class="active" href="#root"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>Dashboard</a>
-        <a href="#root"><svg viewBox="0 0 24 24"><path d="m12 3 1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6Z"/><path d="m19 15 .7 2.2L22 18l-2.3.8L19 21l-.8-2.2L16 18l2.2-.8Z"/></svg>Recommend</a>
-        <a href="#root"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Reader Profiles</a>
-        <a href="#root"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M8 19v-7"/><path d="M12 19V9"/><path d="M16 19V4"/><path d="M20 19v-10"/></svg>Insights</a>
-        <a href="#root"><svg viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4Z"/></svg>Saved Lists</a>
-        <a href="#root"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2 2-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V20h-3v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-2-2 .1-.1A1.7 1.7 0 0 0 5 15.2a1.7 1.7 0 0 0-1.6-1H3v-3h.4A1.7 1.7 0 0 0 5 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1 2-2 .1.1A1.7 1.7 0 0 0 8.6 6.4a1.7 1.7 0 0 0 1-1.6V4h3v.8a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 2 2-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v3h-.2a1.7 1.7 0 0 0-1.4 1Z"/></svg>Settings</a>
+        <a class="active" href="#root" data-view="dashboard"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>Dashboard</a>
+        <a href="#root" data-view="recommend"><svg viewBox="0 0 24 24"><path d="m12 3 1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6Z"/><path d="m19 15 .7 2.2L22 18l-2.3.8L19 21l-.8-2.2L16 18l2.2-.8Z"/></svg>Recommend</a>
+        <a href="#root" data-view="profiles"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Reader Profiles</a>
+        <a href="#root" data-view="insights"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M8 19v-7"/><path d="M12 19V9"/><path d="M16 19V4"/><path d="M20 19v-10"/></svg>Insights</a>
+        <a href="#root" data-view="lists"><svg viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4Z"/></svg>Saved Lists</a>
+        <a href="#root" data-view="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2 2-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V20h-3v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-2-2 .1-.1A1.7 1.7 0 0 0 5 15.2a1.7 1.7 0 0 0-1.6-1H3v-3h.4A1.7 1.7 0 0 0 5 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1 2-2 .1.1A1.7 1.7 0 0 0 8.6 6.4a1.7 1.7 0 0 0 1-1.6V4h3v.8a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 2 2-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v3h-.2a1.7 1.7 0 0 0-1.4 1Z"/></svg>Settings</a>
       </nav>
 
       <div class="side-quote">“A book is a <b>door</b> waiting for the right reader.”</div>
@@ -1346,6 +1621,118 @@ function makeRequestInterpretation({mode,query,refBook,selTropes,priorityTrope,a
   if(!avoid.length) avoid.push("No extra exclusions beyond catalog fit");
 
   return {must:must.slice(0,5), preferred:preferred.slice(0,6), avoid:avoid.slice(0,5), query: query || (refBook?.title || "Selected trope/theme search")};
+}
+
+
+function SavedListsPanel({savedLists,onOpen,onDelete,onPrint}){
+  return <div className="view-panel" data-panel="lists">
+    <div className="card">
+      <div className="card-title">Saved Recommendation Lists</div>
+      <p style={{color:"var(--muted)",marginBottom:14}}>Save result sets from the Recommend screen, then return here to reopen, print, or copy them.</p>
+      {savedLists.length===0&&<div className="empty-panel">No saved lists yet. Generate recommendations and choose “Save This List.”</div>}
+      {savedLists.map(list=><div key={list.id} className="saved-list-card">
+        <div className="saved-list-title">{list.name}</div>
+        <div className="saved-list-meta">{new Date(list.createdAt).toLocaleString()} · {list.books?.length||0} books · {list.profileName||"No profile"}</div>
+        <div className="saved-list-books">{(list.books||[]).slice(0,8).map(b=><span key={b.title} className="saved-book-pill">{b.title}</span>)}</div>
+        <div className="ractions" style={{justifyContent:"flex-start",marginTop:14}}>
+          <button className="act-btn primary" onClick={()=>onOpen(list)}>Open List</button>
+          <button className="act-btn" onClick={()=>onPrint(list)}>Print</button>
+          <button className="act-btn" onClick={()=>navigator.clipboard?.writeText((list.books||[]).map((b,i)=>`${i+1}. ${b.title} — ${b.author||""}\n${b.reason||""}`).join("\\n\\n"))}>Copy</button>
+          <button className="act-btn" onClick={()=>onDelete(list.id)}>Delete</button>
+        </div>
+      </div>)}
+    </div>
+  </div>;
+}
+
+function ProfileDirectoryPanel({profiles,onSelect,onEdit,onNew}){
+  return <div className="view-panel" data-panel="profiles">
+    <div className="card">
+      <div className="card-title">Reader Profiles</div>
+      <p style={{color:"var(--muted)",marginBottom:16}}>Profiles are real working app data. Choose one here to apply it to recommendations, or edit it in the profile area.</p>
+      <div className="ractions" style={{justifyContent:"flex-start",marginBottom:16}}>
+        <button className="act-btn primary" onClick={onNew}>Create Profile</button>
+      </div>
+      {profiles.length===0&&<div className="empty-panel">No profiles saved yet. Create a profile to track liked books, already-read titles, and reading preferences.</div>}
+      <div className="profile-directory">
+        {profiles.map(p=><div key={p.id} className="profile-directory-card">
+          <div className="profile-directory-avatar">{p.initials}</div>
+          <h3>{p.initials}</h3>
+          <p>{p.grade} · {p.reluctant?"Reluctant reader":"Reader profile"}</p>
+          {p.notes&&<p>{p.notes}</p>}
+          <div className="profile-mini-tags">
+            {(p.likedBooks||[]).slice(0,4).map(t=><span key={t}>❤ {t}</span>)}
+            {(p.alreadyRead||[]).slice(0,3).map(t=><span key={t}>✓ {t}</span>)}
+          </div>
+          <div className="ractions" style={{justifyContent:"flex-start",marginTop:14}}>
+            <button className="act-btn primary" onClick={()=>onSelect(p.id)}>Use Profile</button>
+            <button className="act-btn" onClick={()=>onEdit(p)}>Edit</button>
+          </div>
+        </div>)}
+      </div>
+    </div>
+  </div>;
+}
+
+function InsightsPanel({analytics,feedback,books,bookCount}){
+  const topFeedback=Object.entries(feedback||{}).map(([title,obj])=>({title,...obj,score:Object.values(obj||{}).filter(Boolean).length})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
+  return <div className="view-panel" data-panel="insights">
+    <AnalyticsPanel analytics={analytics}/>
+    <div className="utility-grid">
+      <div className="utility-card">
+        <h3>Catalog Coverage</h3>
+        <p>{bookCount.toLocaleString()} fiction records loaded. This panel can become your collection-intelligence view: weak-result searches, common requests, and purchase signals.</p>
+      </div>
+      <div className="utility-card">
+        <h3>Librarian Feedback</h3>
+        <p>{topFeedback.length} titles have local feedback tags. Use this to spot titles that are frequently strong matches, too difficult, or need content review.</p>
+      </div>
+    </div>
+    <div className="card">
+      <div className="card-title">Recent Feedback</div>
+      {topFeedback.length===0&&<div className="empty-panel">No feedback yet. Use the buttons on result cards: Good Match, Not a Fit, Already Read, Too Hard, or Content Check.</div>}
+      {topFeedback.map(item=><div className="stat-row" key={item.title}><span>{item.title}</span><span>{["good","notfit","read","hard","mature"].filter(k=>item[k]).join(", ")}</span></div>)}
+    </div>
+  </div>;
+}
+
+function SettingsPanelReal({settings,setSettings,onExportProfiles,onExportAnalytics,onExportLists,onClearDemo}){
+  const toggle=key=>{const next={...settings,[key]:!settings[key]};setSettings(next);lsSave("appSettings",next);};
+  const rows=[
+    ["showStatus","Show system status","Display catalog, embeddings, and engine status."],
+    ["showReview","Show librarian review notice","Keep the responsible-use framing visible."],
+    ["showInterpretation","Show request interpretation","Summarize what the app thinks the reader wants."],
+    ["showMascot","Enable mascot animation","Optional visual flourish. Currently off in bespoke mode."],
+  ];
+  return <div className="view-panel" data-panel="settings">
+    <div className="card">
+      <div className="card-title">Settings</div>
+      <div className="settings-list">
+        {rows.map(([key,label,help])=><div key={key} className="setting-row">
+          <div><div className="setting-label">{label}</div><div className="setting-help">{help}</div></div>
+          <button className={`setting-toggle ${settings[key]?"on":""}`} onClick={()=>toggle(key)} aria-label={label}></button>
+        </div>)}
+      </div>
+    </div>
+    <div className="utility-grid">
+      <div className="utility-card">
+        <h3>Export</h3>
+        <p>Download local demo data before making big changes.</p>
+        <div className="ractions" style={{justifyContent:"flex-start"}}>
+          <button className="act-btn" onClick={onExportProfiles}>Profiles</button>
+          <button className="act-btn" onClick={onExportAnalytics}>Analytics</button>
+          <button className="act-btn" onClick={onExportLists}>Saved Lists</button>
+        </div>
+      </div>
+      <div className="utility-card">
+        <h3>Reset</h3>
+        <p>Clear local demo data from this browser. Your catalog files are not changed.</p>
+        <div className="ractions" style={{justifyContent:"flex-start"}}>
+          <button className="act-btn" onClick={onClearDemo}>Clear Local Data</button>
+        </div>
+      </div>
+    </div>
+  </div>;
 }
 
 function SystemStatusPanel({loaded,bookCount,embedReady,loadError,profiles,results,searchMeta}){
@@ -1663,6 +2050,9 @@ function App(){
   const[requestInterpretation,setRequestInterpretation]=React.useState(null);
   const[searchMeta,setSearchMeta]=React.useState({engine:"Not run yet",candidates:0,lastRun:null});
   const[feedback,setFeedback]=React.useState(()=>lsLoad("feedback",{}));
+  const[activeView,setActiveView]=React.useState("dashboard");
+  const[savedLists,setSavedLists]=React.useState(()=>lsLoad("savedLists",[]));
+  const[appSettings,setAppSettings]=React.useState(()=>lsLoad("appSettings",{showStatus:true,showReview:true,showInterpretation:true,showMascot:false}));
   const lastSearch=React.useRef(null);
   const stageRef=React.useRef(null);
   const resultsRef=React.useRef(null);
@@ -1695,6 +2085,19 @@ function App(){
     setToasts(p=>[...p,{id,msg,type}]);
     setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),2800);
   };
+
+  React.useEffect(()=>{
+    const links=[...document.querySelectorAll('.side-nav a[data-view]')];
+    const handler=e=>{
+      e.preventDefault();
+      const view=e.currentTarget.dataset.view||"dashboard";
+      setActiveView(view);
+      links.forEach(l=>l.classList.toggle('active',l===e.currentTarget));
+      setTimeout(()=>document.getElementById('root')?.scrollIntoView({behavior:'smooth',block:'start'}),50);
+    };
+    links.forEach(l=>l.addEventListener('click',handler));
+    return()=>links.forEach(l=>l.removeEventListener('click',handler));
+  },[]);
 
   const saveProfiles=p=>{setProfiles(p);lsSave("profiles",p);};
   const saveAnalytics=a=>{setAnalytics(a);lsSave("analytics",a);};
@@ -1731,6 +2134,51 @@ function App(){
     const next={...feedback,[title]:{...(feedback[title]||{}),[key]:!(feedback[title]?.[key])}};
     setFeedback(next);lsSave("feedback",next);
     addToast("Feedback saved ✓");
+  };
+
+  const exportJson=(name,data)=>{
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  };
+
+  const saveCurrentList=()=>{
+    if(!results?.length){addToast("Generate recommendations first","info");return;}
+    const defaultName=activeProfile?`${activeProfile.initials} recommendations`:`Fletcher recommendations`;
+    const name=prompt("Name this recommendation list:",defaultName);
+    if(!name) return;
+    const list={id:uid(),name,createdAt:new Date().toISOString(),profileId:activeProfile?.id||null,profileName:activeProfile?.initials||"",request:requestInterpretation?.query||query||"",books:results};
+    const next=[list,...savedLists];
+    setSavedLists(next);lsSave("savedLists",next);
+    setActiveView("lists");
+    document.querySelectorAll('.side-nav a[data-view]').forEach(l=>l.classList.toggle('active',l.dataset.view==="lists"));
+    addToast("Recommendation list saved ✓");
+  };
+
+  const openSavedList=list=>{
+    setResults(list.books||[]);
+    setRequestInterpretation({must:["Saved recommendation list"],preferred:[list.request||"Previously generated result set"],avoid:["Review before recommending"],query:list.request||list.name});
+    setActiveView("recommend");
+    document.querySelectorAll('.side-nav a[data-view]').forEach(l=>l.classList.toggle('active',l.dataset.view==="recommend"));
+    addToast("Saved list opened");
+  };
+
+  const deleteSavedList=id=>{
+    const next=savedLists.filter(l=>l.id!==id);
+    setSavedLists(next);lsSave("savedLists",next);
+    addToast("Saved list deleted");
+  };
+
+  const printSavedList=list=>{
+    const html=`<html><head><title>${list.name}</title><style>body{font-family:Georgia,serif;padding:32px;line-height:1.5}h1{font-size:28px}h2{font-size:18px;margin-top:24px}.book{break-inside:avoid;margin:18px 0;padding-bottom:14px;border-bottom:1px solid #ccc}</style></head><body><h1>Fletcher Library Recommended Reads</h1><p><strong>${list.name}</strong><br>${new Date(list.createdAt).toLocaleString()}<br>${list.request||""}</p>${(list.books||[]).map((b,i)=>`<div class="book"><h2>${i+1}. ${b.title}</h2><p><em>${b.author||""}</em></p><p>${b.reason||""}</p></div>`).join("")}</body></html>`;
+    const w=window.open("","_blank");w.document.write(html);w.document.close();w.focus();w.print();
+  };
+
+  const clearLocalDemo=()=>{
+    if(!confirm("Clear profiles, analytics, saved lists, feedback, and notes from this browser?")) return;
+    ["profiles","analytics","savedLists","feedback","appSettings"].forEach(k=>localStorage.removeItem(k));
+    Object.keys(localStorage).filter(k=>k.startsWith("note:")).forEach(k=>localStorage.removeItem(k));
+    location.reload();
   };
 
   const addToHistory=(label,m)=>setSearchHistory(p=>[{label,mode:m,id:Date.now()},...p.filter(e=>e.label!==label)].slice(0,5));
@@ -1882,6 +2330,14 @@ function App(){
   },[showAbout,showStats]);
 
   return <div className="page-body">
+    <div className={`view-panel ${(activeView==="dashboard"||activeView==="recommend")?"active":""}`} data-panel="recommend">
+    </div>
+
+    <ProfileDirectoryPanel profiles={profiles} onSelect={selectProfile} onEdit={p=>setEditing(p)} onNew={()=>setEditing({})}/>
+    <InsightsPanel analytics={analytics} feedback={feedback} books={books} bookCount={bookCount}/>
+    <SavedListsPanel savedLists={savedLists} onOpen={openSavedList} onDelete={deleteSavedList} onPrint={printSavedList}/>
+    <SettingsPanelReal settings={appSettings} setSettings={setAppSettings} onExportProfiles={()=>exportJson("fletcher-readermatch-profiles.json",profiles)} onExportAnalytics={()=>exportJson("fletcher-readermatch-analytics.json",analytics)} onExportLists={()=>exportJson("fletcher-readermatch-saved-lists.json",savedLists)} onClearDemo={clearLocalDemo}/>
+
     <Toasts toasts={toasts}/>
 
     {/* STATUS BAR */}
@@ -1893,7 +2349,7 @@ function App(){
       </div>
     </div>
 
-    <SystemStatusPanel loaded={loaded} bookCount={bookCount} embedReady={embedReady} loadError={loadError} profiles={profiles} results={results} searchMeta={searchMeta}/>
+    {appSettings.showStatus&&<SystemStatusPanel loaded={loaded} bookCount={bookCount} embedReady={embedReady} loadError={loadError} profiles={profiles} results={results} searchMeta={searchMeta}/>} 
 
     {showAbout&&<AboutPanel/>}
     {showStats&&<AnalyticsPanel analytics={analytics}/>}

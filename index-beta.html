@@ -754,19 +754,74 @@ async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,exc
   return scored.sort((a,b)=>b._s-a._s).slice(0,n);
 }
 
-// ── CLAUDE ───────────────────────────────────────────────────────────────
+// ── CLAUDE ── UPGRADED ───────────────────────────────────────────────────
 async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote="",advisoryNote="",structured=null){
+
+  // UPGRADE 1: Richer candidate metadata — pages, reading level, series, subjects
+  const list=candidates.map((b,i)=>{
+    const pages=b.pages?`${b.pages}pp`:'';
+    const rl=b.pages?(b.pages<250?'Quick Read':b.pages<=350?'Standard':'Long Haul'):'';
+    const series=b.series?`Series: ${b.series}`:'';
+    const meta=[pages,rl,series].filter(Boolean).join(' · ');
+    const subjects=(b.enriched_subjects||b.subjects||'').split('|').slice(0,5).filter(Boolean).join(', ');
+    const summary=(b.enriched_summary||b.summary||'').slice(0,260);
+    return `${i+1}. "${b.title}" by ${b.author}${meta?` [${meta}]`:''}
+   Subjects: ${subjects||'—'}
+   ${summary}`;
+  }).join("\n\n");
+
   const exclNote=excluded.length?`\n\nDo NOT recommend: ${excluded.join(", ")}`:"";
   const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.`:"";
   const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
   const advNote=advisoryNote?`\n\nLibrarian advisory notes:\n${advisoryNote}`:"";
   const structNote=structured?`\n\nStructured reader model:\nMust have: ${structured.mustHave.join(", ")}\nPrefer: ${structured.softPreferences.join(", ")}\nAvoid/check: ${structured.avoidSignals.join(", ")}`:"";
-  const list=candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.enriched_summary||b.summary||"").slice(0,200)}`).join("\n\n");
-  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:"You are an expert school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${advNote}${structNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
+
+  // UPGRADE 2: Improved system prompt with specific librarian reasoning guidance
+  const systemPrompt=`You are an expert school librarian at Fletcher Middle School recommending middle school and YA fiction.
+
+Your goal is to match students with books they will genuinely love and actually finish — not just books that are thematically adjacent.
+
+When selecting picks:
+- Prioritize books the student is likely to finish, not just start
+- For reluctant readers, fast pacing, short chapters, and a strong hook on page one matter more than literary merit
+- Series starters are valuable — they create reading momentum
+- Match emotional register: a student going through something hard may need levity; a bored reader may need intensity
+- Aim for variety in tone, length, and genre across your 6 picks
+- Never recommend books the student has already read or disliked
+
+For each pick write a 2-3 sentence reason that explains specifically why THIS student would connect with this book — not a generic summary.
+
+Return only valid JSON arrays, no markdown, no text outside the JSON.`;
+
+  // UPGRADE 3: Lite chain-of-thought — brief reasoning before JSON output
+  const userPrompt=`${ctx}${prioNote}${likedNote}${advNote}${structNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}
+
+Before selecting, think through 2-3 sentences: what does this specific reader need right now, and what qualities should the strongest picks share?
+
+Then select the 6 best matches from the catalog below. The JSON array must be the final thing you output — nothing after it.
+
+[{"title":"...","author":"...","reason":"2-3 sentence personalized explanation"}]
+
+Catalog:
+${list}`;
+
+  // UPGRADE 4: max_tokens bumped from 1000 to 2000
+  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    model:"claude-sonnet-4-6",
+    max_tokens:2000,
+    system:systemPrompt,
+    messages:[{role:"user",content:userPrompt}]
+  })});
+
   const raw=await res.text();
   if(!res.ok) throw new Error(`Worker ${res.status}`);
-  let data; try{data=JSON.parse(raw);}catch(e){throw e;}
-  const text=data.content?.[0]?.text||"[]",clean=text.replace(/```json|```/g,"").trim(),jsonText=(clean.match(/\[[\s\S]*\]/)||[clean])[0];
+  let data;try{data=JSON.parse(raw);}catch(e){throw e;}
+  const text=data.content?.[0]?.text||"[]";
+  const clean=text.replace(/```json|```/g,"").trim();
+  // UPGRADE 5: More robust extraction — finds JSON array of objects specifically,
+  // handles any CoT reasoning text that may appear before the JSON
+  const jsonMatch=clean.match(/\[\s*\{[\s\S]*\}\s*\]/);
+  const jsonText=jsonMatch?jsonMatch[0]:clean;
   return JSON.parse(jsonText);
 }
 

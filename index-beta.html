@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fletcher Library Assistant</title>
   <link rel="icon" href="logo.png"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -14,309 +14,328 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #0d1117;
-      --bg2:     #161b22;
-      --bg3:     #21262d;
-      --bg4:     #2d333b;
-      --gold:    #f0a500;
-      --gold2:   #fbbf24;
-      --golddim: rgba(240,165,0,0.15);
-      --text:    #e6edf3;
-      --text2:   #8b949e;
-      --text3:   #6e7681;
-      --border:  #30363d;
-      --border2: rgba(240,165,0,0.3);
-      --green:   #3fb950;
-      --red:     #f85149;
-      --radius:  10px;
-      --shadow:  0 1px 3px rgba(0,0,0,0.4);
-      --shadow2: 0 4px 16px rgba(0,0,0,0.5);
+      --page:     #F0F4F8;
+      --surface:  #FFFFFF;
+      --surface2: #F8FAFC;
+      --surface3: #EDF2F7;
+      --navy:     #1D4ED8;
+      --navy-dk:  #1E40AF;
+      --navy-lt:  #DBEAFE;
+      --navy-txt: #1E3A8A;
+      --teal:     #0D9488;
+      --teal-dk:  #0F766E;
+      --teal-lt:  #F0FDFA;
+      --teal-bd:  #99F6E4;
+      --text:     #111827;
+      --text2:    #4B5563;
+      --text3:    #9CA3AF;
+      --border:   #E5E7EB;
+      --border2:  #D1D5DB;
+      --green:    #059669;
+      --red:      #DC2626;
+      --red-lt:   #FEF2F2;
+      --amber:    #D97706;
+      --amber-lt: #FFFBEB;
+      --r:        10px;
+      --sh-sm:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+      --sh:       0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+      --sh-lg:    0 10px 28px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.05);
     }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      font-size: 15px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
+    body { font-family:'Inter',sans-serif; background:var(--page); color:var(--text); min-height:100vh; font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased; }
 
-    #root { max-width: 780px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+    #root { max-width:800px; margin:0 auto; padding:0 1.5rem 6rem; }
 
     /* ── TIGER ── */
-    .tiger-corner { position:fixed; bottom:28px; right:28px; z-index:10; pointer-events:none; width:110px; transition:opacity .4s; }
-    .tiger-corner.hidden { opacity:0; }
-    .tiger-corner.visible { opacity:.85; }
+    .tiger { position:fixed; bottom:24px; right:24px; z-index:10; pointer-events:none; width:100px; transition:opacity .4s; filter:drop-shadow(0 4px 12px rgba(0,0,0,.2)); }
+    .tiger.hide { opacity:0; }
+    .tiger.show { opacity:1; }
 
     /* ── TOASTS ── */
-    .toast-wrap { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
-    .toast { font-family:'Inter',sans-serif; font-size:13px; font-weight:500; padding:9px 18px; border-radius:100px; box-shadow:var(--shadow2); animation:toastIn .2s ease both; white-space:nowrap; }
+    .toasts { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+    .toast { font-size:13px; font-weight:500; padding:10px 20px; border-radius:100px; box-shadow:var(--sh-lg); animation:tIn .2s ease both; white-space:nowrap; }
     .toast.success { background:var(--green); color:#fff; }
     .toast.error   { background:var(--red);   color:#fff; }
-    .toast.info    { background:var(--bg4);   color:var(--text); border:1px solid var(--border); }
-    .toast.fade-out { animation:toastOut .25s ease both; }
-    @keyframes toastIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes toastOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(6px)} }
+    .toast.info    { background:var(--text);   color:#fff; }
+    @keyframes tIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
     /* ── HEADER ── */
-    .header { padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-    .header-top { display:flex; align-items:center; gap:1.25rem; margin-bottom:1rem; }
-    .logo { width:72px; height:72px; border-radius:12px; object-fit:contain; background:var(--bg2); padding:6px; border:1px solid var(--border); flex-shrink:0; filter:sepia(.3) contrast(1.1); animation:breathe 5s ease-in-out infinite; }
-    @keyframes breathe { 0%,100%{filter:sepia(.3) contrast(1.1)} 50%{filter:sepia(.1) contrast(1.15) drop-shadow(0 0 8px rgba(240,165,0,.4))} }
-    .header-text { flex:1; }
-    .header-badge { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
-    .header-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.1; color:var(--text); margin-bottom:4px; }
-    .header-sub { font-family:'Crimson Text',serif; font-size:15px; font-style:italic; color:var(--text2); }
-    .header-actions { display:flex; gap:8px; align-items:flex-start; flex-shrink:0; }
-    .header-btn { padding:6px 14px; font-size:12px; font-weight:500; border:1px solid var(--border); background:transparent; color:var(--text2); border-radius:6px; cursor:pointer; transition:all .15s; white-space:nowrap; }
-    .header-btn:hover, .header-btn.active { border-color:var(--gold); color:var(--gold); background:var(--golddim); }
+    .hdr { background:var(--surface); border-bottom:1px solid var(--border); margin-bottom:0; padding:0; position:sticky; top:0; z-index:100; box-shadow:var(--sh-sm); }
+    .hdr-inner { max-width:800px; margin:0 auto; padding:0 1.5rem; display:flex; align-items:center; gap:14px; height:64px; }
+    .hdr-logo { width:36px; height:36px; border-radius:8px; object-fit:contain; padding:4px; background:var(--navy-lt); flex-shrink:0; border:1px solid #BFDBFE; }
+    .hdr-brand { flex:1; }
+    .hdr-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--text); line-height:1.2; }
+    .hdr-sub { font-size:11px; color:var(--text3); font-weight:400; }
+    .hdr-actions { display:flex; gap:6px; align-items:center; }
+    .hdr-btn { padding:6px 14px; font-size:12px; font-weight:500; border:1px solid var(--border); background:transparent; color:var(--text2); border-radius:8px; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .hdr-btn:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .hdr-btn.on { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
 
-    .status-bar { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-    .status-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text3); }
-    .status-dot { width:7px; height:7px; border-radius:50%; background:var(--text3); flex-shrink:0; }
-    .status-dot.ready  { background:var(--green); box-shadow:0 0 6px rgba(63,185,80,.5); }
-    .status-dot.loading { background:var(--gold); animation:pulse 1.2s ease-in-out infinite; }
+    /* ── PAGE BODY ── */
+    .page-body { padding-top:24px; }
+
+    /* ── STATUS BAR ── */
+    .status-bar { display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:10px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); margin-bottom:20px; box-shadow:var(--sh-sm); }
+    .status-item { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:500; color:var(--text2); }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--text3); flex-shrink:0; }
+    .dot.ready { background:var(--green); box-shadow:0 0 6px rgba(5,150,105,.4); }
+    .dot.spin { background:var(--amber); animation:pulse 1.2s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-    /* ── PANELS ── */
-    .panel { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
-    .panel-title { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
-    .panel p { font-family:'Crimson Text',serif; font-size:15px; color:var(--text2); line-height:1.7; margin-bottom:10px; }
-    .panel p:last-child { margin-bottom:0; }
-    .panel strong { color:var(--text); font-family:'Inter',sans-serif; font-size:13px; }
+    /* ── CARD ── */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:20px; margin-bottom:16px; box-shadow:var(--sh-sm); }
+    .card-title { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--navy-txt); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+    .card-title::before { content:''; display:block; width:3px; height:14px; background:var(--navy); border-radius:2px; }
 
-    .feature-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-    .feature-tag { padding:4px 12px; background:var(--bg3); border:1px solid var(--border); border-radius:100px; font-size:12px; color:var(--text3); }
+    /* ── ABOUT ── */
+    .about-card p { font-family:'Crimson Text',serif; font-size:15px; color:var(--text2); line-height:1.75; margin-bottom:10px; }
+    .about-card p:last-of-type { margin-bottom:12px; }
+    .about-card strong { font-family:'Inter',sans-serif; font-size:13px; font-weight:600; color:var(--text); }
+    .feature-tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .ftag { padding:4px 12px; background:var(--navy-lt); border:1px solid #BFDBFE; border-radius:100px; font-size:11px; font-weight:500; color:var(--navy-txt); }
 
     /* ── ANALYTICS ── */
-    .stats-grid { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
-    .stat-card { flex:1; min-width:70px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; }
-    .stat-num { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:var(--gold); line-height:1; }
-    .stat-lbl { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text3); margin-top:4px; }
-    .stat-cols { display:flex; gap:16px; flex-wrap:wrap; }
+    .stats-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .stat-box { flex:1; min-width:80px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:14px 12px; text-align:center; }
+    .stat-n { font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:var(--navy); line-height:1; }
+    .stat-l { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text3); margin-top:4px; }
+    .stat-cols { display:flex; gap:20px; flex-wrap:wrap; }
     .stat-col { flex:1; min-width:150px; }
-    .stat-col-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
-    .stat-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:5px 0; border-bottom:1px solid rgba(48,54,61,.5); color:var(--text2); }
-    .stat-row span:last-child { color:var(--gold); font-weight:600; }
+    .stat-col-h { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    .stat-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:5px 0; border-bottom:1px solid var(--border); color:var(--text2); }
+    .stat-row:last-child { border-bottom:none; }
+    .stat-row span:last-child { font-weight:600; color:var(--navy); }
     .stat-empty { font-family:'Crimson Text',serif; font-size:14px; color:var(--text3); font-style:italic; }
 
-    /* ── PROFILE BAR ── */
-    .section-label { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:8px; }
-    .profile-section { margin-bottom:20px; }
-    .profile-pills { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-    .pill { padding:5px 14px; font-size:13px; font-weight:500; border:1px solid var(--border); background:transparent; color:var(--text3); cursor:pointer; transition:all .15s; border-radius:100px; }
-    .pill:hover { border-color:var(--gold); color:var(--text); }
-    .pill.active { background:var(--gold); border-color:var(--gold); color:#000; font-weight:600; }
-    .pill.active-left { border-radius:100px 0 0 100px; background:var(--gold); border-color:var(--gold); color:#000; font-weight:600; border-right:none; }
-    .pill-edit { padding:5px 10px; border-radius:0 100px 100px 0; background:var(--bg2); border:1px solid var(--gold); border-left:none; color:var(--gold); cursor:pointer; font-size:13px; transition:all .15s; }
-    .pill-edit:hover { background:var(--golddim); }
-    .pill-add { padding:5px 14px; font-size:13px; border:1px dashed var(--border); background:transparent; color:var(--text3); cursor:pointer; border-radius:100px; transition:all .15s; }
-    .pill-add:hover { border-color:var(--gold); color:var(--gold); }
-    .profile-meta { margin-top:8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .profile-note { font-family:'Crimson Text',serif; font-size:14px; color:var(--text3); font-style:italic; }
-    .summary-btn { font-size:12px; font-weight:500; padding:3px 12px; border:1px solid var(--border); background:transparent; color:var(--text3); border-radius:6px; cursor:pointer; transition:all .15s; }
-    .summary-btn:hover { border-color:var(--gold); color:var(--gold); }
-    .reluctant-badge { font-size:11px; font-weight:600; color:var(--gold); background:var(--golddim); border:1px solid var(--border2); border-radius:100px; padding:2px 10px; }
+    /* ── PROFILE SECTION ── */
+    .section { margin-bottom:20px; }
+    .sec-label { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:8px; }
+    .pills { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .pill { padding:6px 16px; font-size:13px; font-weight:500; border:1px solid var(--border); background:transparent; color:var(--text2); cursor:pointer; transition:all .15s; border-radius:100px; }
+    .pill:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .pill.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+    .pill.on-l { border-radius:100px 0 0 100px; background:var(--navy); border-color:var(--navy); color:#fff; border-right:none; }
+    .pill-edit { padding:6px 10px; border-radius:0 100px 100px 0; background:var(--surface); border:1px solid var(--navy); border-left:none; color:var(--navy); cursor:pointer; font-size:13px; transition:all .15s; }
+    .pill-edit:hover { background:var(--navy-lt); }
+    .pill-add { padding:6px 16px; font-size:13px; font-weight:500; border:1.5px dashed var(--border2); background:transparent; color:var(--text3); cursor:pointer; border-radius:100px; transition:all .15s; }
+    .pill-add:hover { border-color:var(--navy); color:var(--navy); }
+    .profile-meta { margin-top:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .profile-note { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); font-style:italic; }
+    .profile-btn { font-size:12px; font-weight:500; padding:4px 12px; border:1px solid var(--border); background:transparent; color:var(--text2); border-radius:6px; cursor:pointer; transition:all .15s; }
+    .profile-btn:hover { border-color:var(--navy); color:var(--navy); }
+    .reluctant-tag { font-size:11px; font-weight:600; color:var(--amber); background:var(--amber-lt); border:1px solid #FDE68A; border-radius:100px; padding:3px 10px; }
 
     /* ── EDITOR ── */
-    .editor-panel { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
-    .editor-title { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
-    .editor-row { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+    .editor { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:20px; margin-bottom:16px; box-shadow:var(--sh-sm); }
+    .editor-title { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--navy-txt); margin-bottom:16px; display:flex; align-items:center; gap:6px; }
+    .editor-title::before { content:''; display:block; width:3px; height:14px; background:var(--navy); border-radius:2px; }
+    .ed-row { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
     .field { display:flex; flex-direction:column; gap:5px; }
-    .field-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); }
-    .field-input { padding:9px 12px; font-size:14px; background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:7px; outline:none; font-family:'Inter',sans-serif; transition:border-color .15s; }
-    .field-input:focus { border-color:var(--gold); }
-    .field-input::placeholder { color:var(--text3); }
+    .field label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); }
+    .finput { padding:9px 13px; font-size:14px; background:var(--surface2); border:1.5px solid var(--border); color:var(--text); border-radius:8px; outline:none; font-family:'Inter',sans-serif; transition:border-color .15s, box-shadow .15s; }
+    .finput:focus { border-color:var(--navy); box-shadow:0 0 0 3px var(--navy-lt); }
+    .finput::placeholder { color:var(--text3); }
 
-    .toggle-row { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; cursor:pointer; transition:border-color .15s; margin-bottom:12px; }
-    .toggle-row:hover, .toggle-row.on { border-color:var(--gold); }
-    .toggle-sw { width:36px; height:20px; background:var(--border); border-radius:10px; position:relative; transition:background .15s; flex-shrink:0; }
-    .toggle-sw.on { background:var(--gold); }
-    .toggle-knob { position:absolute; top:3px; left:3px; width:14px; height:14px; background:#fff; border-radius:50%; transition:left .15s; }
+    .toggle { display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--surface2); border:1.5px solid var(--border); border-radius:9px; cursor:pointer; transition:all .15s; margin-bottom:12px; }
+    .toggle:hover, .toggle.on { border-color:var(--teal); background:var(--teal-lt); }
+    .toggle-sw { width:38px; height:22px; background:var(--border2); border-radius:11px; position:relative; transition:background .15s; flex-shrink:0; }
+    .toggle-sw.on { background:var(--teal); }
+    .toggle-knob { position:absolute; top:3px; left:3px; width:16px; height:16px; background:#fff; border-radius:50%; transition:left .15s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
     .toggle-sw.on .toggle-knob { left:19px; }
-    .toggle-text { flex:1; }
-    .toggle-label { font-size:13px; font-weight:500; color:var(--text2); }
-    .toggle-sub { font-size:12px; color:var(--text3); font-style:italic; }
+    .toggle-info { flex:1; }
+    .toggle-lbl { font-size:13px; font-weight:500; color:var(--text); }
+    .toggle-sub { font-size:12px; color:var(--text3); }
 
-    /* ── SUMMARY PANEL ── */
-    .summary-section-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid var(--border); }
-    .summary-item { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); padding:3px 0; }
-    .summary-section { margin-bottom:14px; }
+    /* ── SUMMARY ── */
+    .summary-hd { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); margin-bottom:6px; padding-bottom:5px; border-bottom:1px solid var(--border); }
+    .summary-sec { margin-bottom:12px; }
+    .summary-item { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); padding:2px 0; }
 
     /* ── TABS ── */
-    .tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:20px; gap:0; }
-    .tab { padding:10px 20px; font-size:13px; font-weight:500; background:transparent; border:none; border-bottom:2px solid transparent; cursor:pointer; color:var(--text3); transition:all .15s; margin-bottom:-1px; }
+    .tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:20px; }
+    .tab { padding:10px 20px; font-size:13px; font-weight:500; background:transparent; border:none; border-bottom:2.5px solid transparent; cursor:pointer; color:var(--text3); transition:all .15s; margin-bottom:-2px; white-space:nowrap; }
     .tab:hover { color:var(--text2); }
-    .tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+    .tab.on { color:var(--navy); border-bottom-color:var(--navy); }
 
     /* ── INPUTS ── */
-    .input-section { margin-bottom:16px; }
-    .main-input { width:100%; padding:11px 14px; font-size:15px; background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:8px; outline:none; font-family:'Crimson Text',serif; transition:border-color .15s; }
-    .main-input:focus { border-color:var(--gold); }
-    .main-input::placeholder { color:var(--text3); font-style:italic; }
-    .main-textarea { width:100%; padding:11px 14px; font-size:15px; background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:8px; outline:none; font-family:'Crimson Text',serif; resize:vertical; line-height:1.7; transition:border-color .15s; }
-    .main-textarea:focus { border-color:var(--gold); }
-    .main-textarea::placeholder { color:var(--text3); font-style:italic; }
-    .input-hint { font-size:12px; color:var(--text3); margin-top:5px; }
+    .inp-sec { margin-bottom:16px; }
+    .main-input { width:100%; padding:11px 14px; font-size:15px; font-family:'Inter',sans-serif; background:var(--surface); border:1.5px solid var(--border); color:var(--text); border-radius:9px; outline:none; transition:border-color .15s, box-shadow .15s; box-shadow:var(--sh-sm); }
+    .main-input:focus { border-color:var(--navy); box-shadow:0 0 0 3px var(--navy-lt); }
+    .main-input::placeholder { color:var(--text3); }
+    .main-textarea { width:100%; padding:11px 14px; font-size:15px; font-family:'Crimson Text',serif; background:var(--surface); border:1.5px solid var(--border); color:var(--text); border-radius:9px; outline:none; resize:vertical; line-height:1.7; transition:border-color .15s, box-shadow .15s; box-shadow:var(--sh-sm); }
+    .main-textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px var(--navy-lt); }
+    .main-textarea::placeholder { color:var(--text3); }
+    .inp-hint { font-size:12px; color:var(--text3); margin-top:5px; }
 
     /* ── DROPDOWN ── */
-    .dropdown-wrap { position:relative; }
-    .dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:50; background:var(--bg2); border:1px solid var(--border); border-radius:8px; box-shadow:var(--shadow2); overflow:hidden; }
-    .dropdown-item { padding:10px 14px; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; gap:8px; border-bottom:1px solid var(--border); transition:background .1s; font-family:'Crimson Text',serif; }
-    .dropdown-item:last-child { border-bottom:none; }
-    .dropdown-item:hover, .dropdown-item.hi { background:var(--bg3); }
-    .drop-title { color:var(--text); font-weight:600; }
-    .drop-author { color:var(--text3); font-size:13px; flex-shrink:0; font-style:italic; }
+    .dd-wrap { position:relative; }
+    .dd { position:absolute; top:calc(100% + 5px); left:0; right:0; z-index:50; background:var(--surface); border:1.5px solid var(--border); border-radius:10px; box-shadow:var(--sh-lg); overflow:hidden; }
+    .dd-item { padding:11px 14px; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; gap:8px; border-bottom:1px solid var(--border); transition:background .1s; }
+    .dd-item:last-child { border-bottom:none; }
+    .dd-item:hover, .dd-item.hi { background:var(--surface2); }
+    .dd-title { color:var(--text); font-weight:500; font-family:'Inter',sans-serif; }
+    .dd-author { color:var(--text3); font-size:12px; flex-shrink:0; font-style:italic; font-family:'Crimson Text',serif; }
 
     /* ── TROPES ── */
-    .trope-section { margin-bottom:14px; }
+    .trope-sec { margin-bottom:14px; }
     .trope-cat { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); margin-bottom:8px; }
     .trope-chips { display:flex; flex-wrap:wrap; gap:6px; }
-    .trope-chip { padding:5px 13px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text3); transition:all .15s; border-radius:100px; }
-    .trope-chip:hover { border-color:var(--gold); color:var(--text2); }
-    .trope-chip.sel { background:var(--bg3); border-color:var(--text3); color:var(--text); }
-    .trope-chip.prio { background:var(--gold); border-color:var(--gold2); color:#000; font-weight:600; }
+    .tchip { padding:5px 14px; font-size:12px; font-weight:500; cursor:pointer; border:1.5px solid var(--border); background:var(--surface); color:var(--text2); transition:all .15s; border-radius:100px; box-shadow:var(--sh-sm); }
+    .tchip:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .tchip.sel { background:var(--navy-lt); border-color:var(--navy); color:var(--navy-txt); font-weight:600; }
+    .tchip.prio { background:var(--teal); border-color:var(--teal-dk); color:#fff; font-weight:600; }
     .trope-hint { font-family:'Crimson Text',serif; font-size:14px; color:var(--text3); font-style:italic; margin-bottom:14px; }
 
     /* ── CHIPS ── */
     .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
-    .chip { display:flex; align-items:center; gap:5px; padding:4px 10px; background:var(--bg3); border:1px solid var(--border); font-size:13px; color:var(--text2); border-radius:100px; font-family:'Crimson Text',serif; }
-    .chip.gold { border-color:var(--gold); color:var(--gold); background:var(--golddim); }
-    .chip-x { background:none; border:none; cursor:pointer; color:var(--text3); padding:0; font-size:15px; line-height:1; transition:color .1s; }
+    .chip { display:flex; align-items:center; gap:5px; padding:4px 12px; background:var(--surface2); border:1px solid var(--border); font-size:13px; color:var(--text2); border-radius:100px; font-family:'Crimson Text',serif; }
+    .chip.gold { border-color:#FDE68A; color:var(--amber); background:var(--amber-lt); }
+    .chip-x { background:none; border:none; cursor:pointer; color:var(--text3); padding:0; font-size:16px; line-height:1; transition:color .1s; }
     .chip-x:hover { color:var(--red); }
 
     /* ── LIKED BANNER ── */
-    .liked-banner { padding:10px 16px; background:var(--golddim); border:1px solid var(--border2); border-radius:8px; font-size:13px; margin-bottom:16px; display:flex; align-items:flex-start; gap:8px; }
-    .liked-banner-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
-    .liked-banner-text { font-family:'Crimson Text',serif; color:var(--text2); line-height:1.5; }
-    .liked-banner-text strong { color:var(--gold); font-family:'Inter',sans-serif; font-size:12px; font-weight:600; text-transform:uppercase; display:block; margin-bottom:2px; }
+    .liked-banner { display:flex; align-items:flex-start; gap:10px; padding:12px 16px; background:var(--amber-lt); border:1.5px solid #FDE68A; border-radius:9px; margin-bottom:16px; }
+    .liked-icon { font-size:16px; flex-shrink:0; margin-top:2px; }
+    .liked-body { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.5; }
+    .liked-body strong { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--amber); display:block; margin-bottom:2px; }
 
-    /* ── SEARCH HISTORY ── */
-    .history-wrap { margin-bottom:16px; }
+    /* ── HISTORY ── */
+    .history { margin-bottom:16px; }
     .history-chips { display:flex; flex-wrap:wrap; gap:6px; }
-    .history-chip { display:flex; align-items:center; gap:6px; padding:5px 12px; background:var(--bg2); border:1px solid var(--border); border-radius:100px; font-size:12px; color:var(--text3); cursor:pointer; transition:all .15s; }
-    .history-chip:hover { border-color:var(--gold); color:var(--text2); }
-    .history-mode { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); }
+    .hchip { display:flex; align-items:center; gap:7px; padding:5px 13px; background:var(--surface); border:1px solid var(--border); border-radius:100px; font-size:12px; color:var(--text2); cursor:pointer; transition:all .15s; box-shadow:var(--sh-sm); }
+    .hchip:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .hmode { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); }
 
     /* ── SEARCH BUTTON ── */
-    .search-btn { width:100%; padding:13px; font-family:'Inter',sans-serif; font-size:15px; font-weight:600; letter-spacing:.04em; background:var(--gold); color:#000; border:none; border-radius:10px; cursor:pointer; transition:all .2s; margin-bottom:24px; position:relative; overflow:hidden; }
-    .search-btn::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0); transition:background .2s; }
-    .search-btn:hover::after { background:rgba(255,255,255,.1); }
-    .search-btn:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(240,165,0,.4); }
-    .search-btn:active { transform:translateY(0); box-shadow:none; }
+    .search-btn { width:100%; padding:14px; font-size:15px; font-weight:600; letter-spacing:.02em; background:var(--navy); color:#fff; border:none; border-radius:10px; cursor:pointer; transition:all .2s; margin-bottom:24px; box-shadow:0 4px 14px rgba(29,78,216,.3); }
+    .search-btn:hover { background:var(--navy-dk); box-shadow:0 6px 20px rgba(29,78,216,.4); transform:translateY(-1px); }
+    .search-btn:active { transform:translateY(0); box-shadow:0 2px 8px rgba(29,78,216,.3); }
     .search-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
 
     /* ── RESULTS ── */
-    .results-header { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
-    .results-title { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; font-style:italic; color:var(--text); }
+    .results-hdr { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+    .results-title { font-family:'Playfair Display',serif; font-size:21px; font-weight:700; color:var(--text); }
     .results-line { flex:1; height:1px; background:linear-gradient(to right,var(--border),transparent); }
     .results-count { font-size:12px; font-weight:500; color:var(--text3); white-space:nowrap; }
 
-    .result-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:12px; border-left:3px solid var(--gold); animation:fadeUp .35s ease both; box-shadow:var(--shadow); transition:box-shadow .2s; }
-    .result-card:hover { box-shadow:var(--shadow2); }
+    .rcard { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:18px; margin-bottom:12px; border-left:4px solid var(--teal); animation:fadeUp .35s ease both; box-shadow:var(--sh-sm); transition:box-shadow .2s, transform .2s; }
+    .rcard:hover { box-shadow:var(--sh); transform:translateY(-1px); }
     @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-    .result-num { display:inline-block; font-size:10px; font-weight:700; color:var(--gold); background:var(--golddim); border:1px solid var(--border2); border-radius:4px; padding:1px 7px; margin-bottom:10px; font-family:'Inter',sans-serif; letter-spacing:.05em; }
-    .result-inner { display:flex; gap:14px; }
-    .cover { width:58px; height:84px; flex-shrink:0; background:var(--bg3); border:1px solid var(--border); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:20px; object-fit:cover; transition:transform .2s; }
-    .cover:hover { transform:scale(1.05); }
-    .result-body { flex:1; min-width:0; }
-    .result-title-row { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:3px; }
-    .result-title { font-family:'Playfair Display',serif; font-weight:700; font-size:17px; color:var(--text); line-height:1.2; }
+    .rnum { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:6px; background:var(--teal-lt); border:1px solid var(--teal-bd); font-size:11px; font-weight:700; color:var(--teal-dk); margin-bottom:10px; }
+    .rinner { display:flex; gap:14px; }
+    .cover { width:62px; height:90px; flex-shrink:0; background:var(--surface2); border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:22px; object-fit:cover; transition:transform .2s; }
+    .cover:hover { transform:scale(1.04); }
+    .rbody { flex:1; min-width:0; }
+    .rtitle-row { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:3px; }
+    .rtitle { font-family:'Playfair Display',serif; font-weight:700; font-size:17px; color:var(--text); line-height:1.2; }
     .heart-btn { background:none; border:none; cursor:pointer; font-size:20px; padding:0; flex-shrink:0; line-height:1; transition:transform .15s; }
     .heart-btn:hover { transform:scale(1.2); }
-    .result-meta { font-size:12px; font-weight:500; color:var(--text3); margin-bottom:8px; }
-    .result-series { color:var(--gold); margin-left:6px; }
-    .result-reason { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.65; padding-left:10px; border-left:2px solid var(--border2); }
-    .cursor { display:inline-block; width:2px; height:13px; background:var(--gold); margin-left:2px; animation:blink .7s step-end infinite; vertical-align:middle; }
+    .rmeta { font-size:12px; font-weight:500; color:var(--text3); margin-bottom:9px; }
+    .rseries { color:var(--teal); margin-left:6px; }
+    .rreason { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.65; padding-left:10px; border-left:2px solid var(--teal-bd); }
+    .cursor { display:inline-block; width:2px; height:13px; background:var(--teal); margin-left:2px; animation:blink .7s step-end infinite; vertical-align:middle; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
     .expand-btn { background:none; border:none; cursor:pointer; font-size:12px; font-weight:500; color:var(--text3); padding:0; margin-top:8px; display:flex; align-items:center; gap:4px; transition:color .15s; }
-    .expand-btn:hover { color:var(--gold); }
-    .expand-arrow { display:inline-block; transition:transform .2s; font-size:9px; }
-    .expand-arrow.open { transform:rotate(90deg); }
-    .summary-box { margin-top:10px; padding:10px 13px; background:var(--bg3); border-radius:7px; font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.65; font-style:italic; animation:fadeUp .2s ease; }
-    .note-field { width:100%; margin-top:12px; padding:8px 12px; font-size:13px; background:var(--bg3); border:1px dashed var(--border); color:var(--text2); resize:none; font-family:'Inter',sans-serif; outline:none; line-height:1.6; border-radius:7px; transition:border-color .15s; }
-    .note-field:focus { border-color:var(--gold); border-style:solid; }
+    .expand-btn:hover { color:var(--teal); }
+    .earrow { display:inline-block; transition:transform .2s; font-size:9px; }
+    .earrow.open { transform:rotate(90deg); }
+    .summary-box { margin-top:10px; padding:12px 14px; background:var(--surface2); border-radius:8px; font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.7; font-style:italic; border-left:3px solid var(--teal-bd); animation:fadeUp .2s ease; }
+    .note-field { width:100%; margin-top:12px; padding:9px 13px; font-size:13px; background:var(--surface2); border:1.5px dashed var(--border2); color:var(--text); resize:none; font-family:'Inter',sans-serif; outline:none; line-height:1.6; border-radius:8px; transition:border-color .15s, box-shadow .15s; }
+    .note-field:focus { border-color:var(--navy); border-style:solid; box-shadow:0 0 0 3px var(--navy-lt); }
     .note-field::placeholder { color:var(--text3); }
 
     /* ── RESULTS ACTIONS ── */
-    .results-actions { display:flex; gap:8px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
-    .action-btn { padding:8px 20px; font-size:13px; font-weight:500; background:transparent; border:1px solid var(--border); color:var(--text2); border-radius:8px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:6px; }
-    .action-btn:hover { border-color:var(--gold); color:var(--gold); }
-    .action-btn.primary { border-color:var(--gold); color:var(--gold); }
-    .action-btn.primary:hover { background:var(--golddim); }
-    .action-btn:disabled { opacity:.4; cursor:not-allowed; }
+    .ractions { display:flex; gap:8px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
+    .act-btn { padding:9px 20px; font-size:13px; font-weight:500; background:var(--surface); border:1.5px solid var(--border); color:var(--text2); border-radius:9px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:6px; box-shadow:var(--sh-sm); }
+    .act-btn:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .act-btn.primary { border-color:var(--teal); color:var(--teal); }
+    .act-btn.primary:hover { background:var(--teal-lt); }
 
     /* ── LOADING ── */
-    .loading-wrap { text-align:center; padding:3rem 0 2rem; }
-    .loading-video { width:200px; max-width:100%; border-radius:10px; box-shadow:var(--shadow2); display:block; margin:0 auto 20px; border:1px solid var(--border); }
-    .loading-card { display:inline-block; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px 28px; max-width:380px; width:100%; }
-    .loading-bars { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
-    .loading-bar { height:3px; background:var(--border); border-radius:2px; overflow:hidden; position:relative; }
-    .loading-bar::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:var(--gold); animation:barSlide 1.8s ease-in-out infinite; }
-    .loading-bar:nth-child(1)::after { animation-delay:0s; width:80%; }
-    .loading-bar:nth-child(2)::after { animation-delay:.15s; width:95%; }
-    .loading-bar:nth-child(3)::after { animation-delay:.3s;  width:70%; }
-    .loading-bar:nth-child(4)::after { animation-delay:.45s; width:88%; }
-    @keyframes barSlide { 0%{left:-100%} 100%{left:100%} }
-    .loading-text { font-size:12px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; border-top:1px solid var(--border); padding-top:12px; animation:textFade 1.5s ease-in-out infinite; }
-    @keyframes textFade { 0%,100%{opacity:.5} 50%{opacity:1} }
+    .loading-wrap { text-align:center; padding:2.5rem 0 2rem; }
+    .loading-video { width:190px; max-width:100%; border-radius:12px; box-shadow:var(--sh-lg); display:block; margin:0 auto 20px; border:1px solid var(--border); }
+    .loading-card { display:inline-block; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 28px; max-width:360px; width:100%; box-shadow:var(--sh); }
+    .lbars { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+    .lbar { height:3px; background:var(--border); border-radius:2px; overflow:hidden; position:relative; }
+    .lbar::after { content:''; position:absolute; top:0; left:-100%; height:100%; background:linear-gradient(90deg,var(--navy),var(--teal)); border-radius:2px; animation:lslide 1.8s ease-in-out infinite; }
+    .lbar:nth-child(1)::after { width:80%; }
+    .lbar:nth-child(2)::after { width:95%; animation-delay:.15s; }
+    .lbar:nth-child(3)::after { width:70%; animation-delay:.3s; }
+    .lbar:nth-child(4)::after { width:88%; animation-delay:.45s; }
+    @keyframes lslide { 0%{left:-100%} 100%{left:110%} }
+    .ltext { font-size:12px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; border-top:1px solid var(--border); padding-top:12px; animation:tfade 1.5s ease-in-out infinite; }
+    @keyframes tfade { 0%,100%{opacity:.5} 50%{opacity:1} }
 
-    /* ── EMPTY ── */
-    .empty-state { text-align:center; padding:3rem 0; }
-    .empty-msg { font-family:'Playfair Display',serif; font-size:18px; font-style:italic; color:var(--text3); margin-bottom:16px; }
+    /* ── EMPTY STATE ── */
+    .empty { text-align:center; padding:3rem 0; }
+    .empty-title { font-family:'Playfair Display',serif; font-size:18px; font-style:italic; color:var(--text2); margin-bottom:6px; }
+    .empty-sub { font-size:13px; color:var(--text3); margin-bottom:20px; }
     .empty-actions { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
-    .empty-chip { padding:6px 16px; font-size:13px; font-weight:500; background:var(--bg2); border:1px solid var(--border); border-radius:100px; cursor:pointer; color:var(--text3); transition:all .15s; }
-    .empty-chip:hover { border-color:var(--gold); color:var(--gold); }
+    .echip { padding:8px 18px; font-size:13px; font-weight:500; background:var(--surface); border:1.5px solid var(--border); border-radius:100px; cursor:pointer; color:var(--text2); transition:all .15s; box-shadow:var(--sh-sm); }
+    .echip:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
 
-    /* ── MISC ── */
-    .divider { height:1px; background:var(--border); margin:20px 0; }
-    .error-msg { font-size:14px; color:var(--red); margin-bottom:14px; display:flex; align-items:center; gap:8px; padding:10px 14px; background:rgba(248,81,73,.08); border:1px solid rgba(248,81,73,.2); border-radius:8px; }
-    .btn-row { display:flex; gap:8px; justify-content:space-between; align-items:center; }
-    .btn { padding:8px 16px; font-size:13px; font-weight:500; border-radius:7px; cursor:pointer; transition:all .15s; }
-    .btn-primary { background:var(--gold); color:#000; border:none; }
-    .btn-primary:hover { background:var(--gold2); }
-    .btn-secondary { background:transparent; color:var(--text2); border:1px solid var(--border); }
-    .btn-secondary:hover { border-color:var(--text2); }
-    .btn-danger { background:transparent; color:var(--red); border:1px solid rgba(248,81,73,.3); }
-    .btn-danger:hover { background:rgba(248,81,73,.08); }
+    /* ── ERROR ── */
+    .error-msg { font-size:13px; font-weight:500; color:var(--red); margin-bottom:14px; display:flex; align-items:center; gap:8px; padding:11px 14px; background:var(--red-lt); border:1px solid #FECACA; border-radius:9px; }
 
-    @media(max-width:560px) {
-      .header-top { flex-direction:column; align-items:flex-start; gap:1rem; }
-      .header-actions { width:100%; }
-      .header-btn { flex:1; text-align:center; }
-      .logo { width:60px; height:60px; }
-      .header-title { font-size:22px; }
+    /* ── BUTTONS ── */
+    .btn-row { display:flex; gap:8px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .btn { padding:9px 18px; font-size:13px; font-weight:500; border-radius:8px; cursor:pointer; transition:all .15s; font-family:'Inter',sans-serif; }
+    .btn-primary { background:var(--navy); color:#fff; border:none; box-shadow:0 2px 8px rgba(29,78,216,.25); }
+    .btn-primary:hover { background:var(--navy-dk); }
+    .btn-secondary { background:transparent; color:var(--text2); border:1.5px solid var(--border); }
+    .btn-secondary:hover { border-color:var(--border2); background:var(--surface2); }
+    .btn-danger { background:transparent; color:var(--red); border:1.5px solid #FECACA; }
+    .btn-danger:hover { background:var(--red-lt); }
+
+    @media print {
+      .hdr, .tiger, .toasts, .search-btn, .ractions, .tabs, .history, .status-bar, .hdr-actions { display:none !important; }
+      body { background:#fff; }
+      .rcard { border:1px solid #ccc; box-shadow:none; page-break-inside:avoid; }
+      #root { max-width:100%; padding:1rem; }
+    }
+
+    @media(max-width:580px) {
+      .hdr-inner { gap:10px; }
+      .hdr-title { font-size:15px; }
+      .hdr-sub { display:none; }
       .tabs { overflow-x:auto; }
-      .tab { padding:8px 14px; font-size:12px; white-space:nowrap; }
-      .result-card { padding:14px; }
-      .result-title { font-size:15px; }
-      .editor-row { flex-direction:column; }
+      .tab { padding:8px 14px; font-size:12px; }
+      .stat-row-wrap { flex-direction:column; }
+      .rcard { padding:14px; }
+      .rtitle { font-size:15px; }
+      .ed-row { flex-direction:column; }
       .stat-cols { flex-direction:column; }
-      .results-actions { flex-direction:column; align-items:stretch; }
-      .action-btn { justify-content:center; }
+      .ractions { flex-direction:column; align-items:stretch; }
+      .act-btn { justify-content:center; }
+      .stats-row { flex-wrap:wrap; }
+      .stat-box { min-width:calc(50% - 5px); }
     }
   </style>
 </head>
 <body>
+
+<!-- STICKY HEADER -->
+<header class="hdr">
+  <div class="hdr-inner">
+    <img class="hdr-logo" src="logo.png" alt="Fletcher Library"/>
+    <div class="hdr-brand">
+      <div class="hdr-title">Fletcher Library Assistant</div>
+      <div class="hdr-sub">AI-powered book recommendations</div>
+    </div>
+    <div class="hdr-actions" id="hdr-btns"></div>
+  </div>
+</header>
+
 <div id="root"></div>
-<img id="corner-tiger" class="tiger-corner visible" src="images/detective_cat_coffee_loop_apng_slow.png" alt=""/>
+<img id="corner-tiger" class="tiger show" src="images/detective_cat_coffee_loop_apng_slow.png" alt=""/>
 
 <script type="text/babel">
 // ── CONSTANTS ────────────────────────────────────────────────────────────
 const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
 const EMBED_URL  = `${WORKER_URL}/embed`;
 const CSV_FILE   = "books_fiction_enriched.csv";
-const LOGO_FILE  = "logo.png";
 const ROMAN      = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
-const STAGE_MSGS = [
-  "Scanning the catalog…",
-  "Analyzing your request…",
-  "Finding the best matches…",
-  "Ranking by relevance…",
-  "Almost ready…",
-];
+const STAGE_MSGS = ["Scanning the catalog…","Analyzing your request…","Finding the best matches…","Ranking by relevance…","Almost ready…"];
 
 // ── DATA ─────────────────────────────────────────────────────────────────
 const TROPES = [
@@ -358,7 +377,6 @@ const TROPES = [
   {id:"mythology_retelling",label:"Mythology Retelling",cat:"Fantasy & Sci-fi"},
   {id:"chosen_one",label:"Chosen One",cat:"Fantasy & Sci-fi"},
 ];
-
 const TROPE_KEYWORDS = {
   enemies_to_lovers:["enemy","enemies","rival","rivals","hate","hatred","despise","antagonist"],
   slow_burn:["tension","slowly","gradually","building","eventually"],
@@ -399,9 +417,9 @@ const TROPE_KEYWORDS = {
   chosen_one:["chosen","destined","destiny","prophecy","fate","hero"],
 };
 
-const CATS    = [...new Set(TROPES.map(t=>t.cat))];
-const STOP    = new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
-const GRADES  = ["6th","7th","8th"];
+const CATS   = [...new Set(TROPES.map(t=>t.cat))];
+const STOP   = new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
+const GRADES = ["6th","7th","8th"];
 const DEFAULT_ANALYTICS = {totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
 
 // ── UTILITIES ────────────────────────────────────────────────────────────
@@ -409,48 +427,34 @@ const uid      = () => Math.random().toString(36).slice(2,9);
 const tokenize = t => (t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
 const lsLoad   = (k,fb) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;} };
 const lsSave   = (k,v)  => { try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
+function cosine(a,b){ let d=0,na=0,nb=0; for(let i=0;i<a.length;i++){d+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return d/(Math.sqrt(na)*Math.sqrt(nb)||1); }
+function setTiger(v){ const el=document.getElementById('corner-tiger'); if(el) el.className='tiger '+(v?'show':'hide'); }
 
-function cosine(a,b) {
-  let dot=0,na=0,nb=0;
-  for(let i=0;i<a.length;i++){dot+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];}
-  return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
-}
+// ── CANDIDATES ───────────────────────────────────────────────────────────
+async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null){
+  const pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
+  const authorLast=refAuthor?refAuthor.split(',')[0].trim().toLowerCase():null;
+  const sameAuthor=new Set(authorLast?pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title):[]);
 
-function setTigerVisible(v) {
-  const el=document.getElementById('corner-tiger');
-  if(el) el.className='tiger-corner '+(v?'visible':'hidden');
-}
-
-// ── CANDIDATE RETRIEVAL ──────────────────────────────────────────────────
-async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null) {
-  const pool = books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
-
-  const authorLast = refAuthor ? refAuthor.split(',')[0].trim().toLowerCase() : null;
-  const sameAuthor = new Set(authorLast ? pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title) : []);
-
-  // Embedding path
-  if (bookEmbeddings && Object.keys(bookEmbeddings).length > 0) {
-    try {
-      const res = await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
-      if (!res.ok) throw new Error(`embed ${res.status}`);
-      const {embedding:qEmb} = await res.json();
-      const lSet = new Set(likedKws);
-      const scored = pool.map(b=>{
-        const bEmb = bookEmbeddings[b.title];
-        const sim  = bEmb ? cosine(qEmb,bEmb) : 0;
-        const toks = tokenize(`${b.enriched_subjects||b.subjects||''} ${b.enriched_summary||b.summary||''}`);
-        const likedBoost  = toks.filter(t=>lSet.has(t)).length*0.01;
-        const authorBoost = sameAuthor.has(b.title)?0.15:0;
-        return {...b,_s:sim+likedBoost+authorBoost};
+  if(bookEmbeddings&&Object.keys(bookEmbeddings).length>0){
+    try{
+      const res=await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
+      if(!res.ok) throw new Error(`embed ${res.status}`);
+      const{embedding:qEmb}=await res.json();
+      const lSet=new Set(likedKws);
+      const scored=pool.map(b=>{
+        const bEmb=bookEmbeddings[b.title];
+        const sim=bEmb?cosine(qEmb,bEmb):0;
+        const toks=tokenize(`${b.enriched_subjects||b.subjects||''} ${b.enriched_summary||b.summary||''}`);
+        const likedBoost=toks.filter(t=>lSet.has(t)).length*0.01;
+        const authorBoost=sameAuthor.has(b.title)?0.15:0;
+        return{...b,_s:sim+likedBoost+authorBoost};
       }).sort((a,b)=>b._s-a._s);
       return scored.slice(0,n);
-    } catch(err) {
-      console.warn('Embedding failed — using keyword fallback:',err);
-    }
+    }catch(err){console.warn('Embedding failed — keyword fallback:',err);}
   }
 
-  // Keyword fallback
-  const kws=tokenize(queryText), kSet=new Set(kws), lSet=new Set(likedKws);
+  const kws=tokenize(queryText),kSet=new Set(kws),lSet=new Set(likedKws);
   let scored=pool.map(b=>{
     const st=new Set(tokenize(b.enriched_subjects||b.subjects||''));
     const sm=new Set(tokenize(b.enriched_summary||b.summary||''));
@@ -458,28 +462,25 @@ async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,exc
     const base=[...kSet].filter(k=>st.has(k)).length*3+[...kSet].filter(k=>sm.has(k)).length+[...kSet].filter(k=>ti.has(k)).length;
     const liked=[...lSet].filter(k=>st.has(k)).length*4+[...lSet].filter(k=>sm.has(k)).length*2;
     const authorBoost=sameAuthor.has(b.title)?10:0;
-    return {...b,_s:base+liked+authorBoost};
+    return{...b,_s:base+liked+authorBoost};
   }).filter(b=>b._s>0);
   if(!scored.length) scored=pool;
   return scored.sort((a,b)=>b._s-a._s).slice(0,n);
 }
 
 // ── CLAUDE CALL ──────────────────────────────────────────────────────────
-async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote="") {
-  const exclNote  = excluded.length    ? `\n\nDo NOT recommend: ${excluded.join(", ")}` : "";
-  const prioNote  = priorityLabel      ? `\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.` : "";
-  const likedNote = likedTitles.length ? `\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.` : "";
-  const list = candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.enriched_summary||b.summary||"").slice(0,200)}`).join("\n\n");
-
-  const res = await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote=""){
+  const exclNote=excluded.length?`\n\nDo NOT recommend: ${excluded.join(", ")}`:"";
+  const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.`:"";
+  const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
+  const list=candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.enriched_summary||b.summary||"").slice(0,200)}`).join("\n\n");
+  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
       system:"You are an expert school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",
       messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
-
   const raw=await res.text();
   if(!res.ok) throw new Error(`Worker ${res.status}`);
-  let data;
-  try{data=JSON.parse(raw);}catch(e){console.error("Bad JSON from worker:",raw);throw e;}
+  let data; try{data=JSON.parse(raw);}catch(e){console.error("Worker JSON error:",raw);throw e;}
   const text=data.content?.[0]?.text||"[]";
   const clean=text.replace(/```json|```/g,"").trim();
   const jsonText=(clean.match(/\[[\s\S]*\]/)||[clean])[0];
@@ -487,9 +488,7 @@ async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTit
 }
 
 // ── COMPONENTS ───────────────────────────────────────────────────────────
-function ToastContainer({toasts}){
-  return <div className="toast-wrap">{toasts.map(t=><div key={t.id} className={`toast ${t.type}`}>{t.msg}</div>)}</div>;
-}
+function Toasts({toasts}){ return <div className="toasts">{toasts.map(t=><div key={t.id} className={`toast ${t.type}`}>{t.msg}</div>)}</div>; }
 
 function CoverImg({isbn}){
   const[failed,setFailed]=React.useState(false);
@@ -505,7 +504,7 @@ function TypewriterText({text}){
     const iv=setInterval(()=>{if(i<text.length){setDisplayed(text.slice(0,i+1));i++;}else{setDone(true);clearInterval(iv);}},16);
     return()=>clearInterval(iv);
   },[text]);
-  return <span className="result-reason">{displayed}{!done&&<span className="cursor"/>}</span>;
+  return <span className="rreason">{displayed}{!done&&<span className="cursor"/>}</span>;
 }
 
 function NoteField({title,onSave}){
@@ -513,30 +512,29 @@ function NoteField({title,onSave}){
   const[note,setNote]=React.useState(()=>localStorage.getItem(key)||"");
   const onChange=v=>{setNote(v);localStorage.setItem(key,v);};
   return <textarea className="note-field" value={note} onChange={e=>onChange(e.target.value)}
-    onBlur={()=>{if(note&&onSave)onSave();}} placeholder="Librarian notes…" rows={1}
-    onFocus={e=>e.target.rows=3}/>;
+    onBlur={()=>{if(note&&onSave)onSave();}} placeholder="Librarian notes…" rows={1} onFocus={e=>e.target.rows=3}/>;
 }
 
 function ResultCard({book,index,activeProfile,onHeart,onNoteSave}){
   const[expanded,setExpanded]=React.useState(false);
   const isLiked=activeProfile?.likedBooks?.includes(book.title);
   const summary=book.enriched_summary||book.summary;
-  return <div className="result-card" style={{animationDelay:`${index*0.07}s`}}>
-    <div className="result-num">{ROMAN[index]||index+1}</div>
-    <div className="result-inner">
+  return <div className="rcard" style={{animationDelay:`${index*0.07}s`}}>
+    <div className="rnum">{ROMAN[index]||index+1}</div>
+    <div className="rinner">
       <CoverImg isbn={book.isbn}/>
-      <div className="result-body">
-        <div className="result-title-row">
-          <span className="result-title">{book.title}</span>
-          {activeProfile&&<button className="heart-btn" onClick={()=>onHeart(book.title)} title={isLiked?"Remove from liked":"Add to liked"} style={{color:isLiked?"#ef4444":"var(--border)"}}>
+      <div className="rbody">
+        <div className="rtitle-row">
+          <span className="rtitle">{book.title}</span>
+          {activeProfile&&<button className="heart-btn" onClick={()=>onHeart(book.title)} style={{color:isLiked?"#DC2626":"var(--border2)"}}>
             {isLiked?"♥":"♡"}
           </button>}
         </div>
-        <div className="result-meta">{book.author}{book.series&&<span className="result-series">· {book.series}</span>}</div>
+        <div className="rmeta">{book.author}{book.series&&<span className="rseries">· {book.series}</span>}</div>
         <TypewriterText text={book.reason||""}/>
         {summary&&<>
           <button className="expand-btn" onClick={()=>setExpanded(p=>!p)}>
-            <span className={`expand-arrow${expanded?" open":""}`}>▶</span>
+            <span className={`earrow${expanded?" open":""}`}>▶</span>
             {expanded?"Hide summary":"Read summary"}
           </button>
           {expanded&&<div className="summary-box">{summary}</div>}
@@ -552,26 +550,26 @@ function BookSearch({books,exclude,onSelect,placeholder}){
   const onChange=v=>{setInp(v);setHi(-1);if(v.length>1)setSugg(books.filter(b=>(b.title||"").toLowerCase().includes(v.toLowerCase())&&!exclude.has(b.title)).slice(0,6));else setSugg([]);};
   const pick=b=>{onSelect(b);setInp("");setSugg([]);setHi(-1);};
   const onKD=e=>{if(!sugg.length)return;if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,sugg.length-1));}else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}else if(e.key==="Enter"&&hi>=0){e.preventDefault();pick(sugg[hi]);}else if(e.key==="Escape"){setSugg([]);setHi(-1);}};
-  return <div className="dropdown-wrap">
-    <input className="field-input" style={{width:"100%"}} value={inp} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder={placeholder||"Type a title…"}/>
-    {sugg.length>0&&<div className="dropdown">{sugg.map((b,i)=><div key={i} className={`dropdown-item${hi===i?" hi":""}`} onClick={()=>pick(b)}><span className="drop-title">{b.title}</span><span className="drop-author">{b.author}</span></div>)}</div>}
+  return <div className="dd-wrap">
+    <input className="finput" style={{width:"100%"}} value={inp} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder={placeholder||"Type a title…"}/>
+    {sugg.length>0&&<div className="dd">{sugg.map((b,i)=><div key={i} className={`dd-item${hi===i?" hi":""}`} onClick={()=>pick(b)}><span className="dd-title">{b.title}</span><span className="dd-author">{b.author}</span></div>)}</div>}
   </div>;
 }
 
-function MainInput({value,onChange,onEnter,suggestions,onSelectSuggestion,clearSuggestions}){
+function MainInput({value,onChange,onEnter,suggestions,onSelect,clearSugg}){
   const[hi,setHi]=React.useState(-1);
   const onKD=e=>{
     if(suggestions.length){
       if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,suggestions.length-1));}
       else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}
-      else if(e.key==="Enter"&&hi>=0){e.preventDefault();onSelectSuggestion(suggestions[hi]);setHi(-1);}
-      else if(e.key==="Enter"){e.preventDefault();clearSuggestions();onEnter();}
-      else if(e.key==="Escape"){clearSuggestions();setHi(-1);}
-    } else if(e.key==="Enter"){e.preventDefault();onEnter();}
+      else if(e.key==="Enter"&&hi>=0){e.preventDefault();onSelect(suggestions[hi]);setHi(-1);}
+      else if(e.key==="Enter"){e.preventDefault();clearSugg();onEnter();}
+      else if(e.key==="Escape"){clearSugg();setHi(-1);}
+    }else if(e.key==="Enter"){e.preventDefault();onEnter();}
   };
-  return <div className="dropdown-wrap">
+  return <div className="dd-wrap">
     <input className="main-input" value={value} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder="Start typing a title…"/>
-    {suggestions.length>0&&<div className="dropdown">{suggestions.map((b,i)=><div key={i} className={`dropdown-item${hi===i?" hi":""}`} onClick={()=>{onSelectSuggestion(b);setHi(-1);}}><span className="drop-title">{b.title}</span><span className="drop-author">{b.author}</span></div>)}</div>}
+    {suggestions.length>0&&<div className="dd">{suggestions.map((b,i)=><div key={i} className={`dd-item${hi===i?" hi":""}`} onClick={()=>{onSelect(b);setHi(-1);}}><span className="dd-title">{b.title}</span><span className="dd-author">{b.author}</span></div>)}</div>}
   </div>;
 }
 
@@ -580,26 +578,20 @@ function ChipList({items,onRemove,gold}){
   return <div className="chips">{items.map((t,i)=><div key={i} className={`chip${gold?" gold":""}`}><span>{t}</span><button className="chip-x" onClick={()=>onRemove(t)}>×</button></div>)}</div>;
 }
 
-function StudentSummary({profile,onClose}){
-  return <div className="panel" style={{marginBottom:16}}>
+function ProfileSummary({profile,onClose}){
+  return <div className="card" style={{marginBottom:16}}>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-      <div className="panel-title" style={{marginBottom:0}}>Profile Summary — {profile.initials} · {profile.grade}</div>
-      <button className="summary-btn" onClick={onClose}>Close</button>
+      <div className="card-title" style={{marginBottom:0}}>Profile — {profile.initials} · {profile.grade}</div>
+      <button className="profile-btn" onClick={onClose}>Close</button>
     </div>
-    {profile.notes&&<div className="summary-section">
-      <div className="summary-section-label">Reading preferences</div>
-      <div className="summary-item" style={{fontStyle:"italic"}}>"{profile.notes}"</div>
-    </div>}
-    {profile.reluctant&&<div className="summary-section">
-      <div className="summary-section-label">Reader type</div>
-      <div className="summary-item"><span className="reluctant-badge">⚡ Reluctant reader</span></div>
-    </div>}
-    <div className="summary-section">
-      <div className="summary-section-label">Liked books ({(profile.likedBooks||[]).length})</div>
+    {profile.notes&&<div className="summary-sec"><div className="summary-hd">Reading preferences</div><div className="summary-item" style={{fontStyle:"italic"}}>"{profile.notes}"</div></div>}
+    {profile.reluctant&&<div className="summary-sec"><div className="summary-hd">Reader type</div><div className="summary-item"><span className="reluctant-tag">⚡ Reluctant reader</span></div></div>}
+    <div className="summary-sec">
+      <div className="summary-hd">Liked books ({(profile.likedBooks||[]).length})</div>
       {(profile.likedBooks||[]).length?profile.likedBooks.map((t,i)=><div key={i} className="summary-item">❤ {t}</div>):<div className="summary-item" style={{color:"var(--text3)"}}>None recorded</div>}
     </div>
-    <div className="summary-section">
-      <div className="summary-section-label">Already read ({(profile.alreadyRead||[]).length})</div>
+    <div className="summary-sec">
+      <div className="summary-hd">Already read ({(profile.alreadyRead||[]).length})</div>
       {(profile.alreadyRead||[]).length?profile.alreadyRead.map((t,i)=><div key={i} className="summary-item">✓ {t}</div>):<div className="summary-item" style={{color:"var(--text3)"}}>None recorded</div>}
     </div>
   </div>;
@@ -614,35 +606,35 @@ function ProfileEditor({profile,books,onSave,onDelete,onCancel}){
   const[liked,setLiked]=React.useState(profile.likedBooks||[]);
   const[read,setRead]=React.useState(profile.alreadyRead||[]);
   const save=()=>{if(!initials.trim()){alert("Please enter initials.");return;}onSave({...profile,id:profile.id||uid(),initials:initials.trim().toUpperCase(),grade,notes,reluctant,likedBooks:liked,alreadyRead:read});};
-  return <div className="editor-panel">
+  return <div className="editor">
     <div className="editor-title">{isNew?"New Student Profile":"Edit Student Profile"}</div>
-    <div className="editor-row">
-      <div className="field" style={{flex:"0 0 80px"}}>
-        <label className="field-label">Initials</label>
-        <input className="field-input" value={initials} onChange={e=>setInitials(e.target.value)} maxLength={5} placeholder="A.R." style={{textAlign:"center",fontWeight:600}}/>
+    <div className="ed-row">
+      <div className="field" style={{flex:"0 0 82px"}}>
+        <label>Initials</label>
+        <input className="finput" value={initials} onChange={e=>setInitials(e.target.value)} maxLength={5} placeholder="A.R." style={{textAlign:"center",fontWeight:600}}/>
       </div>
-      <div className="field" style={{flex:"0 0 90px"}}>
-        <label className="field-label">Grade</label>
-        <select className="field-input" value={grade} onChange={e=>setGrade(e.target.value)} style={{background:"var(--bg3)"}}>
+      <div className="field" style={{flex:"0 0 92px"}}>
+        <label>Grade</label>
+        <select className="finput" value={grade} onChange={e=>setGrade(e.target.value)} style={{background:"var(--surface2)"}}>
           {GRADES.map(g=><option key={g}>{g}</option>)}
         </select>
       </div>
       <div className="field" style={{flex:1,minWidth:130}}>
-        <label className="field-label">Reading preferences</label>
-        <input className="field-input" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="e.g. loves fantasy, avoids romance…"/>
+        <label>Reading preferences</label>
+        <input className="finput" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="e.g. loves fantasy, avoids romance…"/>
       </div>
     </div>
-    <div className={`toggle-row${reluctant?" on":""}`} onClick={()=>setReluctant(p=>!p)}>
+    <div className={`toggle${reluctant?" on":""}`} onClick={()=>setReluctant(p=>!p)}>
       <div className={`toggle-sw${reluctant?" on":""}`}><div className="toggle-knob"/></div>
-      <div className="toggle-text"><div className="toggle-label">⚡ Reluctant reader</div><div className="toggle-sub">Prioritize short, fast-paced books with high action</div></div>
+      <div className="toggle-info"><div className="toggle-lbl">⚡ Reluctant reader</div><div className="toggle-sub">Prioritize short, fast-paced books with high action</div></div>
     </div>
     <div style={{marginBottom:12}}>
-      <label className="field-label" style={{display:"block",marginBottom:6}}>Liked books</label>
+      <label className="field" style={{display:"block",marginBottom:6}}><span style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:".07em",color:"var(--text3)"}}>Liked books</span></label>
       <BookSearch books={books} exclude={new Set(liked)} onSelect={b=>setLiked(prev=>[...prev,b.title])} placeholder="Add a book they enjoy…"/>
       <ChipList items={liked} onRemove={t=>setLiked(prev=>prev.filter(x=>x!==t))} gold/>
     </div>
     <div style={{marginBottom:16}}>
-      <label className="field-label" style={{display:"block",marginBottom:6}}>Already read</label>
+      <label className="field" style={{display:"block",marginBottom:6}}><span style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:".07em",color:"var(--text3)"}}>Already read</span></label>
       <BookSearch books={books} exclude={new Set(read)} onSelect={b=>setRead(prev=>[...prev,b.title])} placeholder="Add a book they've finished…"/>
       <ChipList items={read} onRemove={t=>setRead(prev=>prev.filter(x=>x!==t))}/>
     </div>
@@ -660,20 +652,20 @@ function AnalyticsPanel({analytics}){
   const topTropes=Object.entries(analytics.tropeSearches||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const topBooks=Object.entries(analytics.recommendedBooks||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const sm=analytics.searchModes||{};
-  return <div className="panel">
-    <div className="panel-title">Usage Statistics</div>
-    <div className="stats-grid">
+  return <div className="card" style={{marginBottom:16}}>
+    <div className="card-title">Usage Statistics</div>
+    <div className="stats-row">
       {[["Total Searches",analytics.totalSearches||0],["Find Similar",sm.similar||0],["By Trope",sm.tropes||0],["Describe It",sm.freetext||0]].map(([l,v])=>(
-        <div key={l} className="stat-card"><div className="stat-num">{v}</div><div className="stat-lbl">{l}</div></div>
+        <div key={l} className="stat-box"><div className="stat-n">{v}</div><div className="stat-l">{l}</div></div>
       ))}
     </div>
     <div className="stat-cols">
       <div className="stat-col">
-        <div className="stat-col-title">Top tropes searched</div>
+        <div className="stat-col-h">Top tropes searched</div>
         {topTropes.length?topTropes.map(([id,n])=>{const label=TROPES.find(t=>t.id===id)?.label||id;return <div key={id} className="stat-row"><span>{label}</span><span>{n}</span></div>;}): <span className="stat-empty">No searches yet</span>}
       </div>
       <div className="stat-col">
-        <div className="stat-col-title">Most recommended</div>
+        <div className="stat-col-h">Most recommended</div>
         {topBooks.length?topBooks.map(([title,n])=><div key={title} className="stat-row"><span style={{flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:8}}>{title}</span><span>{n}</span></div>):<span className="stat-empty">No recommendations yet</span>}
       </div>
     </div>
@@ -681,14 +673,13 @@ function AnalyticsPanel({analytics}){
 }
 
 function AboutPanel(){
-  return <div className="panel">
-    <div className="panel-title">About This Tool</div>
-    <p>The Fletcher Library Assistant is an AI-powered book recommendation system built for the Fletcher Middle School library. It combines semantic search, enriched catalog data, and Claude AI to surface the most relevant fiction titles for each student — understanding meaning and context, not just keywords.</p>
-    <p><strong>Three search modes</strong> — Find books similar to a title a student loved, browse by narrative tropes and themes, or describe what a student is looking for in plain language.</p>
-    <p><strong>Semantic matching</strong> — Powered by vector embeddings, the system understands that a student asking for "something like Hunger Games" wants survival, dystopia, and strong protagonists — not just books with those exact words in their description.</p>
-    <p><strong>Student profiles</strong> — Save reading preferences, liked books, and already-read lists per student. Liked books actively influence recommendation results through subject heading extraction.</p>
-    <div className="feature-grid">
-      {["3,500+ Fiction Titles","Voyage AI Embeddings","Claude Sonnet","Enriched MARC Data","Student Profiles","Cloudflare Workers","GitHub Pages"].map(t=><span key={t} className="feature-tag">{t}</span>)}
+  return <div className="card about-card" style={{marginBottom:16}}>
+    <div className="card-title">About This Tool</div>
+    <p>The Fletcher Library Assistant uses AI-powered semantic search to match students with books from the Fletcher Middle School fiction catalog. It combines vector embeddings, enriched MARC data, and Claude AI to surface the most relevant titles — understanding context and meaning, not just keywords.</p>
+    <p><strong>Find Similar</strong> — Enter a title a student loved and the system finds books with matching themes, tone, and characters. <strong>By Trope</strong> — Browse narrative themes and select what a student is looking for. <strong>Describe It</strong> — Type a freeform description in plain language.</p>
+    <p><strong>Student Profiles</strong> — Save reading preferences, liked books, and already-read lists. Liked books actively shape recommendation results through subject heading analysis.</p>
+    <div className="feature-tags">
+      {["3,500+ Fiction Titles","Voyage AI Semantic Search","Claude Sonnet","Enriched MARC Data","Student Profiles","Privacy-First Design"].map(t=><span key={t} className="ftag">{t}</span>)}
     </div>
   </div>;
 }
@@ -697,90 +688,80 @@ function LoadingView({stageMsg}){
   return <div className="loading-wrap">
     <video className="loading-video" src="A_–_second_seamless_loop_for.mp4" autoPlay muted loop playsInline/>
     <div className="loading-card">
-      <div className="loading-bars"><div className="loading-bar"/><div className="loading-bar"/><div className="loading-bar"/><div className="loading-bar"/></div>
-      <div className="loading-text">{stageMsg}</div>
+      <div className="lbars"><div className="lbar"/><div className="lbar"/><div className="lbar"/><div className="lbar"/></div>
+      <div className="ltext">{stageMsg}</div>
     </div>
   </div>;
 }
 
 // ── APP ──────────────────────────────────────────────────────────────────
 function App(){
-  const[books,setBooks]                     = React.useState([]);
-  const[bookCount,setBookCount]             = React.useState(0);
-  const[bookEmbeddings,setBookEmbeddings]   = React.useState(null);
-  const[embedReady,setEmbedReady]           = React.useState(null); // null=loading, true=ready, false=fallback
-  const[loadError,setLoadError]             = React.useState(false);
-  const[profiles,setProfiles]               = React.useState(()=>lsLoad("profiles",[]));
-  const[activeProfileId,setActiveProfileId] = React.useState(null);
-  const[editing,setEditing]                 = React.useState(null);
-  const[showAnalytics,setShowAnalytics]     = React.useState(false);
-  const[showAbout,setShowAbout]             = React.useState(false);
-  const[showSummary,setShowSummary]         = React.useState(false);
-  const[analytics,setAnalytics]             = React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
-  const[mode,setMode]                       = React.useState("similar");
-  const[query,setQuery]                     = React.useState("");
-  const[selTropes,setSelTropes]             = React.useState(new Set());
-  const[priorityTrope,setPriorityTrope]     = React.useState(null);
-  const[alreadyRead,setAlreadyRead]         = React.useState(new Set());
-  const[didntLike,setDidntLike]             = React.useState("");
-  const[results,setResults]                 = React.useState(null);
-  const[loading,setLoading]                 = React.useState(false);
-  const[loadingMore,setLoadingMore]         = React.useState(false);
-  const[stageMsg,setStageMsg]               = React.useState(STAGE_MSGS[0]);
-  const[error,setError]                     = React.useState("");
-  const[suggestions,setSuggestions]         = React.useState([]);
-  const[refBook,setRefBook]                 = React.useState(null);
-  const[shownTitles,setShownTitles]         = React.useState(new Set());
-  const[toasts,setToasts]                   = React.useState([]);
-  const[searchHistory,setSearchHistory]     = React.useState([]);
-  const lastSearch = React.useRef(null);
-  const stageRef   = React.useRef(null);
+  const[books,setBooks]=React.useState([]);
+  const[bookCount,setBookCount]=React.useState(0);
+  const[bookEmbeddings,setBookEmbeddings]=React.useState(null);
+  const[embedReady,setEmbedReady]=React.useState(null);
+  const[loadError,setLoadError]=React.useState(false);
+  const[profiles,setProfiles]=React.useState(()=>lsLoad("profiles",[]));
+  const[activeProfileId,setActiveProfileId]=React.useState(null);
+  const[editing,setEditing]=React.useState(null);
+  const[showStats,setShowStats]=React.useState(false);
+  const[showAbout,setShowAbout]=React.useState(false);
+  const[showSummary,setShowSummary]=React.useState(false);
+  const[analytics,setAnalytics]=React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
+  const[mode,setMode]=React.useState("similar");
+  const[query,setQuery]=React.useState("");
+  const[selTropes,setSelTropes]=React.useState(new Set());
+  const[priorityTrope,setPriorityTrope]=React.useState(null);
+  const[alreadyRead,setAlreadyRead]=React.useState(new Set());
+  const[didntLike,setDidntLike]=React.useState("");
+  const[results,setResults]=React.useState(null);
+  const[loading,setLoading]=React.useState(false);
+  const[loadingMore,setLoadingMore]=React.useState(false);
+  const[stageMsg,setStageMsg]=React.useState(STAGE_MSGS[0]);
+  const[error,setError]=React.useState("");
+  const[suggestions,setSuggestions]=React.useState([]);
+  const[refBook,setRefBook]=React.useState(null);
+  const[shownTitles,setShownTitles]=React.useState(new Set());
+  const[toasts,setToasts]=React.useState([]);
+  const[searchHistory,setSearchHistory]=React.useState([]);
+  const lastSearch=React.useRef(null);
+  const stageRef=React.useRef(null);
+  const resultsRef=React.useRef(null);
 
-  // Load CSV
   React.useEffect(()=>{
     fetch(CSV_FILE).then(r=>{if(!r.ok)throw new Error();return r.text();})
-      .then(text=>{Papa.parse(text,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);}});})
+      .then(t=>Papa.parse(t,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);}}))
       .catch(()=>setLoadError(true));
   },[]);
 
-  // Load embeddings
   React.useEffect(()=>{
-    fetch('book_embeddings.json')
-      .then(r=>{if(!r.ok)throw new Error();return r.json();})
-      .then(data=>{setBookEmbeddings(data);setEmbedReady(true);console.log(`Embeddings: ${Object.keys(data).length} books`);})
-      .catch(()=>{setBookEmbeddings({});setEmbedReady(false);console.warn('Embeddings not found — keyword fallback');});
+    fetch('book_embeddings.json').then(r=>{if(!r.ok)throw new Error();return r.json();})
+      .then(d=>{setBookEmbeddings(d);setEmbedReady(true);console.log(`Embeddings: ${Object.keys(d).length} books`);})
+      .catch(()=>{setBookEmbeddings({});setEmbedReady(false);});
   },[]);
 
-  // Tiger + stage messages
   React.useEffect(()=>{
-    setTigerVisible(!(loading||loadingMore));
-    if(loading||loadingMore){
-      let i=0;
-      stageRef.current=setInterval(()=>{i=(i+1)%STAGE_MSGS.length;setStageMsg(STAGE_MSGS[i]);},2000);
-    } else {
-      if(stageRef.current) clearInterval(stageRef.current);
-      setStageMsg(STAGE_MSGS[0]);
-    }
+    setTiger(!(loading||loadingMore));
+    if(loading||loadingMore){let i=0;stageRef.current=setInterval(()=>{i=(i+1)%STAGE_MSGS.length;setStageMsg(STAGE_MSGS[i]);},2000);}
+    else{if(stageRef.current)clearInterval(stageRef.current);setStageMsg(STAGE_MSGS[0]);}
     return()=>{if(stageRef.current)clearInterval(stageRef.current);};
   },[loading,loadingMore]);
 
-  // Auto-scroll to results
-  const resultsRef = React.useRef(null);
   React.useEffect(()=>{
     if(results?.length&&resultsRef.current) setTimeout(()=>resultsRef.current.scrollIntoView({behavior:'smooth',block:'start'}),150);
   },[results]);
 
   const addToast=(msg,type='success')=>{
     const id=Date.now()+Math.random();
-    setToasts(prev=>[...prev,{id,msg,type}]);
-    setTimeout(()=>setToasts(prev=>prev.filter(t=>t.id!==id)),2800);
+    setToasts(p=>[...p,{id,msg,type}]);
+    setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),2800);
   };
 
-  const saveProfiles  = p=>{setProfiles(p);lsSave("profiles",p);};
-  const saveAnalytics = a=>{setAnalytics(a);lsSave("analytics",a);};
-  const activeProfile = profiles.find(p=>p.id===activeProfileId)||null;
+  const saveProfiles=p=>{setProfiles(p);lsSave("profiles",p);};
+  const saveAnalytics=a=>{setAnalytics(a);lsSave("analytics",a);};
+  const activeProfile=profiles.find(p=>p.id===activeProfileId)||null;
 
-  const selectProfile = id=>{
+  const selectProfile=id=>{
     setActiveProfileId(id);setEditing(null);setResults(null);
     setShownTitles(new Set());lastSearch.current=null;setShowSummary(false);
     setAlreadyRead(id?new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]):new Set());
@@ -792,7 +773,7 @@ function App(){
     const nowLiked=!liked.includes(title);
     const updated=nowLiked?[...liked,title]:liked.filter(t=>t!==title);
     saveProfiles(profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p));
-    addToast(nowLiked?`❤ Added to liked books`:`Removed from liked books`);
+    addToast(nowLiked?'❤ Added to liked books':'Removed from liked books');
   };
 
   const trackSearch=(m,tropes=[])=>{
@@ -807,9 +788,7 @@ function App(){
     saveAnalytics(a);
   };
 
-  const addToHistory=(label,m)=>{
-    setSearchHistory(prev=>[{label,mode:m,id:Date.now()},...prev.filter(e=>e.label!==label)].slice(0,5));
-  };
+  const addToHistory=(label,m)=>setSearchHistory(p=>[{label,mode:m,id:Date.now()},...p.filter(e=>e.label!==label)].slice(0,5));
 
   const getLikedKws=()=>{
     if(!activeProfile?.likedBooks?.length) return[];
@@ -873,8 +852,7 @@ function App(){
       return `${refBook.title} ${refBook.author} ${refBook.enriched_subjects||refBook.subjects||""} ${refBook.enriched_summary||refBook.summary||""}`;
     if(mode==="tropes"){
       const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
-      const kws=[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])]}))];
-      return kws.join(' ');
+      return[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])]}))].join(' ');
     }
     return query;
   };
@@ -890,7 +868,7 @@ function App(){
     const recs=await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote);
     const enriched=recs.map(r=>({...(books.find(b=>b.title===r.title&&b.author===r.author)||books.find(b=>b.title===r.title)||r),...r}));
     setShownTitles(new Set([...shown,...enriched.map(b=>b.title)]));
-    if(isMore) setResults(prev=>[...(prev||[]),...enriched]);
+    if(isMore) setResults(p=>[...(p||[]),...enriched]);
     else setResults(enriched);
     trackRecs(enriched);
   };
@@ -899,16 +877,13 @@ function App(){
     setError("");setResults(null);setLoading(true);setShownTitles(new Set());lastSearch.current=null;
     try{
       const params=buildParams();
-      if(!params){
-        setError(mode==="similar"?"Please select a title from the suggestions.":mode==="tropes"?"Please select at least one trope.":"Please describe what you're looking for.");
-        setLoading(false);return;
-      }
+      if(!params){setError(mode==="similar"?"Please select a title from the list.":mode==="tropes"?"Please select at least one trope.":"Please describe what the student is looking for.");setLoading(false);return;}
       lastSearch.current=params;
       const histLabel=mode==="similar"?query:mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(', '):query;
       addToHistory(histLabel,mode);
       await runSearch(params,new Set());
       trackSearch(mode,mode==="tropes"?[...selTropes]:[]);
-    }catch(e){console.error(e);setError("Search failed — please try again.");}
+    }catch(e){console.error(e);setError("Search failed. Please check your connection and try again.");}
     setLoading(false);
   };
 
@@ -916,14 +891,14 @@ function App(){
     if(!lastSearch.current) return;
     setLoadingMore(true);
     try{await runSearch(lastSearch.current,shownTitles,true);}
-    catch{setError("Search failed — please try again.");}
+    catch{setError("Search failed. Please try again.");}
     setLoadingMore(false);
   };
 
   const copyResults=()=>{
     if(!results?.length) return;
     const text=results.map((b,i)=>`${ROMAN[i]||i+1}. ${b.title} by ${b.author}\n   ${b.reason||""}`).join('\n\n');
-    navigator.clipboard.writeText(text).then(()=>addToast('📋 Recommendations copied to clipboard')).catch(()=>addToast('Could not copy to clipboard','error'));
+    navigator.clipboard.writeText(text).then(()=>addToast('📋 Recommendations copied')).catch(()=>addToast('Could not copy','error'));
   };
 
   const saveProfile=p=>{
@@ -939,110 +914,104 @@ function App(){
   };
 
   const loaded=bookCount>0;
-  const modeLabels={similar:"Similar",tropes:"Trope",freetext:"Describe"};
-  const modes=[{id:"similar",label:"Find Similar"},{id:"tropes",label:"By Trope"},{id:"freetext",label:"Describe It"}];
+  const modeLbls={similar:"Similar",tropes:"Trope",freetext:"Describe"};
 
-  return <div>
-    <ToastContainer toasts={toasts}/>
+  // Wire header buttons to React state via portal
+  React.useEffect(()=>{
+    const el=document.getElementById('hdr-btns');
+    if(!el) return;
+    const root=ReactDOM.createRoot?ReactDOM.createRoot(el):null;
+    if(root){
+      root.render(<>
+        <button className={`hdr-btn${showAbout?" on":""}`} onClick={()=>{setShowAbout(p=>!p);setShowStats(false);}}>About</button>
+        <button className={`hdr-btn${showStats?" on":""}`} onClick={()=>{setShowStats(p=>!p);setShowAbout(false);}}>Stats</button>
+      </>);
+    }
+  },[showAbout,showStats]);
 
-    {/* HEADER */}
-    <div className="header">
-      <div className="header-top">
-        <img className="logo" src={LOGO_FILE} alt="Fletcher Library"/>
-        <div className="header-text">
-          <div className="header-badge">Fletcher Middle School Library</div>
-          <h1 className="header-title">Library Assistant</h1>
-          <p className="header-sub">AI-powered book recommendations for your students</p>
-        </div>
-        <div className="header-actions">
-          <button className={`header-btn${showAbout?" active":""}`} onClick={()=>{setShowAbout(p=>!p);setShowAnalytics(false);}}>About</button>
-          <button className={`header-btn${showAnalytics?" active":""}`} onClick={()=>{setShowAnalytics(p=>!p);setShowAbout(false);}}>Stats</button>
-        </div>
-      </div>
-      <div className="status-bar">
-        <div className="status-item">
-          <div className={`status-dot${loaded?" ready":""}`}/>
-          <span>{loaded?`${bookCount.toLocaleString()} titles loaded`:"Loading catalog…"}</span>
-        </div>
-        <div className="status-item">
-          <div className={`status-dot${embedReady===true?" ready":embedReady===false?"":""} ${embedReady===null?" loading":""}`}
-               style={embedReady===false?{background:"var(--text3)"}:{}}/>
-          <span>{embedReady===null?"Loading semantic search…":embedReady?"Semantic search ready":"Keyword search active"}</span>
-        </div>
+  return <div className="page-body">
+    <Toasts toasts={toasts}/>
+
+    {/* STATUS BAR */}
+    <div className="status-bar">
+      <div className="status-item"><div className={`dot${loaded?" ready":""}`}/><span>{loaded?`${bookCount.toLocaleString()} titles loaded`:"Loading catalog…"}</span></div>
+      <div className="status-item">
+        <div className={`dot${embedReady===true?" ready":embedReady===null?" spin":""}`}/>
+        <span>{embedReady===null?"Initializing semantic search…":embedReady?"Semantic search ready":"Keyword search active"}</span>
       </div>
     </div>
 
     {showAbout&&<AboutPanel/>}
-    {showAnalytics&&<AnalyticsPanel analytics={analytics}/>}
+    {showStats&&<AnalyticsPanel analytics={analytics}/>}
 
     {loadError&&<div className="error-msg">⚠ Could not load the book catalog. Make sure {CSV_FILE} is in your repository.</div>}
 
     {loaded&&<>
-      {/* PROFILES */}
-      <div className="profile-section">
-        <div className="section-label">Student Profile</div>
-        <div className="profile-pills">
-          <button className={`pill${!activeProfileId?" active":""}`} onClick={()=>selectProfile(null)}>No Profile</button>
+      {/* STUDENT PROFILES */}
+      <div className="section">
+        <div className="sec-label">Student Profile</div>
+        <div className="pills">
+          <button className={`pill${!activeProfileId?" on":""}`} onClick={()=>selectProfile(null)}>No Profile</button>
           {profiles.map(p=><div key={p.id} style={{display:"flex",alignItems:"center"}}>
-            <button className={`pill${activeProfileId===p.id?" active-left":""}`} onClick={()=>selectProfile(p.id)}>
-              {p.initials} <span style={{fontSize:11,opacity:.7}}>{p.grade}</span>
+            <button className={`pill${activeProfileId===p.id?" on-l":""}`} onClick={()=>selectProfile(p.id)}>
+              {p.initials} <span style={{fontSize:11,opacity:.7,marginLeft:2}}>{p.grade}</span>
             </button>
             {activeProfileId===p.id&&<button className="pill-edit" onClick={()=>setEditing(editing?.id===p.id?null:p)}>✎</button>}
           </div>)}
-          {profiles.length<10&&<button className="pill-add" onClick={()=>setEditing({initials:"",grade:"6th",notes:"",reluctant:false,likedBooks:[],alreadyRead:[]})}>+ New</button>}
+          {profiles.length<10&&<button className="pill-add" onClick={()=>setEditing({initials:"",grade:"6th",notes:"",reluctant:false,likedBooks:[],alreadyRead:[]})}>+ New Profile</button>}
         </div>
         {activeProfile&&<div className="profile-meta">
           {activeProfile.notes&&<span className="profile-note">"{activeProfile.notes}"</span>}
-          <button className="summary-btn" onClick={()=>setShowSummary(p=>!p)}>{showSummary?"Hide profile":"View profile"}</button>
-          {activeProfile.reluctant&&<span className="reluctant-badge">⚡ Reluctant reader</span>}
+          <button className="profile-btn" onClick={()=>setShowSummary(p=>!p)}>{showSummary?"Hide":"View profile"}</button>
+          {activeProfile.reluctant&&<span className="reluctant-tag">⚡ Reluctant reader</span>}
         </div>}
       </div>
 
-      {showSummary&&activeProfile&&<StudentSummary profile={activeProfile} onClose={()=>setShowSummary(false)}/>}
+      {showSummary&&activeProfile&&<ProfileSummary profile={activeProfile} onClose={()=>setShowSummary(false)}/>}
       {editing&&<ProfileEditor profile={editing} books={books} onSave={saveProfile} onDelete={deleteProfile} onCancel={()=>setEditing(null)}/>}
 
       {!editing&&<>
         {/* SEARCH HISTORY */}
-        {searchHistory.length>0&&<div className="history-wrap">
-          <div className="section-label" style={{marginBottom:6}}>Recent searches</div>
+        {searchHistory.length>0&&<div className="history">
+          <div className="sec-label" style={{marginBottom:8}}>Recent searches</div>
           <div className="history-chips">
-            {searchHistory.map(h=><div key={h.id} className="history-chip" onClick={()=>{switchMode(h.mode);if(h.mode!=="tropes")setQuery(h.label);}}>
-              <span className="history-mode">{modeLabels[h.mode]}</span>
+            {searchHistory.map(h=><div key={h.id} className="hchip" onClick={()=>{switchMode(h.mode);if(h.mode!=="tropes")setQuery(h.label);}}>
+              <span className="hmode">{modeLbls[h.mode]}</span>
               <span>{h.label.length>42?h.label.slice(0,42)+'…':h.label}</span>
             </div>)}
           </div>
         </div>}
 
-        {/* TABS */}
+        {/* SEARCH MODES */}
         <div className="tabs">
-          {modes.map(m=><button key={m.id} className={`tab${mode===m.id?" active":""}`} onClick={()=>switchMode(m.id)}>{m.label}</button>)}
+          {[{id:"similar",label:"Find Similar"},{id:"tropes",label:"By Trope"},{id:"freetext",label:"Describe It"}].map(m=>(
+            <button key={m.id} className={`tab${mode===m.id?" on":""}`} onClick={()=>switchMode(m.id)}>{m.label}</button>
+          ))}
         </div>
 
-        {/* SEARCH INPUTS */}
-        {mode==="similar"&&<div className="input-section">
-          <div className="section-label">Book title</div>
+        {mode==="similar"&&<div className="inp-sec">
+          <div className="sec-label">Book title</div>
           <MainInput value={query} onChange={onQueryChange} onEnter={search} suggestions={suggestions}
-            onSelectSuggestion={b=>{setRefBook(b);setQuery(b.title);setSuggestions([]);}}
-            clearSuggestions={()=>setSuggestions([])}/>
-          <div className="input-hint">Select a title from the suggestions, then click Find Books</div>
+            onSelect={b=>{setRefBook(b);setQuery(b.title);setSuggestions([]);}} clearSugg={()=>setSuggestions([])}/>
+          <div className="inp-hint">Select a title from the suggestions, then click Find Books</div>
         </div>}
 
-        {mode==="freetext"&&<div className="input-section">
-          <div className="section-label">Describe what the student is looking for</div>
+        {mode==="freetext"&&<div className="inp-sec">
+          <div className="sec-label">Describe what the student is looking for</div>
           <textarea className="main-textarea" value={query} onChange={e=>setQuery(e.target.value)}
             onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();search();}}}
-            rows={3} placeholder='e.g. "A fantasy with a strong female lead and a mystery to solve"'/>
-          <div className="input-hint">Press Enter to search · Shift+Enter for a new line</div>
+            rows={3} placeholder='e.g. "A fantasy with a strong female lead who discovers she has hidden powers"'/>
+          <div className="inp-hint">Press Enter to search · Shift+Enter for a new line</div>
         </div>}
 
-        {mode==="tropes"&&<div className="input-section">
-          <p className="trope-hint">Click once to select · Click again to mark as must-have (★)</p>
-          {CATS.map(cat=><div key={cat} className="trope-section">
+        {mode==="tropes"&&<div className="inp-sec">
+          <p className="trope-hint">Select one or more tropes · Click again to mark as must-have (★)</p>
+          {CATS.map(cat=><div key={cat} className="trope-sec">
             <div className="trope-cat">{cat}</div>
             <div className="trope-chips">
               {TROPES.filter(t=>t.cat===cat).map(t=>{
                 const on=selTropes.has(t.id),isPrio=priorityTrope===t.id;
-                return <button key={t.id} onClick={()=>toggleTrope(t.id)} className={`trope-chip${isPrio?" prio":on?" sel":""}`}>
+                return <button key={t.id} onClick={()=>toggleTrope(t.id)} className={`tchip${isPrio?" prio":on?" sel":""}`}>
                   {isPrio?"★ ":""}{t.label}
                 </button>;
               })}
@@ -1051,24 +1020,24 @@ function App(){
         </div>}
 
         {/* ALREADY READ */}
-        <div className="input-section">
-          <div className="section-label">Exclude books already read</div>
-          <BookSearch books={books} exclude={alreadyRead} onSelect={b=>setAlreadyRead(prev=>new Set([...prev,b.title]))} placeholder="Add a book to exclude…"/>
+        <div className="inp-sec">
+          <div className="sec-label">Exclude books already read</div>
+          <BookSearch books={books} exclude={alreadyRead} onSelect={b=>setAlreadyRead(prev=>new Set([...prev,b.title]))} placeholder="Add a title to exclude…"/>
           <ChipList items={[...alreadyRead]} onRemove={t=>setAlreadyRead(prev=>{const n=new Set(prev);n.delete(t);return n;})}/>
         </div>
 
         {/* LIKED BANNER */}
         {activeProfile?.likedBooks?.length>0&&<div className="liked-banner">
-          <span className="liked-banner-icon">❤</span>
-          <div className="liked-banner-text">
+          <span className="liked-icon">❤</span>
+          <div className="liked-body">
             <strong>Influencing recommendations</strong>
             {activeProfile.likedBooks.join(", ")}
           </div>
         </div>}
 
         {/* DIDNT LIKE */}
-        <div className="input-section">
-          <div className="section-label">What didn't they enjoy? <span style={{color:"var(--text3)",fontWeight:400,textTransform:"none",letterSpacing:0,fontSize:12}}>(optional)</span></div>
+        <div className="inp-sec">
+          <div className="sec-label">What didn't the student enjoy? <span style={{color:"var(--text3)",fontWeight:400,textTransform:"none",letterSpacing:0,fontSize:12}}>(optional)</span></div>
           <input className="main-input" value={didntLike} onChange={e=>setDidntLike(e.target.value)} placeholder='e.g. "too slow, too much romance, confusing ending"'/>
         </div>
 
@@ -1081,25 +1050,26 @@ function App(){
 
         {/* RESULTS */}
         {results&&results.length>0&&!loading&&<div ref={resultsRef}>
-          <div className="results-header">
+          <div className="results-hdr">
             <span className="results-title">Recommendations</span>
             <div className="results-line"/>
             <span className="results-count">{results.length} titles</span>
           </div>
           {results.map((b,i)=><ResultCard key={`${b.title}-${i}`} book={b} index={i} activeProfile={activeProfile} onHeart={toggleHeart} onNoteSave={()=>addToast('Note saved ✓')}/>)}
-          <div className="results-actions">
-            <button className="action-btn" onClick={()=>window.print()}>🖨 Print</button>
-            <button className="action-btn" onClick={copyResults}>📋 Copy list</button>
-            {!loadingMore&&<button className="action-btn primary" onClick={searchMore}>Load more →</button>}
+          <div className="ractions">
+            <button className="act-btn" onClick={()=>window.print()}>🖨 Print</button>
+            <button className="act-btn" onClick={copyResults}>📋 Copy list</button>
+            {!loadingMore&&<button className="act-btn primary" onClick={searchMore}>Load more →</button>}
           </div>
         </div>}
 
-        {results&&results.length===0&&!loading&&<div className="empty-state">
-          <p className="empty-msg">No matching titles found.</p>
+        {results&&results.length===0&&!loading&&<div className="empty">
+          <p className="empty-title">No matching titles found.</p>
+          <p className="empty-sub">Try broadening your search or using a different mode.</p>
           <div className="empty-actions">
-            <div className="empty-chip" onClick={()=>switchMode("freetext")}>Try describing it</div>
-            <div className="empty-chip" onClick={()=>switchMode("tropes")}>Browse by trope</div>
-            <div className="empty-chip" onClick={()=>setResults(null)}>Start over</div>
+            <div className="echip" onClick={()=>switchMode("freetext")}>Try describing it</div>
+            <div className="echip" onClick={()=>switchMode("tropes")}>Browse by trope</div>
+            <div className="echip" onClick={()=>setResults(null)}>Start over</div>
           </div>
         </div>}
       </>}

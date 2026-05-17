@@ -25,12 +25,10 @@
       background-repeat:repeat; background-size:128px 128px; }
     #root { max-width:740px; margin:0 auto; padding:0 1.5rem 5rem; }
 
-    /* CORNER TIGERS */
     .tiger-corner { position:fixed; bottom:32px; right:32px; z-index:10; pointer-events:none; user-select:none; width:120px; transition:opacity .4s ease; }
     .tiger-corner.hidden { opacity:0; }
     .tiger-corner.visible { opacity:.9; }
 
-    /* HEADER */
     .header { padding:2.5rem 0 0; margin-bottom:2rem; position:relative; }
     .header-inner { display:flex; align-items:center; gap:1.5rem; padding-bottom:1rem; border-bottom:3px double var(--amber); }
     .logo-badge { position:relative; flex-shrink:0; }
@@ -47,7 +45,6 @@
     .ledger-btn { font-family:'Special Elite',serif; font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding:5px 12px; background:transparent; color:var(--text2); border:1px solid var(--border); border-radius:3px; cursor:pointer; transition:all .2s; }
     .ledger-btn:hover,.ledger-btn.active { color:var(--amber); border-color:var(--amber); background:var(--bg2); }
 
-    /* ANALYTICS */
     .analytics-panel { background:var(--bg2); border:1px solid var(--border2); border-top:3px solid var(--amber); padding:16px; margin-bottom:20px; font-family:'Special Elite',serif; }
     .analytics-title { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--amber); margin-bottom:12px; }
     .analytics-stats { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
@@ -61,7 +58,6 @@
     .analytics-row span:last-child { color:var(--amber); font-weight:600; flex-shrink:0; margin-left:8px; }
     .analytics-empty { font-size:13px; color:var(--text3); font-style:italic; font-family:'Crimson Text',serif; }
 
-    /* PROFILES */
     .section-label { font-family:'Special Elite',serif; font-size:12px; text-transform:uppercase; letter-spacing:.15em; color:var(--text2); margin-bottom:8px; }
     .profile-bar { margin-bottom:20px; }
     .profile-pills { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
@@ -76,7 +72,6 @@
     .summary-view-btn { font-family:'Special Elite',serif; font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:4px 10px; background:transparent; color:var(--text3); border:1px solid var(--border); border-radius:2px; cursor:pointer; transition:all .2s; }
     .summary-view-btn:hover { color:var(--amber); border-color:var(--amber); }
 
-    /* RELUCTANT TOGGLE */
     .reluctant-toggle { display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:10px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:2px; cursor:pointer; transition:border-color .2s; }
     .reluctant-toggle:hover,.reluctant-toggle.on { border-color:var(--amber); }
     .toggle-switch { width:36px; height:20px; background:var(--border); border-radius:10px; position:relative; transition:background .2s; flex-shrink:0; }
@@ -86,7 +81,6 @@
     .toggle-label { font-family:'Special Elite',serif; font-size:12px; color:var(--text2); letter-spacing:.05em; }
     .toggle-sub { font-family:'Crimson Text',serif; font-size:12px; color:var(--text3); font-style:italic; }
 
-    /* SUMMARY PANEL */
     .summary-panel { background:var(--bg2); border:1px solid var(--border2); border-top:3px solid var(--amber); padding:16px; margin-bottom:20px; }
     .summary-panel-title { font-family:'Special Elite',serif; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--amber); margin-bottom:12px; }
     .summary-section { margin-bottom:12px; }
@@ -94,7 +88,6 @@
     .summary-empty { font-family:'Crimson Text',serif; font-size:13px; color:var(--text3); font-style:italic; }
     .summary-book { font-family:'Crimson Text',serif; font-size:13px; color:var(--text2); padding:2px 0; border-bottom:1px dotted var(--border); }
 
-    /* EDITOR */
     .editor { background:var(--bg2); border:1px solid var(--border2); border-top:3px solid var(--amber); padding:16px; margin-bottom:20px; }
     .editor-row { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
     .field-group { display:flex; flex-direction:column; gap:4px; }
@@ -103,13 +96,11 @@
     .field-input:focus { border-color:var(--amber); }
     .field-input::placeholder { color:var(--text3); }
 
-    /* TABS */
     .tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:20px; gap:2px; }
     .tab { padding:8px 20px; font-size:12px; font-family:'Special Elite',serif; letter-spacing:.12em; text-transform:uppercase; background:var(--bg2); border:1px solid var(--border); border-bottom:none; cursor:pointer; color:var(--text2); transition:all .2s; margin-bottom:-2px; }
     .tab:hover { color:var(--text); background:var(--bg3); }
     .tab.active { background:var(--bg); color:var(--amber2); border-color:var(--amber); border-bottom:2px solid var(--bg); }
 
-    /* INPUTS */
     .input-wrap { margin-bottom:16px; }
     .main-input { width:100%; padding:12px 14px; font-size:15px; background:var(--bg2); border:1px solid var(--border); border-bottom:2px solid var(--border); color:var(--text); font-family:'Crimson Text',serif; outline:none; transition:border-color .2s; border-radius:2px; }
     .main-input:focus { border-color:var(--amber); }
@@ -118,7 +109,6 @@
     .main-textarea:focus { border-color:var(--amber); }
     .main-textarea::placeholder { color:var(--text3); font-style:italic; }
 
-    /* DROPDOWN */
     .dropdown { position:absolute; top:100%; left:0; right:0; z-index:30; background:var(--bg2); border:1px solid var(--amber); margin-top:2px; box-shadow:4px 4px 0 rgba(0,0,0,.4); overflow:hidden; }
     .dropdown-item { padding:10px 14px; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px dotted var(--border); transition:background .15s; font-family:'Crimson Text',serif; }
     .dropdown-item:last-child { border-bottom:none; }
@@ -126,7 +116,6 @@
     .dropdown-title { color:var(--text); font-weight:600; }
     .dropdown-author { color:var(--text3); font-size:13px; margin-left:8px; flex-shrink:0; font-style:italic; }
 
-    /* TROPES */
     .trope-section { margin-bottom:14px; }
     .trope-cat { font-family:'Special Elite',serif; font-size:10px; text-transform:uppercase; letter-spacing:.15em; color:var(--text3); margin-bottom:8px; }
     .trope-chips { display:flex; flex-wrap:wrap; gap:6px; }
@@ -136,19 +125,16 @@
     .trope-chip.priority { background:var(--amber); border-color:var(--amber2); color:var(--bg); font-weight:700; }
     .trope-hint { font-size:14px; color:var(--text3); font-style:italic; margin-bottom:12px; font-family:'Crimson Text',serif; }
 
-    /* CHIPS */
     .chips-wrap { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
     .chip { display:flex; align-items:center; gap:4px; padding:4px 10px; background:var(--bg3); border:1px solid var(--border); font-size:12px; color:var(--text2); font-family:'Crimson Text',serif; border-radius:2px; }
     .chip-remove { background:none; border:none; cursor:pointer; color:var(--text3); padding:0; font-size:16px; line-height:1; }
     .chip-remove:hover { color:var(--amber); }
     .chip.gold { border-color:var(--amber); color:var(--amber2); background:var(--bg2); }
 
-    /* LIKED BANNER */
     .liked-banner { margin-bottom:16px; padding:10px 14px; background:var(--bg2); border-left:3px solid var(--amber); font-size:14px; font-family:'Crimson Text',serif; }
     .liked-banner strong { color:var(--amber2); }
     .liked-banner span { color:var(--text2); }
 
-    /* BUTTON */
     .ask-btn { position:relative; width:100%; padding:15px; font-family:'Playfair Display',serif; font-size:16px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; background:var(--amber); color:var(--bg); border:none; cursor:pointer; transition:all .2s; box-shadow:4px 4px 0 rgba(0,0,0,.4); margin-bottom:28px; overflow:hidden; }
     .ask-btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent); transition:left .5s; }
     .ask-btn:hover::before { left:100%; }
@@ -156,7 +142,6 @@
     .ask-btn:active { transform:translate(2px,2px); box-shadow:2px 2px 0 rgba(0,0,0,.4); }
     .ask-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 
-    /* RESULTS */
     .results-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; position:relative; overflow:hidden; }
     .results-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; font-style:italic; color:var(--amber2); white-space:nowrap; }
     .results-line { flex:1; height:1px; background:linear-gradient(to right,var(--amber),transparent); }
@@ -164,7 +149,6 @@
     .filed-stamp { position:absolute; right:80px; top:50%; transform:translateY(-50%) rotate(-12deg); font-family:'Special Elite',serif; font-size:20px; font-weight:700; color:#8b202088; border:3px solid #8b202088; padding:2px 10px; letter-spacing:.15em; text-transform:uppercase; pointer-events:none; animation:stampIn .35s cubic-bezier(.2,1.4,.4,1) both; }
     @keyframes stampIn { from{transform:translateY(-50%) rotate(-12deg) scale(2.5);opacity:0} to{transform:translateY(-50%) rotate(-12deg) scale(1);opacity:1} }
 
-    /* RESULT CARDS */
     .result-card { position:relative; padding:16px; margin-bottom:14px; background:var(--bg2); border:1px solid var(--border); border-top:2px solid var(--amber); box-shadow:3px 3px 0 rgba(0,0,0,.3); animation:fadeUp .4s ease both; }
     .result-card::before { content:attr(data-num); position:absolute; top:-1px; right:12px; font-family:'Playfair Display',serif; font-size:11px; font-style:italic; color:var(--bg); background:var(--amber); padding:1px 8px; }
     @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -190,7 +174,6 @@
     .note-field:focus { border-color:var(--amber); }
     .note-field::placeholder { color:var(--text3); }
 
-    /* MORE / MISC */
     .more-btn { display:block; margin:20px auto 0; padding:10px 28px; font-family:'Special Elite',serif; font-size:12px; letter-spacing:.1em; text-transform:uppercase; background:transparent; color:var(--amber); border:1px solid var(--amber); cursor:pointer; transition:all .2s; border-radius:2px; }
     .more-btn:hover { background:var(--amber); color:var(--bg); box-shadow:3px 3px 0 rgba(0,0,0,.3); }
     .more-btn:disabled { opacity:.4; cursor:not-allowed; }
@@ -202,20 +185,8 @@
     .btn-secondary { padding:8px 14px; font-size:13px; background:transparent; color:var(--text2); border:1px solid var(--border); cursor:pointer; font-family:'Special Elite',serif; border-radius:2px; }
     .btn-danger { padding:8px 14px; font-size:13px; background:transparent; color:#e07070; border:1px solid #8b404044; cursor:pointer; font-family:'Special Elite',serif; border-radius:2px; }
 
-    /* LOADING TIGER VIDEO */
-    .loading-tiger-video {
-      width: 220px;
-      max-width: 100%;
-      height: auto;
-      display: block;
-      margin: 0 auto 14px;
-      border-radius: 8px;
-      box-shadow: 4px 4px 0 rgba(0,0,0,.35);
-      border: 1px solid var(--border2);
-      background: var(--bg2);
-    }
+    .loading-tiger-video { width:220px; max-width:100%; height:auto; display:block; margin:0 auto 14px; border-radius:8px; box-shadow:4px 4px 0 rgba(0,0,0,.35); border:1px solid var(--border2); background:var(--bg2); }
 
-    /* TYPEWRITER LOADING */
     .typewriter-loading { padding:2.5rem 0 2rem; text-align:center; margin-bottom:28px; }
     .tw-paper { display:inline-block; background:var(--paper); border:1px solid var(--paper2); box-shadow:4px 4px 0 rgba(0,0,0,.4); padding:24px 32px; max-width:420px; width:100%; position:relative; }
     .tw-paper::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:repeating-linear-gradient(90deg,var(--bg3) 0px,var(--bg3) 8px,transparent 8px,transparent 12px); }
@@ -226,7 +197,6 @@
     .tw-text { font-family:'Special Elite',serif; font-size:13px; letter-spacing:.1em; color:var(--bg3); text-transform:uppercase; border-top:1px solid var(--paper2); padding-top:12px; animation:twTextFade 1.5s ease-in-out infinite; }
     @keyframes twTextFade { 0%,100%{opacity:.5} 50%{opacity:1} }
 
-    /* MOBILE */
     @media(max-width:540px){
       .header-inner{flex-direction:column;align-items:flex-start;gap:1rem}
       .logo-badge img{width:80px;height:80px} .title{font-size:26px}
@@ -240,16 +210,14 @@
 </head>
 <body>
 <div id="root"></div>
-
-<!-- Corner tigers -->
 <img id="coffee-tiger" class="tiger-corner visible" src="images/detective_cat_coffee_loop_apng_slow.png" alt=""/>
 
 <script type="text/babel">
-const WORKER_URL="https://anthropic-proxy.roman-carlos09.workers.dev";
-const EMBED_URL   = `${WORKER_URL}/embed`; 
-const CSV_FILE="books_fiction_enriched.csv";
-const LOGO_FILE="logo.png";
-const ROMAN=["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
+const EMBED_URL  = `${WORKER_URL}/embed`;
+const CSV_FILE   = "books_fiction_enriched.csv";
+const LOGO_FILE  = "logo.png";
+const ROMAN      = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
 
 const TROPES=[
   {id:"enemies_to_lovers",label:"Enemies to Lovers",cat:"Romance"},
@@ -331,124 +299,124 @@ const TROPE_KEYWORDS={
   chosen_one:["chosen","destined","destiny","prophecy","fate","hero"],
 };
 
-const CATS=[...new Set(TROPES.map(t=>t.cat))];
-const STOP=new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
-const GRADES=["6th","7th","8th"];
-const DEFAULT_ANALYTICS={totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
+const CATS    = [...new Set(TROPES.map(t=>t.cat))];
+const STOP    = new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
+const GRADES  = ["6th","7th","8th"];
+const DEFAULT_ANALYTICS = {totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
 
-const uid=()=>Math.random().toString(36).slice(2,9);
-const tokenize=t=>(t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
-const shuffle=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-const lsLoad=(k,fb)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}};
-const lsSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+const uid      = () => Math.random().toString(36).slice(2,9);
+const tokenize = t => (t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
+const lsLoad   = (k,fb) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;} };
+const lsSave   = (k,v)  => { try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
 
 function cosine(a, b) {
-  let dot = 0, na = 0, nb = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    na  += a[i] * a[i];
-    nb  += b[i] * b[i];
-  }
+  let dot=0, na=0, nb=0;
+  for(let i=0;i<a.length;i++){ dot+=a[i]*b[i]; na+=a[i]*a[i]; nb+=b[i]*b[i]; }
   return dot / (Math.sqrt(na) * Math.sqrt(nb) || 1);
 }
 
-
-
-// Coffee tiger visibility during loading
-function setCoffeeTigerVisible(visible){
-  const coffee=document.getElementById('coffee-tiger');
-  if(!coffee) return;
-  coffee.className = visible ? 'tiger-corner visible' : 'tiger-corner hidden';
+function setCoffeeTigerVisible(v) {
+  const el = document.getElementById('coffee-tiger');
+  if(el) el.className = 'tiger-corner ' + (v ? 'visible' : 'hidden');
 }
 
-
+// ── CANDIDATE RETRIEVAL ───────────────────────────────────────────────────
 async function getCandidates(
   books, queryText, bookEmbeddings,
-  likedKws = [], n = 70,
-  excl = null, alreadyRead = new Set(), shown = new Set()
+  likedKws=[], n=70,
+  excl=null, alreadyRead=new Set(), shown=new Set(),
+  refAuthor=null
 ) {
   const pool = books.filter(b =>
     b.title !== excl && !alreadyRead.has(b.title) && !shown.has(b.title)
   );
 
-  // ── embedding path ──────────────────────────────────────────────────
+  // Same-author books get a score boost so they always reach Claude
+  const authorLastName = refAuthor ? refAuthor.split(',')[0].trim().toLowerCase() : null;
+  const sameAuthorTitles = new Set(
+    authorLastName
+      ? pool.filter(b=>(b.author||'').toLowerCase().includes(authorLastName)).map(b=>b.title)
+      : []
+  );
+
+  // ── embedding path ──────────────────────────────────────────────────────
   if (bookEmbeddings && Object.keys(bookEmbeddings).length > 0) {
     try {
       const res = await fetch(EMBED_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: queryText }),
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({text: queryText}),
       });
       if (!res.ok) throw new Error(`embed ${res.status}`);
-      const { embedding: qEmb } = await res.json();
+      const {embedding: qEmb} = await res.json();
 
-      // Score by cosine similarity; boost liked-book themes
       const likedSet = new Set(likedKws);
       const scored = pool.map(b => {
         const bEmb = bookEmbeddings[b.title];
         const sim  = bEmb ? cosine(qEmb, bEmb) : 0;
-        // Small liked-book keyword boost on top of semantic score
-        const subjectTokens = tokenize(`${b.enriched_subjects || b.subjects || ''} ${b.enriched_summary || b.summary || ''}`);
-        const likedBoost = subjectTokens.filter(t => likedSet.has(t)).length * 0.01;
-        return { ...b, _s: sim + likedBoost };
-      }).sort((a, b) => b._s - a._s);
+        const subjectTokens = tokenize(
+          `${b.enriched_subjects||b.subjects||''} ${b.enriched_summary||b.summary||''}`
+        );
+        const likedBoost  = subjectTokens.filter(t=>likedSet.has(t)).length * 0.01;
+        const authorBoost = sameAuthorTitles.has(b.title) ? 0.15 : 0;
+        return {...b, _s: sim + likedBoost + authorBoost};
+      }).sort((a,b) => b._s - a._s);
 
       return scored.slice(0, n);
-    } catch (err) {
+    } catch(err) {
       console.warn('Embedding lookup failed — falling back to keyword scoring:', err);
-      // fall through to keyword path below
     }
   }
 
-  // ── keyword fallback (original logic) ──────────────────────────────
-  const kws      = tokenize(queryText);
-  const kSet     = new Set(kws);
-  const lSet     = new Set(likedKws);
+  // ── keyword fallback ────────────────────────────────────────────────────
+  const kws  = tokenize(queryText);
+  const kSet = new Set(kws);
+  const lSet = new Set(likedKws);
   let scored = pool.map(b => {
-    const st = new Set(tokenize(b.enriched_subjects || b.subjects   || ''));
-    const sm = new Set(tokenize(b.enriched_summary  || b.summary    || ''));
-    const ti = new Set(tokenize(b.title || ''));
-    const base  = [...kSet].filter(k => st.has(k)).length * 3
-                + [...kSet].filter(k => sm.has(k)).length
-                + [...kSet].filter(k => ti.has(k)).length;
-    const liked = [...lSet].filter(k => st.has(k)).length * 4
-                + [...lSet].filter(k => sm.has(k)).length * 2;
-    return { ...b, _s: base + liked };
-  }).filter(b => b._s > 0);
+    const st = new Set(tokenize(b.enriched_subjects||b.subjects||''));
+    const sm = new Set(tokenize(b.enriched_summary||b.summary||''));
+    const ti = new Set(tokenize(b.title||''));
+    const base  = [...kSet].filter(k=>st.has(k)).length*3
+                + [...kSet].filter(k=>sm.has(k)).length
+                + [...kSet].filter(k=>ti.has(k)).length;
+    const liked = [...lSet].filter(k=>st.has(k)).length*4
+                + [...lSet].filter(k=>sm.has(k)).length*2;
+    const authorBoost = sameAuthorTitles.has(b.title) ? 10 : 0;
+    return {...b, _s: base + liked + authorBoost};
+  }).filter(b=>b._s>0);
   if (!scored.length) scored = pool;
-  return scored.sort((a, b) => b._s - a._s).slice(0, n);
+  return scored.sort((a,b)=>b._s-a._s).slice(0,n);
 }
 
+// ── CLAUDE CALL ───────────────────────────────────────────────────────────
 async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote=""){
-  const exclNote=excluded.length?`\n\nDo NOT recommend: ${excluded.join(", ")}`:"";
-  const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.`:"";
-  const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
-  const list=candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.summary||"").slice(0,200)}`).join("\n\n");
+  const exclNote    = excluded.length ? `\n\nDo NOT recommend: ${excluded.join(", ")}` : "";
+  const prioNote    = priorityLabel   ? `\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.` : "";
+  const likedNote   = likedTitles.length ? `\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.` : "";
+  const list = candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.enriched_summary||b.summary||"").slice(0,200)}`).join("\n\n");
 
-  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
+  const res = await fetch(WORKER_URL, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      model:"claude-sonnet-4-6",
+      max_tokens:1000,
       system:"You are a school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",
-      messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
+      messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]
+    })
+  });
 
-  const raw=await res.text();
-  if(!res.ok){
-    console.error("Claude worker error:",res.status,raw);
-    throw new Error(`Claude worker returned ${res.status}`);
-  }
-
+  const raw = await res.text();
+  if(!res.ok) throw new Error(`Claude worker returned ${res.status}`);
   let data;
-  try{ data=JSON.parse(raw); }
-  catch(err){
-    console.error("Worker did not return JSON:",raw);
-    throw err;
-  }
-
-  const text=data.content?.[0]?.text||"[]";
-  const cleaned=text.replace(/```json|```/g,"").trim();
-  const jsonText=(cleaned.match(/\[[\s\S]*\]/)||[cleaned])[0];
+  try { data = JSON.parse(raw); } catch(err) { console.error("Worker did not return JSON:", raw); throw err; }
+  const text     = data.content?.[0]?.text || "[]";
+  const cleaned  = text.replace(/```json|```/g,"").trim();
+  const jsonText = (cleaned.match(/\[[\s\S]*\]/) || [cleaned])[0];
   return JSON.parse(jsonText);
 }
 
+// ── COMPONENTS ────────────────────────────────────────────────────────────
 function CoverImg({isbn}){
   const[failed,setFailed]=React.useState(false);
   if(!isbn||failed) return <div className="cover">📖</div>;
@@ -477,6 +445,7 @@ function NoteField({title}){
 function ResultCard({book,index,activeProfile,onHeart}){
   const[expanded,setExpanded]=React.useState(false);
   const isLiked=activeProfile?.likedBooks?.includes(book.title);
+  const summary = book.enriched_summary || book.summary;
   return <div className="result-card" data-num={ROMAN[index]||index+1} style={{animationDelay:`${index*0.08}s`}}>
     <div className="result-inner">
       <CoverImg isbn={book.isbn}/>
@@ -489,12 +458,12 @@ function ResultCard({book,index,activeProfile,onHeart}){
         </div>
         <div className="result-meta">{book.author}{book.series&&<span className="result-series">· {book.series}</span>}</div>
         <TypewriterText text={book.reason||""}/>
-        {book.summary&&<>
+        {summary&&<>
           <button className="expand-btn" onClick={()=>setExpanded(p=>!p)}>
             <span className={`expand-arrow${expanded?" open":""}`}>▶</span>
             {expanded?"Hide summary":"Read the blurb"}
           </button>
-          {expanded&&<div className="summary-box">{book.summary}</div>}
+          {expanded&&<div className="summary-box">{summary}</div>}
         </>}
       </div>
     </div>
@@ -657,14 +626,7 @@ function AnalyticsPanel({analytics}){
 
 function TypewriterLoading({text}){
   return <div className="typewriter-loading">
-    <video
-      className="loading-tiger-video"
-      src="A_–_second_seamless_loop_for.mp4"
-      autoPlay
-      muted
-      loop
-      playsInline
-    />
+    <video className="loading-tiger-video" src="A_–_second_seamless_loop_for.mp4" autoPlay muted loop playsInline/>
     <div className="tw-paper">
       <div className="tw-lines"><div className="tw-line"/><div className="tw-line"/><div className="tw-line"/><div className="tw-line"/></div>
       <div className="tw-text">{text}</div>
@@ -672,104 +634,108 @@ function TypewriterLoading({text}){
   </div>;
 }
 
+// ── APP ───────────────────────────────────────────────────────────────────
 function App(){
-  const[books,setBooks]=React.useState([]);
-  const[bookCount,setBookCount]=React.useState(0);
-  const [bookEmbeddings, setBookEmbeddings] = React.useState(null);
-  const[loadError,setLoadError]=React.useState(false);
-  const[profiles,setProfiles]=React.useState(()=>lsLoad("profiles",[]));
-  const[activeProfileId,setActiveProfileId]=React.useState(null);
-  const[editing,setEditing]=React.useState(null);
-  const[showAnalytics,setShowAnalytics]=React.useState(false);
-  const[showSummary,setShowSummary]=React.useState(false);
-  const[analytics,setAnalytics]=React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
-  const[mode,setMode]=React.useState("similar");
-  const[query,setQuery]=React.useState("");
-  const[selTropes,setSelTropes]=React.useState(new Set());
-  const[priorityTrope,setPriorityTrope]=React.useState(null);
-  const[alreadyRead,setAlreadyRead]=React.useState(new Set());
-  const[didntLike,setDidntLike]=React.useState("");
-  const[results,setResults]=React.useState(null);
-  const[loading,setLoading]=React.useState(false);
-  const[loadingMore,setLoadingMore]=React.useState(false);
-  const[error,setError]=React.useState("");
-  const[suggestions,setSuggestions]=React.useState([]);
-  const[refBook,setRefBook]=React.useState(null);
-  const[shownTitles,setShownTitles]=React.useState(new Set());
-  const[showStamp,setShowStamp]=React.useState(false);
-  const lastSearch=React.useRef(null);
+  const[books,setBooks]                   = React.useState([]);
+  const[bookCount,setBookCount]           = React.useState(0);
+  const[bookEmbeddings,setBookEmbeddings] = React.useState(null);
+  const[loadError,setLoadError]           = React.useState(false);
+  const[profiles,setProfiles]             = React.useState(()=>lsLoad("profiles",[]));
+  const[activeProfileId,setActiveProfileId] = React.useState(null);
+  const[editing,setEditing]               = React.useState(null);
+  const[showAnalytics,setShowAnalytics]   = React.useState(false);
+  const[showSummary,setShowSummary]       = React.useState(false);
+  const[analytics,setAnalytics]           = React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
+  const[mode,setMode]                     = React.useState("similar");
+  const[query,setQuery]                   = React.useState("");
+  const[selTropes,setSelTropes]           = React.useState(new Set());
+  const[priorityTrope,setPriorityTrope]   = React.useState(null);
+  const[alreadyRead,setAlreadyRead]       = React.useState(new Set());
+  const[didntLike,setDidntLike]           = React.useState("");
+  const[results,setResults]               = React.useState(null);
+  const[loading,setLoading]               = React.useState(false);
+  const[loadingMore,setLoadingMore]       = React.useState(false);
+  const[error,setError]                   = React.useState("");
+  const[suggestions,setSuggestions]       = React.useState([]);
+  const[refBook,setRefBook]               = React.useState(null);
+  const[shownTitles,setShownTitles]       = React.useState(new Set());
+  const[showStamp,setShowStamp]           = React.useState(false);
+  const lastSearch = React.useRef(null);
 
+  // Load CSV
   React.useEffect(()=>{
-    fetch(CSV_FILE).then(r=>{if(!r.ok)throw new Error();return r.text();})
+    fetch(CSV_FILE)
+      .then(r=>{if(!r.ok)throw new Error();return r.text();})
       .then(text=>{Papa.parse(text,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);}});})
       .catch(()=>setLoadError(true));
   },[]);
-  React.useEffect(() => {
+
+  // Load embeddings
+  React.useEffect(()=>{
     fetch('book_embeddings.json')
-      .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
-      .then(data => {
-        setBookEmbeddings(data);
-        console.log(`Embeddings loaded: ${Object.keys(data).length} books`);
-      })
-      .catch(() => {
-        console.warn('book_embeddings.json not found — using keyword scoring');
-        setBookEmbeddings({});
-      });
-  }, []);
-  // Hide the corner coffee tiger while the loading video is showing.
-  React.useEffect(()=>{setCoffeeTigerVisible(!(loading||loadingMore));},[loading,loadingMore]);
+      .then(r=>{if(!r.ok)throw new Error('not found');return r.json();})
+      .then(data=>{setBookEmbeddings(data);console.log(`Embeddings loaded: ${Object.keys(data).length} books`);})
+      .catch(()=>{console.warn('book_embeddings.json not found — using keyword scoring');setBookEmbeddings({});});
+  },[]);
 
-  const saveProfiles=p=>{setProfiles(p);lsSave("profiles",p);};
-  const saveAnalytics=a=>{setAnalytics(a);lsSave("analytics",a);};
-  const activeProfile=profiles.find(p=>p.id===activeProfileId)||null;
+  // Tiger visibility
+  React.useEffect(()=>{ setCoffeeTigerVisible(!(loading||loadingMore)); },[loading,loadingMore]);
 
-  const selectProfile=id=>{
-    setActiveProfileId(id);setEditing(null);setResults(null);setShownTitles(new Set());lastSearch.current=null;setShowSummary(false);
-    setAlreadyRead(id?new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]):new Set());
+  const saveProfiles  = p => { setProfiles(p); lsSave("profiles",p); };
+  const saveAnalytics = a => { setAnalytics(a); lsSave("analytics",a); };
+  const activeProfile = profiles.find(p=>p.id===activeProfileId) || null;
+
+  const selectProfile = id => {
+    setActiveProfileId(id); setEditing(null); setResults(null);
+    setShownTitles(new Set()); lastSearch.current=null; setShowSummary(false);
+    setAlreadyRead(id ? new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]) : new Set());
   };
 
-  const toggleHeart=title=>{
+  const toggleHeart = title => {
     if(!activeProfile) return;
-    const liked=activeProfile.likedBooks||[];
-    const updated=liked.includes(title)?liked.filter(t=>t!==title):[...liked,title];
+    const liked   = activeProfile.likedBooks||[];
+    const updated = liked.includes(title) ? liked.filter(t=>t!==title) : [...liked,title];
     saveProfiles(profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p));
   };
 
-  const trackSearch=(m,tropes=[])=>{
-    const a={...analytics,totalSearches:(analytics.totalSearches||0)+1,searchModes:{...analytics.searchModes,[m]:(analytics.searchModes[m]||0)+1},tropeSearches:{...analytics.tropeSearches}};
+  const trackSearch = (m,tropes=[]) => {
+    const a={...analytics,totalSearches:(analytics.totalSearches||0)+1,
+      searchModes:{...analytics.searchModes,[m]:(analytics.searchModes[m]||0)+1},
+      tropeSearches:{...analytics.tropeSearches}};
     tropes.forEach(t=>{a.tropeSearches[t]=(a.tropeSearches[t]||0)+1;});
     saveAnalytics(a);
   };
 
-  const trackRecs=recs=>{
+  const trackRecs = recs => {
     const a={...analytics,recommendedBooks:{...analytics.recommendedBooks}};
     recs.forEach(b=>{a.recommendedBooks[b.title]=(a.recommendedBooks[b.title]||0)+1;});
     saveAnalytics(a);
   };
 
-  const getLikedKws=()=>{
-    if(!activeProfile?.likedBooks?.length) return[];
-    const likedObjs=books.filter(b=>activeProfile.likedBooks.includes(b.title));
-    const subjectText=likedObjs.map(b=>b.subjects||"").join(" ");
-    const summaryText=likedObjs.map(b=>b.summary||"").join(" ");
-    return[...tokenize(subjectText),...tokenize(subjectText),...tokenize(subjectText),...tokenize(summaryText)];
+  const getLikedKws = () => {
+    if(!activeProfile?.likedBooks?.length) return [];
+    const objs = books.filter(b=>activeProfile.likedBooks.includes(b.title));
+    const st   = objs.map(b=>b.enriched_subjects||b.subjects||"").join(" ");
+    const sm   = objs.map(b=>b.enriched_summary||b.summary||"").join(" ");
+    return [...tokenize(st),...tokenize(st),...tokenize(st),...tokenize(sm)];
   };
 
-  const getLikedThemes=()=>{
-    if(!activeProfile?.likedBooks?.length) return"";
-    const likedObjs=books.filter(b=>activeProfile.likedBooks.includes(b.title));
-    const allSubjects=likedObjs.flatMap(b=>(b.subjects||"").split("|").map(s=>s.trim())).filter(Boolean);
-    const unique=[...new Set(allSubjects)].slice(0,12);
-    return unique.length?`\n\nThemes from books this student enjoyed: ${unique.join("; ")}. Prioritize books sharing these themes.`:"";
+  const getLikedThemes = () => {
+    if(!activeProfile?.likedBooks?.length) return "";
+    const objs = books.filter(b=>activeProfile.likedBooks.includes(b.title));
+    const allSubjects = objs.flatMap(b=>(b.enriched_subjects||b.subjects||"").split("|").map(s=>s.trim())).filter(Boolean);
+    const unique = [...new Set(allSubjects)].slice(0,12);
+    return unique.length ? `\n\nThemes from books this student enjoyed: ${unique.join("; ")}. Prioritize books sharing these themes.` : "";
   };
 
-  const onQueryChange=val=>{
-    setQuery(val);setRefBook(null);
-    if(mode==="similar"&&val.length>1) setSuggestions(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())).slice(0,6));
+  const onQueryChange = val => {
+    setQuery(val); setRefBook(null);
+    if(mode==="similar"&&val.length>1)
+      setSuggestions(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())).slice(0,6));
     else setSuggestions([]);
   };
 
-  const toggleTrope=id=>{
+  const toggleTrope = id => {
     setSelTropes(prev=>{
       const n=new Set(prev);
       if(!n.has(id)){n.add(id);}
@@ -779,91 +745,101 @@ function App(){
     });
   };
 
-  const switchMode=m=>{setMode(m);setResults(null);setError("");setQuery("");setRefBook(null);setSuggestions([]);setSelTropes(new Set());setPriorityTrope(null);setShownTitles(new Set());lastSearch.current=null;};
-
-  const buildParams=()=>{
-    let kws=[],priorityKws=[],ctx="",excl=null,priorityLabel=null;
-    if(mode==="similar"){
-      const ref=refBook||books.find(b=>(b.title||"").toLowerCase()===query.toLowerCase());
-      if(!ref) return null;
-      kws=tokenize(`${ref.subjects} ${ref.summary}`);excl=ref.title;
-      ctx=`A student loved "${ref.title}" by ${ref.author}.\n\nSummary: ${ref.summary}\n\nFind books with similar themes, characters, tone, and plot elements.`;
-    } else if(mode==="tropes"){
-      if(!selTropes.size) return null;
-      const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
-      kws=[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])];}))];
-      if(priorityTrope){priorityKws=[...tokenize(TROPES.find(t=>t.id===priorityTrope)?.label||""),...(TROPE_KEYWORDS[priorityTrope]||[])];priorityLabel=TROPES.find(t=>t.id===priorityTrope)?.label;}
-      ctx=`A student wants books with: ${labels.join(", ")}. Find the best matches.`;
-    } else {
-      if(!query.trim()) return null;
-      kws=tokenize(query);
-      ctx=`A student wants: "${query}". Find the best matches.`;
-    }
-    return{kws,priorityKws,ctx,excl,priorityLabel};
+  const switchMode = m => {
+    setMode(m); setResults(null); setError(""); setQuery(""); setRefBook(null);
+    setSuggestions([]); setSelTropes(new Set()); setPriorityTrope(null);
+    setShownTitles(new Set()); lastSearch.current=null;
   };
 
-function buildQueryText(mode, query, refBook, selTropes) {
-  if (mode === 'similar' && refBook) {
-    return `${refBook.title} ${refBook.author} ${refBook.enriched_subjects || refBook.subjects || ''} ${refBook.enriched_summary || refBook.summary || ''}`;
-  }
-  if (mode === 'tropes') {
-    const labels = TROPES.filter(t => selTropes.has(t.id)).map(t => t.label);
-    const kws = [...new Set(labels.flatMap(l => {
-      const id = TROPES.find(t => t.label === l)?.id;
-      return [...tokenize(l), ...(TROPE_KEYWORDS[id] || [])];
-    }))];
-    return kws.join(' ');
-  }
-  return query;
-}
-  const runSearch=async(params,shown,doShuffle=false,isMore=false)=>{
-    const{kws,priorityKws,ctx,excl,priorityLabel}=params;
-    const queryText = buildQueryText(mode, query, refBook, selTropes);
-    const cands = await getCandidates(books, queryText, bookEmbeddings, getLikedKws(), 70, params.excl, alreadyRead, shown);
-    const prefNote=activeProfile?.notes?`\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.`:"";
-    const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — ONLY recommend fast-paced books with short chapters and high action.`:"";
-    const didntLikeNote=didntLike.trim()?`\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.`:"";
-    const recs=await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote);
-    const enriched=recs.map(r=>({...(books.find(b=>b.title===r.title&&b.author===r.author)||books.find(b=>b.title===r.title)||r),...r}));
+  const buildParams = () => {
+    let ctx="", excl=null, priorityLabel=null, priorityKws=[];
+    if(mode==="similar"){
+      const ref = refBook||books.find(b=>(b.title||"").toLowerCase()===query.toLowerCase());
+      if(!ref) return null;
+      excl = ref.title;
+      ctx  = `A student loved "${ref.title}" by ${ref.author}.\n\nSummary: ${ref.enriched_summary||ref.summary||""}\n\nFind books with similar themes, characters, tone, and plot elements.`;
+    } else if(mode==="tropes"){
+      if(!selTropes.size) return null;
+      const labels = TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
+      if(priorityTrope){
+        priorityKws  = [...(TROPE_KEYWORDS[priorityTrope]||[])];
+        priorityLabel = TROPES.find(t=>t.id===priorityTrope)?.label;
+      }
+      ctx = `A student wants books with: ${labels.join(", ")}. Find the best matches.`;
+    } else {
+      if(!query.trim()) return null;
+      ctx = `A student wants: "${query}". Find the best matches.`;
+    }
+    return {ctx, excl, priorityLabel, priorityKws};
+  };
+
+  const buildQueryText = () => {
+    if(mode==="similar"&&refBook){
+      return `${refBook.title} ${refBook.author} ${refBook.enriched_subjects||refBook.subjects||""} ${refBook.enriched_summary||refBook.summary||""}`;
+    }
+    if(mode==="tropes"){
+      const labels = TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
+      const kws = [...new Set(labels.flatMap(l=>{
+        const id = TROPES.find(t=>t.label===l)?.id;
+        return [...tokenize(l),...(TROPE_KEYWORDS[id]||[])];
+      }))];
+      return kws.join(' ');
+    }
+    return query;
+  };
+
+  const runSearch = async(params, shown, isMore=false) => {
+    const {ctx, excl, priorityLabel} = params;
+    const queryText = buildQueryText();
+    const refAuthor = (mode==='similar'&&refBook) ? refBook.author : null;
+    const cands = await getCandidates(
+      books, queryText, bookEmbeddings,
+      getLikedKws(), 70, excl, alreadyRead, shown, refAuthor
+    );
+    const prefNote     = activeProfile?.notes    ? `\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.` : "";
+    const reluctantNote= activeProfile?.reluctant ? `\n\nThis is a reluctant reader — ONLY recommend fast-paced books with short chapters and high action.` : "";
+    const didntLikeNote= didntLike.trim()         ? `\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.` : "";
+    const recs = await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote);
+    const enriched = recs.map(r=>({...(books.find(b=>b.title===r.title&&b.author===r.author)||books.find(b=>b.title===r.title)||r),...r}));
     setShownTitles(new Set([...shown,...enriched.map(b=>b.title)]));
     if(isMore) setResults(prev=>[...(prev||[]),...enriched]);
-    else{setResults(enriched);setShowStamp(true);setTimeout(()=>setShowStamp(false),1800);}
+    else { setResults(enriched); setShowStamp(true); setTimeout(()=>setShowStamp(false),1800); }
     trackRecs(enriched);
   };
 
-  const search=async()=>{
-    setError("");setResults(null);setLoading(true);setShownTitles(new Set());lastSearch.current=null;setShowStamp(false);
-    try{
-      const params=buildParams();
-      if(!params){setError(mode==="similar"?"Select a title from the suggestions.":mode==="tropes"?"Select at least one trope.":"Describe what you're looking for.");setLoading(false);return;}
-      lastSearch.current=params;
-      await runSearch(params,new Set());
-      trackSearch(mode,mode==="tropes"?[...selTropes]:[]);
-    }catch{setError("Case stalled — please try again.");}
+  const search = async() => {
+    setError(""); setResults(null); setLoading(true); setShownTitles(new Set()); lastSearch.current=null; setShowStamp(false);
+    try {
+      const params = buildParams();
+      if(!params){ setError(mode==="similar"?"Select a title from the suggestions.":mode==="tropes"?"Select at least one trope.":"Describe what you're looking for."); setLoading(false); return; }
+      lastSearch.current = params;
+      await runSearch(params, new Set());
+      trackSearch(mode, mode==="tropes"?[...selTropes]:[]);
+    } catch { setError("Case stalled — please try again."); }
     setLoading(false);
   };
 
-  const searchMore=async()=>{
+  const searchMore = async() => {
     if(!lastSearch.current) return;
     setLoadingMore(true);
-    try{await runSearch(lastSearch.current,shownTitles,true,true);}
-    catch{setError("Case stalled — please try again.");}
+    try { await runSearch(lastSearch.current, shownTitles, true); }
+    catch { setError("Case stalled — please try again."); }
     setLoadingMore(false);
   };
 
-  const saveProfile=p=>{
-    const updated=profiles.find(x=>x.id===p.id)?profiles.map(x=>x.id===p.id?p:x):[...profiles,p];
-    saveProfiles(updated);setActiveProfileId(p.id);setAlreadyRead(new Set(p.alreadyRead||[]));setEditing(null);
+  const saveProfile = p => {
+    const updated = profiles.find(x=>x.id===p.id) ? profiles.map(x=>x.id===p.id?p:x) : [...profiles,p];
+    saveProfiles(updated); setActiveProfileId(p.id); setAlreadyRead(new Set(p.alreadyRead||[])); setEditing(null);
   };
 
-  const deleteProfile=id=>{
+  const deleteProfile = id => {
     saveProfiles(profiles.filter(p=>p.id!==id));
-    if(activeProfileId===id){setActiveProfileId(null);setAlreadyRead(new Set());}
+    if(activeProfileId===id){ setActiveProfileId(null); setAlreadyRead(new Set()); }
     setEditing(null);
   };
 
-  const loaded=bookCount>0;
-  const modes=[{id:"similar",label:"Find Similar"},{id:"tropes",label:"By Trope"},{id:"freetext",label:"Describe It"}];
+  const loaded = bookCount > 0;
+  const modes  = [{id:"similar",label:"Find Similar"},{id:"tropes",label:"By Trope"},{id:"freetext",label:"Describe It"}];
 
   return <div>
     <div className="header">
@@ -887,7 +863,7 @@ function buildQueryText(mode, query, refBook, selTropes) {
 
     {!loaded&&!loadError&&<p style={{color:"var(--text3)",fontStyle:"italic",fontSize:14,marginTop:"3rem",textAlign:"center",fontFamily:"'Crimson Text',serif"}}>Pulling the archive…</p>}
     {loadError&&<div style={{background:"#1a0a0a",border:"1px solid #8b404044",padding:"1rem",color:"#e07070",fontSize:14,marginTop:"2rem"}}>
-      <strong>Could not load books_fiction.csv.</strong> Make sure the file is in your GitHub repo.
+      <strong>Could not load {CSV_FILE}.</strong> Make sure the file is in your GitHub repo.
     </div>}
 
     {loaded&&<>
@@ -967,7 +943,6 @@ function buildQueryText(mode, query, refBook, selTropes) {
         {error&&<p className="error-msg">{error}</p>}
         {loading&&<TypewriterLoading text="Rounding up the list of suspects…"/>}
         {loadingMore&&<TypewriterLoading text="Pulling more files…"/>}
-
         {!loading&&<button className="ask-btn" onClick={search} disabled={loadingMore}>Find Suspects</button>}
 
         {results&&results.length>0&&!loading&&<div>
@@ -987,7 +962,7 @@ function buildQueryText(mode, query, refBook, selTropes) {
   </div>;
 }
 
-const rootEl=document.getElementById("root");
+const rootEl = document.getElementById("root");
 if(ReactDOM.createRoot){ ReactDOM.createRoot(rootEl).render(<App/>); }
 else{ ReactDOM.render(<App/>, rootEl); }
 </script>

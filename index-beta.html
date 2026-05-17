@@ -1254,9 +1254,7 @@ function App(){
         <div className="inp-sec"><div className="sec-label">What didn't the student enjoy? <span style={{color:"var(--text3)",fontWeight:400,textTransform:"none",letterSpacing:0,fontSize:12}}>(optional)</span></div><input className="main-input" value={didntLike} onChange={e=>setDidntLike(e.target.value)} placeholder='e.g. "too slow, too much romance"'/></div>
 
         {error&&<div className="error-msg"><span>⚠</span>{error}</div>}
-        {loading&&<LoadingView stageMsg={stageMsg}/>}
-        {loadingMore&&<LoadingView stageMsg={stageMsg}/>}
-        {!loading&&<button className="search-btn" onClick={search} disabled={loadingMore}>Find Books</button>}
+        <button className="search-btn" onClick={search} disabled={loading||loadingMore}>Find Books</button>
 
         {structuredRequest&&!loading&&<ConstraintPanel structured={structuredRequest}/>}
 

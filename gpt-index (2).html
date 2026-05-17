@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fletcher ReaderMatch | Fletcher Library</title>
+  <link rel="icon" href="logo.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --page:     #F0F4F8;
+      --surface:  #FFFFFF;
+      --surface2: #F8FAFC;
+      --surface3: #EDF2F7;
+      --navy:     #1D4ED8;
+      --navy-dk:  #1E40AF;
+      --navy-lt:  #DBEAFE;
+      --navy-txt: #1E3A8A;
+      --teal:     #0D9488;
+      --teal-dk:  #0F766E;
+      --teal-lt:  #F0FDFA;
+      --teal-bd:  #99F6E4;
+      --text:     #111827;
+      --text2:    #4B5563;
+      --text3:    #9CA3AF;
+      --border:   #E5E7EB;
+      --border2:  #D1D5DB;
+      --green:    #059669;
+      --red:      #DC2626;
+      --red-lt:   #FEF2F2;
+      --amber:    #D97706;
+      --amber-lt: #FFFBEB;
+      --r:        10px;
+      --sh-sm:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+      --sh:       0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+      --sh-lg:    0 10px 28px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.05);
+    }
+
+    body { font-family:'Inter',sans-serif; background:var(--page); color:var(--text); min-height:100vh; font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+
+    #root { max-width:800px; margin:0 auto; padding:0 1.5rem 6rem; }
+
+    /* ── TIGER ── */
+    .tiger { position:fixed; bottom:24px; right:24px; z-index:10; pointer-events:none; width:100px; transition:opacity .4s; filter:drop-shadow(0 4px 12px rgba(0,0,0,.2)); }
+    .tiger.hide { opacity:0; }
+    .tiger.show { opacity:1; }
+
+    /* ── TOASTS ── */
+    .toasts { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+    .toast { font-size:13px; font-weight:500; padding:10px 20px; border-radius:100px; box-shadow:var(--sh-lg); animation:tIn .2s ease both; white-space:nowrap; }
+    .toast.success { background:var(--green); color:#fff; }
+    .toast.error   { background:var(--red);   color:#fff; }
+    .toast.info    { background:var(--text);   color:#fff; }
+    @keyframes tIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── HEADER ── */
+    .hdr { background:var(--surface); border-bottom:1px solid var(--border); margin-bottom:0; padding:0; position:sticky; top:0; z-index:100; box-shadow:var(--sh-sm); }
+    .hdr-inner { max-width:800px; margin:0 auto; padding:0 1.5rem; display:flex; align-items:center; gap:14px; height:64px; }
+    .hdr-logo { width:36px; height:36px; border-radius:8px; object-fit:contain; padding:4px; background:var(--navy-lt); flex-shrink:0; border:1px solid #BFDBFE; }
+    .hdr-brand { flex:1; }
+    .hdr-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--text); line-height:1.2; }
+    .hdr-sub { font-size:11px; color:var(--text3); font-weight:400; }
+    .hdr-actions { display:flex; gap:6px; align-items:center; }
+    .hdr-btn { padding:6px 14px; font-size:12px; font-weight:500; border:1px solid var(--border); background:transparent; color:var(--text2); border-radius:8px; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .hdr-btn:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .hdr-btn.on { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+
+    /* ── PAGE BODY ── */
+    .page-body { padding-top:24px; }
+
+    /* ── STATUS BAR ── */
+    .status-bar { display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:10px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); margin-bottom:20px; box-shadow:var(--sh-sm); }
+    .status-item { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:500; color:var(--text2); }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--text3); flex-shrink:0; }
+    .dot.ready { background:var(--green); box-shadow:0 0 6px rgba(5,150,105,.4); }
+    .dot.spin { background:var(--amber); animation:pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── CARD ── */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:20px; margin-bottom:16px; box-shadow:var(--sh-sm); }
+    .card-title { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--navy-txt); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+    .card-title::before { content:''; display:block; width:3px; height:14px; background:var(--navy); border-radius:2px; }
+
+    /* ── ABOUT ── */
+    .about-card p { font-family:'Crimson Text',serif; font-size:15px; color:var(--text2); line-height:1.75; margin-bottom:10px; }
+    .about-card p:last-of-type { margin-bottom:12px; }
+    .about-card strong { font-family:'Inter',sans-serif; font-size:13px; font-weight:600; color:var(--text); }
+    .feature-tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .ftag { padding:4px 12px; background:var(--navy-lt); border:1px solid #BFDBFE; border-radius:100px; font-size:11px; font-weight:500; color:var(--navy-txt); }
+
+    /* ── ANALYTICS ── */
+    .stats-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .stat-box { flex:1; min-width:80px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:14px 12px; text-align:center; }
+    .stat-n { font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:var(--navy); line-height:1; }
+    .stat-l { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text3); margin-top:4px; }
+    .stat-cols { display:flex; gap:20px; flex-wrap:wrap; }
+    .stat-col { flex:1; min-width:150px; }
+    .stat-col-h { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    .stat-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:5px 0; border-bottom:1px solid var(--border); color:var(--text2); }
+    .stat-row:last-child { border-bottom:none; }
+    .stat-row span:last-child { font-weight:600; color:var(--navy); }
+    .stat-empty { font-family:'Crimson Text',serif; font-size:14px; color:var(--text3); font-style:italic; }
+
+    /* ── PROFILE SECTION ── */
+    .section { margin-bottom:20px; }
+    .sec-label { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:8px; }
+    .pills { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .pill { padding:6px 16px; font-size:13px; font-weight:500; border:1px solid var(--border); background:transparent; color:var(--text2); cursor:pointer; transition:all .15s; border-radius:100px; }
+    .pill:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .pill.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+    .pill.on-l { border-radius:100px 0 0 100px; background:var(--navy); border-color:var(--navy); color:#fff; border-right:none; }
+    .pill-edit { padding:6px 10px; border-radius:0 100px 100px 0; background:var(--surface); border:1px solid var(--navy); border-left:none; color:var(--navy); cursor:pointer; font-size:13px; transition:all .15s; }
+    .pill-edit:hover { background:var(--navy-lt); }
+    .pill-add { padding:6px 16px; font-size:13px; font-weight:500; border:1.5px dashed var(--border2); background:transparent; color:var(--text3); cursor:pointer; border-radius:100px; transition:all .15s; }
+    .pill-add:hover { border-color:var(--navy); color:var(--navy); }
+    .profile-meta { margin-top:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .profile-note { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); font-style:italic; }
+    .profile-btn { font-size:12px; font-weight:500; padding:4px 12px; border:1px solid var(--border); background:transparent; color:var(--text2); border-radius:6px; cursor:pointer; transition:all .15s; }
+    .profile-btn:hover { border-color:var(--navy); color:var(--navy); }
+    .reluctant-tag { font-size:11px; font-weight:600; color:var(--amber); background:var(--amber-lt); border:1px solid #FDE68A; border-radius:100px; padding:3px 10px; }
+
+    /* ── EDITOR ── */
+    .editor { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:20px; margin-bottom:16px; box-shadow:var(--sh-sm); }
+    .editor-title { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--navy-txt); margin-bottom:16px; display:flex; align-items:center; gap:6px; }
+    .editor-title::before { content:''; display:block; width:3px; height:14px; background:var(--navy); border-radius:2px; }
+    .ed-row { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+    .field { display:flex; flex-direction:column; gap:5px; }
+    .field label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); }
+    .finput { padding:9px 13px; font-size:14px; background:var(--surface2); border:1.5px solid var(--border); color:var(--text); border-radius:8px; outline:none; font-family:'Inter',sans-serif; transition:border-color .15s, box-shadow .15s; }
+    .finput:focus { border-color:var(--navy); box-shadow:0 0 0 3px var(--navy-lt); }
+    .finput::placeholder { color:var(--text3); }
+
+    .toggle { display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--surface2); border:1.5px solid var(--border); border-radius:9px; cursor:pointer; transition:all .15s; margin-bottom:12px; }
+    .toggle:hover, .toggle.on { border-color:var(--teal); background:var(--teal-lt); }
+    .toggle-sw { width:38px; height:22px; background:var(--border2); border-radius:11px; position:relative; transition:background .15s; flex-shrink:0; }
+    .toggle-sw.on { background:var(--teal); }
+    .toggle-knob { position:absolute; top:3px; left:3px; width:16px; height:16px; background:#fff; border-radius:50%; transition:left .15s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+    .toggle-sw.on .toggle-knob { left:19px; }
+    .toggle-info { flex:1; }
+    .toggle-lbl { font-size:13px; font-weight:500; color:var(--text); }
+    .toggle-sub { font-size:12px; color:var(--text3); }
+
+    /* ── SUMMARY ── */
+    .summary-hd { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); margin-bottom:6px; padding-bottom:5px; border-bottom:1px solid var(--border); }
+    .summary-sec { margin-bottom:12px; }
+    .summary-item { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); padding:2px 0; }
+
+    /* ── TABS ── */
+    .tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:20px; }
+    .tab { padding:10px 20px; font-size:13px; font-weight:500; background:transparent; border:none; border-bottom:2.5px solid transparent; cursor:pointer; color:var(--text3); transition:all .15s; margin-bottom:-2px; white-space:nowrap; }
+    .tab:hover { color:var(--text2); }
+    .tab.on { color:var(--navy); border-bottom-color:var(--navy); }
+
+    /* ── INPUTS ── */
+    .inp-sec { margin-bottom:16px; }
+    .main-input { width:100%; padding:11px 14px; font-size:15px; font-family:'Inter',sans-serif; background:var(--surface); border:1.5px solid var(--border); color:var(--text); border-radius:9px; outline:none; transition:border-color .15s, box-shadow .15s; box-shadow:var(--sh-sm); }
+    .main-input:focus { border-color:var(--navy); box-shadow:0 0 0 3px var(--navy-lt); }
+    .main-input::placeholder { color:var(--text3); }
+    .main-textarea { width:100%; padding:11px 14px; font-size:15px; font-family:'Crimson Text',serif; background:var(--surface); border:1.5px solid var(--border); color:var(--text); border-radius:9px; outline:none; resize:vertical; line-height:1.7; transition:border-color .15s, box-shadow .15s; box-shadow:var(--sh-sm); }
+    .main-textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px var(--navy-lt); }
+    .main-textarea::placeholder { color:var(--text3); }
+    .inp-hint { font-size:12px; color:var(--text3); margin-top:5px; }
+
+    /* ── DROPDOWN ── */
+    .dd-wrap { position:relative; }
+    .dd { position:absolute; top:calc(100% + 5px); left:0; right:0; z-index:50; background:var(--surface); border:1.5px solid var(--border); border-radius:10px; box-shadow:var(--sh-lg); overflow:hidden; }
+    .dd-item { padding:11px 14px; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; gap:8px; border-bottom:1px solid var(--border); transition:background .1s; }
+    .dd-item:last-child { border-bottom:none; }
+    .dd-item:hover, .dd-item.hi { background:var(--surface2); }
+    .dd-title { color:var(--text); font-weight:500; font-family:'Inter',sans-serif; }
+    .dd-author { color:var(--text3); font-size:12px; flex-shrink:0; font-style:italic; font-family:'Crimson Text',serif; }
+
+    /* ── TROPES ── */
+    .trope-sec { margin-bottom:14px; }
+    .trope-cat { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); margin-bottom:8px; }
+    .trope-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .tchip { padding:5px 14px; font-size:12px; font-weight:500; cursor:pointer; border:1.5px solid var(--border); background:var(--surface); color:var(--text2); transition:all .15s; border-radius:100px; box-shadow:var(--sh-sm); }
+    .tchip:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .tchip.sel { background:var(--navy-lt); border-color:var(--navy); color:var(--navy-txt); font-weight:600; }
+    .tchip.prio { background:var(--teal); border-color:var(--teal-dk); color:#fff; font-weight:600; }
+    .trope-hint { font-family:'Crimson Text',serif; font-size:14px; color:var(--text3); font-style:italic; margin-bottom:14px; }
+
+    /* ── CHIPS ── */
+    .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .chip { display:flex; align-items:center; gap:5px; padding:4px 12px; background:var(--surface2); border:1px solid var(--border); font-size:13px; color:var(--text2); border-radius:100px; font-family:'Crimson Text',serif; }
+    .chip.gold { border-color:#FDE68A; color:var(--amber); background:var(--amber-lt); }
+    .chip-x { background:none; border:none; cursor:pointer; color:var(--text3); padding:0; font-size:16px; line-height:1; transition:color .1s; }
+    .chip-x:hover { color:var(--red); }
+
+    /* ── LIKED BANNER ── */
+    .liked-banner { display:flex; align-items:flex-start; gap:10px; padding:12px 16px; background:var(--amber-lt); border:1.5px solid #FDE68A; border-radius:9px; margin-bottom:16px; }
+    .liked-icon { font-size:16px; flex-shrink:0; margin-top:2px; }
+    .liked-body { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.5; }
+    .liked-body strong { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--amber); display:block; margin-bottom:2px; }
+
+    /* ── HISTORY ── */
+    .history { margin-bottom:16px; }
+    .history-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .hchip { display:flex; align-items:center; gap:7px; padding:5px 13px; background:var(--surface); border:1px solid var(--border); border-radius:100px; font-size:12px; color:var(--text2); cursor:pointer; transition:all .15s; box-shadow:var(--sh-sm); }
+    .hchip:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .hmode { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); }
+
+    /* ── SEARCH BUTTON ── */
+    .search-btn { width:100%; padding:14px; font-size:15px; font-weight:600; letter-spacing:.02em; background:var(--navy); color:#fff; border:none; border-radius:10px; cursor:pointer; transition:all .2s; margin-bottom:24px; box-shadow:0 4px 14px rgba(29,78,216,.3); }
+    .search-btn:hover { background:var(--navy-dk); box-shadow:0 6px 20px rgba(29,78,216,.4); transform:translateY(-1px); }
+    .search-btn:active { transform:translateY(0); box-shadow:0 2px 8px rgba(29,78,216,.3); }
+    .search-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    /* ── RESULTS ── */
+    .results-hdr { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+    .results-title { font-family:'Playfair Display',serif; font-size:21px; font-weight:700; color:var(--text); }
+    .results-line { flex:1; height:1px; background:linear-gradient(to right,var(--border),transparent); }
+    .results-count { font-size:12px; font-weight:500; color:var(--text3); white-space:nowrap; }
+
+    .rcard { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:18px; margin-bottom:12px; border-left:4px solid var(--teal); animation:fadeUp .35s ease both; box-shadow:var(--sh-sm); transition:box-shadow .2s, transform .2s; }
+    .rcard:hover { box-shadow:var(--sh); transform:translateY(-1px); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .rnum { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:6px; background:var(--teal-lt); border:1px solid var(--teal-bd); font-size:11px; font-weight:700; color:var(--teal-dk); margin-bottom:10px; }
+    .rinner { display:flex; gap:14px; }
+    .cover { width:62px; height:90px; flex-shrink:0; background:var(--surface2); border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:22px; object-fit:cover; transition:transform .2s; }
+    .cover:hover { transform:scale(1.04); }
+    .rbody { flex:1; min-width:0; }
+    .rtitle-row { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:3px; }
+    .rtitle { font-family:'Playfair Display',serif; font-weight:700; font-size:17px; color:var(--text); line-height:1.2; }
+    .heart-btn { background:none; border:none; cursor:pointer; font-size:20px; padding:0; flex-shrink:0; line-height:1; transition:transform .15s; }
+    .heart-btn:hover { transform:scale(1.2); }
+    .rmeta { font-size:12px; font-weight:500; color:var(--text3); margin-bottom:9px; }
+    .rseries { color:var(--teal); margin-left:6px; }
+    .rreason { font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.65; padding-left:10px; border-left:2px solid var(--teal-bd); }
+    .cursor { display:inline-block; width:2px; height:13px; background:var(--teal); margin-left:2px; animation:blink .7s step-end infinite; vertical-align:middle; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .expand-btn { background:none; border:none; cursor:pointer; font-size:12px; font-weight:500; color:var(--text3); padding:0; margin-top:8px; display:flex; align-items:center; gap:4px; transition:color .15s; }
+    .expand-btn:hover { color:var(--teal); }
+    .earrow { display:inline-block; transition:transform .2s; font-size:9px; }
+    .earrow.open { transform:rotate(90deg); }
+    .summary-box { margin-top:10px; padding:12px 14px; background:var(--surface2); border-radius:8px; font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.7; font-style:italic; border-left:3px solid var(--teal-bd); animation:fadeUp .2s ease; }
+    .note-field { width:100%; margin-top:12px; padding:9px 13px; font-size:13px; background:var(--surface2); border:1.5px dashed var(--border2); color:var(--text); resize:none; font-family:'Inter',sans-serif; outline:none; line-height:1.6; border-radius:8px; transition:border-color .15s, box-shadow .15s; }
+    .note-field:focus { border-color:var(--navy); border-style:solid; box-shadow:0 0 0 3px var(--navy-lt); }
+    .note-field::placeholder { color:var(--text3); }
+
+    /* ── RESULTS ACTIONS ── */
+    .ractions { display:flex; gap:8px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
+    .act-btn { padding:9px 20px; font-size:13px; font-weight:500; background:var(--surface); border:1.5px solid var(--border); color:var(--text2); border-radius:9px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:6px; box-shadow:var(--sh-sm); }
+    .act-btn:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+    .act-btn.primary { border-color:var(--teal); color:var(--teal); }
+    .act-btn.primary:hover { background:var(--teal-lt); }
+
+    /* ── LOADING ── */
+    .loading-wrap { text-align:center; padding:2.5rem 0 2rem; }
+    .loading-video { width:190px; max-width:100%; border-radius:12px; box-shadow:var(--sh-lg); display:block; margin:0 auto 20px; border:1px solid var(--border); }
+    .loading-card { display:inline-block; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 28px; max-width:360px; width:100%; box-shadow:var(--sh); }
+    .lbars { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+    .lbar { height:3px; background:var(--border); border-radius:2px; overflow:hidden; position:relative; }
+    .lbar::after { content:''; position:absolute; top:0; left:-100%; height:100%; background:linear-gradient(90deg,var(--navy),var(--teal)); border-radius:2px; animation:lslide 1.8s ease-in-out infinite; }
+    .lbar:nth-child(1)::after { width:80%; }
+    .lbar:nth-child(2)::after { width:95%; animation-delay:.15s; }
+    .lbar:nth-child(3)::after { width:70%; animation-delay:.3s; }
+    .lbar:nth-child(4)::after { width:88%; animation-delay:.45s; }
+    @keyframes lslide { 0%{left:-100%} 100%{left:110%} }
+    .ltext { font-size:12px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; border-top:1px solid var(--border); padding-top:12px; animation:tfade 1.5s ease-in-out infinite; }
+    @keyframes tfade { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+    /* ── EMPTY STATE ── */
+    .empty { text-align:center; padding:3rem 0; }
+    .empty-title { font-family:'Playfair Display',serif; font-size:18px; font-style:italic; color:var(--text2); margin-bottom:6px; }
+    .empty-sub { font-size:13px; color:var(--text3); margin-bottom:20px; }
+    .empty-actions { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+    .echip { padding:8px 18px; font-size:13px; font-weight:500; background:var(--surface); border:1.5px solid var(--border); border-radius:100px; cursor:pointer; color:var(--text2); transition:all .15s; box-shadow:var(--sh-sm); }
+    .echip:hover { border-color:var(--navy); color:var(--navy); background:var(--navy-lt); }
+
+    /* ── ERROR ── */
+    .error-msg { font-size:13px; font-weight:500; color:var(--red); margin-bottom:14px; display:flex; align-items:center; gap:8px; padding:11px 14px; background:var(--red-lt); border:1px solid #FECACA; border-radius:9px; }
+
+    /* ── BUTTONS ── */
+    .btn-row { display:flex; gap:8px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .btn { padding:9px 18px; font-size:13px; font-weight:500; border-radius:8px; cursor:pointer; transition:all .15s; font-family:'Inter',sans-serif; }
+    .btn-primary { background:var(--navy); color:#fff; border:none; box-shadow:0 2px 8px rgba(29,78,216,.25); }
+    .btn-primary:hover { background:var(--navy-dk); }
+    .btn-secondary { background:transparent; color:var(--text2); border:1.5px solid var(--border); }
+    .btn-secondary:hover { border-color:var(--border2); background:var(--surface2); }
+    .btn-danger { background:transparent; color:var(--red); border:1.5px solid #FECACA; }
+    .btn-danger:hover { background:var(--red-lt); }
+
+    @media print {
+      .hdr, .tiger, .toasts, .search-btn, .ractions, .tabs, .history, .status-bar, .hdr-actions { display:none !important; }
+      body { background:#fff; }
+      .rcard { border:1px solid #ccc; box-shadow:none; page-break-inside:avoid; }
+      #root { max-width:100%; padding:1rem; }
+    }
+
+    @media(max-width:580px) {
+      .hdr-inner { gap:10px; }
+      .hdr-title { font-size:15px; }
+      .hdr-sub { display:none; }
+      .tabs { overflow-x:auto; }
+      .tab { padding:8px 14px; font-size:12px; }
+      .stat-row-wrap { flex-direction:column; }
+      .rcard { padding:14px; }
+      .rtitle { font-size:15px; }
+      .ed-row { flex-direction:column; }
+      .stat-cols { flex-direction:column; }
+      .ractions { flex-direction:column; align-items:stretch; }
+      .act-btn { justify-content:center; }
+      .stats-row { flex-wrap:wrap; }
+      .stat-box { min-width:calc(50% - 5px); }
+    }
+
+
+    /* ─────────────────────────────────────────────────────────────
+       FLETCHER READERMATCH PROFESSIONAL THEME
+       Keeps the original recommendation engine, replaces the look.
+       ───────────────────────────────────────────────────────────── */
+    :root {
+      --page: #f4f1e8;
+      --surface: #ffffff;
+      --surface2: #faf7ef;
+      --surface3: #f0e6cf;
+      --navy: #111111;
+      --navy-dk: #000000;
+      --navy-lt: #fff3c4;
+      --navy-txt: #151515;
+      --teal: #d6a900;
+      --teal-dk: #a37b00;
+      --teal-lt: #fff8db;
+      --teal-bd: #efd67a;
+      --text: #151515;
+      --text2: #4c4638;
+      --text3: #887d68;
+      --border: #e4dccb;
+      --border2: #cdbc96;
+      --green: #0f7a4f;
+      --red: #b42318;
+      --red-lt: #fff0ed;
+      --amber: #b98700;
+      --amber-lt: #fff8df;
+      --r: 18px;
+      --sh-sm: 0 1px 2px rgba(10,10,10,.05), 0 1px 8px rgba(10,10,10,.04);
+      --sh: 0 12px 32px rgba(17,17,17,.08);
+      --sh-lg: 0 20px 55px rgba(17,17,17,.14);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(214,169,0,.18), transparent 34rem),
+        linear-gradient(180deg, #fbf8ef 0%, var(--page) 42%, #efe6d5 100%);
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    #root { max-width: 1180px; padding: 0 1.25rem 7rem; }
+
+    .hdr {
+      background: linear-gradient(135deg, #090909 0%, #151515 62%, #2a2107 100%);
+      border-bottom: 4px solid var(--teal);
+      box-shadow: 0 14px 36px rgba(0,0,0,.18);
+    }
+    .hdr-inner { max-width:1180px; height:92px; gap:18px; }
+    .hdr-logo-wrap {
+      width:68px; height:68px; border-radius:20px; background:#fff;
+      display:flex; align-items:center; justify-content:center;
+      border:2px solid var(--teal); box-shadow:0 12px 30px rgba(0,0,0,.25);
+      flex-shrink:0; overflow:hidden;
+    }
+    .hdr-logo { width:62px; height:62px; border:0; background:transparent; border-radius:16px; padding:4px; }
+    .hdr-kicker { font-size:11px; text-transform:uppercase; letter-spacing:.18em; color:var(--teal); font-weight:800; line-height:1; margin-bottom:5px; }
+    .hdr-title { font-family:'Inter',sans-serif; color:#fff; font-size:28px; font-weight:900; letter-spacing:-.04em; line-height:1; }
+    .hdr-sub { color:#d7ceb9; font-size:12px; font-weight:600; margin-top:6px; }
+    .hdr-actions { gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .hdr-btn {
+      border:1px solid rgba(214,169,0,.35); color:#f5e7b2; background:rgba(255,255,255,.05);
+      border-radius:999px; padding:8px 14px; font-weight:800; font-size:12px;
+    }
+    .hdr-btn:hover, .hdr-btn.on { background:var(--teal); border-color:var(--teal); color:#111; }
+
+    .page-body { padding-top:26px; }
+    .status-bar {
+      background:rgba(255,255,255,.82); backdrop-filter:blur(10px);
+      border:1px solid rgba(205,188,150,.7); border-radius:999px;
+      box-shadow:var(--sh-sm); padding:10px 18px;
+    }
+    .dot.ready { background:var(--teal); box-shadow:0 0 0 5px rgba(214,169,0,.12); }
+
+    .card, .editor, .rcard { border-radius:24px; border:1px solid rgba(205,188,150,.75); box-shadow:var(--sh-sm); }
+    .card-title, .editor-title, .sec-label, .summary-hd, .stat-col-h, .trope-cat {
+      color:#111; letter-spacing:.12em; font-weight:900;
+    }
+    .card-title::before, .editor-title::before { background:var(--teal); height:18px; width:4px; }
+
+    .fletcher-hero {
+      position:relative; overflow:hidden; border-radius:30px; padding:28px; margin-bottom:18px;
+      color:#fff; background:
+        linear-gradient(135deg, rgba(8,8,8,.96), rgba(20,20,20,.94) 58%, rgba(65,50,8,.94)),
+        radial-gradient(circle at top right, rgba(214,169,0,.45), transparent 18rem);
+      border:1px solid rgba(214,169,0,.4); box-shadow:var(--sh-lg);
+    }
+    .fletcher-hero::after {
+      content:''; position:absolute; right:-80px; top:-110px; width:260px; height:260px;
+      background:radial-gradient(circle, rgba(214,169,0,.38), transparent 68%); pointer-events:none;
+    }
+    .hero-grid { display:grid; grid-template-columns:1.5fr .9fr; gap:22px; align-items:stretch; position:relative; z-index:1; }
+    .hero-logo-card {
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); border-radius:26px;
+      padding:20px; display:flex; gap:16px; align-items:center;
+    }
+    .hero-logo-card img { width:86px; height:86px; object-fit:contain; border-radius:22px; background:#fff; border:2px solid var(--teal); padding:6px; }
+    .hero-eyebrow { text-transform:uppercase; letter-spacing:.18em; font-size:11px; color:var(--teal); font-weight:900; margin-bottom:8px; }
+    .hero-title { font-size:34px; line-height:1.05; font-weight:950; letter-spacing:-.05em; margin-bottom:10px; }
+    .hero-copy { color:#e6ddc6; max-width:710px; line-height:1.7; font-size:14px; }
+    .hero-panel { background:#fff; color:#111; border-radius:24px; padding:18px; box-shadow:0 18px 40px rgba(0,0,0,.2); }
+    .hero-panel-row { display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid #eee5cf; font-size:13px; }
+    .hero-panel-row:last-child { border-bottom:0; }
+    .hero-panel-row span:first-child { color:var(--text3); font-weight:800; }
+    .hero-panel-row span:last-child { color:#111; font-weight:900; }
+
+    .workspace-grid { display:grid; grid-template-columns: 320px 1fr; gap:18px; align-items:start; }
+    .pro-sidebar-card { position:sticky; top:118px; }
+    .pro-sidebar-card .card-title { margin-bottom:10px; }
+    .workflow-btn {
+      width:100%; display:flex; align-items:flex-start; gap:12px; text-align:left; padding:13px; margin-bottom:9px;
+      border:1px solid var(--border); border-radius:18px; background:#fff; color:#111; cursor:pointer; transition:all .16s;
+    }
+    .workflow-btn:hover { transform:translateY(-1px); border-color:var(--teal); box-shadow:var(--sh-sm); }
+    .workflow-btn.on { background:#111; border-color:#111; color:#fff; }
+    .workflow-icon { width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:var(--amber-lt); color:#111; font-weight:900; flex-shrink:0; }
+    .workflow-btn.on .workflow-icon { background:var(--teal); }
+    .workflow-title { font-weight:900; font-size:13px; }
+    .workflow-sub { font-size:12px; color:var(--text3); line-height:1.4; margin-top:2px; }
+    .workflow-btn.on .workflow-sub { color:#d8d0bc; }
+
+    .tabs { display:none; }
+    .main-input, .main-textarea, .finput, .note-field { border-radius:18px; border-color:#d9c89f; background:#fffdf8; }
+    .main-input:focus, .main-textarea:focus, .finput:focus, .note-field:focus { border-color:var(--teal); box-shadow:0 0 0 4px rgba(214,169,0,.18); }
+    .main-textarea { font-family:'Inter',sans-serif; }
+    .pill, .pill-add, .profile-btn, .act-btn, .echip { border-radius:999px; font-weight:800; }
+    .pill:hover, .pill-add:hover, .profile-btn:hover, .act-btn:hover, .echip:hover { border-color:var(--teal); color:#111; background:var(--amber-lt); }
+    .pill.on, .pill.on-l { background:#111; border-color:#111; color:#fff; }
+    .pill-edit { border-color:#111; color:#111; border-radius:0 999px 999px 0; }
+    .toggle:hover, .toggle.on { border-color:var(--teal); background:var(--amber-lt); }
+    .toggle-sw.on { background:var(--teal); }
+
+    .search-btn { background:#111; color:#fff; border-radius:20px; box-shadow:0 10px 24px rgba(0,0,0,.16); font-weight:900; padding:16px; }
+    .search-btn:hover { background:#000; box-shadow:0 12px 28px rgba(0,0,0,.22); }
+    .search-btn::before { content:'★ '; color:var(--teal); }
+
+    .tchip { border-radius:999px; background:#fff; font-weight:800; }
+    .tchip:hover, .tchip.sel { border-color:#111; background:#111; color:#fff; }
+    .tchip.prio { background:var(--teal); border-color:var(--teal-dk); color:#111; }
+
+    .rcard { border-left:0; padding:0; overflow:hidden; background:#fff; }
+    .rinner { gap:0; }
+    .cover { width:86px; height:126px; border-radius:16px; margin:18px; background:#f7edcf; }
+    .rbody { padding:18px 18px 18px 0; }
+    .rnum { margin:18px 0 0 18px; background:#111; color:var(--teal); border:0; border-radius:12px; }
+    .rtitle { font-family:'Inter',sans-serif; font-size:20px; letter-spacing:-.03em; font-weight:950; }
+    .rmeta { color:#6f654f; font-weight:800; }
+    .rseries { color:var(--teal-dk); }
+    .rreason { display:block; border-left:4px solid var(--teal); padding:10px 0 10px 14px; font-family:'Inter',sans-serif; color:#2b271f; font-size:14px; line-height:1.65; background:linear-gradient(90deg, rgba(214,169,0,.08), transparent); }
+    .result-section-label { margin-top:12px; margin-bottom:6px; font-size:10px; text-transform:uppercase; letter-spacing:.12em; font-weight:950; color:#81745b; }
+    .appeal-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .appeal-tag { border:1px solid #ecd47a; background:#fff7d6; color:#111; border-radius:999px; padding:4px 10px; font-size:11px; font-weight:900; }
+    .expand-btn { font-weight:900; color:#111; }
+    .summary-box { border-left-color:var(--teal); background:#fffaf0; border-radius:16px; font-family:'Inter',sans-serif; font-style:normal; }
+    .note-field { margin:0 18px 18px; width:calc(100% - 36px); background:#fffaf0; }
+    .heart-btn { color:#b48b00 !important; }
+
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); }
+    .stat-box { border-radius:20px; background:#fffdf8; }
+    .stat-n { font-family:'Inter',sans-serif; color:#111; font-weight:950; letter-spacing:-.04em; }
+
+    .feature-tags .ftag, .chip.gold { background:#fff7d6; border-color:#ecd47a; color:#111; font-weight:800; }
+    .liked-banner { background:#fff7d6; border-color:#ecd47a; border-radius:20px; }
+    .error-msg { border-radius:18px; }
+    .loading-video { display:none; }
+    .loading-card { border-radius:24px; box-shadow:var(--sh); }
+    .lbar::after { background:linear-gradient(90deg,#111,var(--teal)); }
+    .tiger { display:none; }
+
+    .saved-list-row {
+      display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; border-bottom:1px solid var(--border);
+    }
+    .saved-list-row:last-child { border-bottom:0; }
+    .saved-list-title { font-weight:900; color:#111; }
+    .saved-list-meta { font-size:12px; color:var(--text3); margin-top:2px; }
+
+
+
+    /* ── COWORKER-READY PROFESSIONAL FEATURES ── */
+    .trust-panel {
+      display:flex; gap:12px; align-items:flex-start; margin-bottom:16px;
+      background:#111; color:#fff; border:1px solid rgba(214,169,0,.45);
+      border-radius:24px; padding:16px 18px; box-shadow:var(--sh-sm);
+    }
+    .trust-icon { width:34px; height:34px; flex-shrink:0; border-radius:12px; display:flex; align-items:center; justify-content:center; background:var(--teal); color:#111; font-weight:950; }
+    .trust-title { font-weight:950; letter-spacing:-.02em; margin-bottom:3px; }
+    .trust-copy { color:#e5ddc9; font-size:13px; line-height:1.55; }
+
+    .interpret-card {
+      margin-bottom:16px; border-radius:24px; border:1px solid #ecd47a;
+      background:linear-gradient(180deg,#fffdf6,#fff8df); padding:18px; box-shadow:var(--sh-sm);
+    }
+    .interpret-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+    .interpret-col { background:#fff; border:1px solid #f0df9e; border-radius:18px; padding:13px; }
+    .interpret-h { font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:#81745b; font-weight:950; margin-bottom:8px; }
+    .mini-list { display:flex; flex-wrap:wrap; gap:6px; }
+    .mini-tag { background:#111; color:#fff7d6; border-radius:999px; padding:4px 9px; font-size:11px; font-weight:800; }
+    .mini-tag.soft { background:#fff7d6; color:#111; border:1px solid #ecd47a; }
+    .mini-tag.avoid { background:#fff0f0; color:#8f1d1d; border:1px solid #ffd0d0; }
+
+    .librarian-check {
+      margin-top:12px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
+    }
+    .check-pill { border:1px solid #efe3bd; background:#fffdf8; border-radius:14px; padding:9px; }
+    .check-k { display:block; font-size:9px; text-transform:uppercase; letter-spacing:.12em; color:#86785d; font-weight:950; margin-bottom:2px; }
+    .check-v { display:block; font-size:12px; color:#111; font-weight:900; }
+    .data-badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .data-badge { border:1px solid #ddd; background:#fafafa; color:#333; border-radius:999px; padding:4px 9px; font-size:10px; font-weight:900; }
+    .data-badge.ok { border-color:#ecd47a; background:#fff7d6; }
+
+    .feedback-row { display:flex; flex-wrap:wrap; gap:7px; margin:12px 18px 18px; }
+    .feedback-btn { border:1px solid #d8c88c; background:#fff; color:#111; border-radius:999px; padding:7px 11px; font-size:11px; font-weight:900; cursor:pointer; transition:all .15s; }
+    .feedback-btn:hover { background:#111; color:#fff7d6; border-color:#111; transform:translateY(-1px); }
+
+    .tools-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+    .tool-card { border:1px solid #e8dba8; background:#fffdf8; border-radius:22px; padding:16px; }
+    .tool-title { font-weight:950; color:#111; margin-bottom:5px; }
+    .tool-copy { font-size:13px; color:#5f5542; line-height:1.55; margin-bottom:12px; }
+    .setting-row { display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid #efe3bd; font-size:13px; }
+    .setting-row:last-child { border-bottom:0; }
+    .setting-row span:first-child { color:#685d49; font-weight:800; }
+    .setting-row span:last-child { color:#111; font-weight:950; }
+
+    @media(max-width:760px){
+      .interpret-grid, .librarian-check, .tools-grid { grid-template-columns:1fr; }
+    }
+
+    @media(max-width:900px){
+      .hdr-inner { height:auto; min-height:86px; padding-top:12px; padding-bottom:12px; align-items:flex-start; }
+      .hdr-logo-wrap { width:56px; height:56px; border-radius:16px; }
+      .hdr-logo { width:50px; height:50px; }
+      .hdr-title { font-size:23px; }
+      .hdr-actions { width:100%; justify-content:flex-start; margin-left:74px; }
+      .hero-grid, .workspace-grid { grid-template-columns:1fr; }
+      .pro-sidebar-card { position:static; }
+      .stats-row { grid-template-columns:repeat(2,1fr); }
+    }
+    @media(max-width:580px){
+      #root { padding-left:1rem; padding-right:1rem; }
+      .hdr-inner { gap:12px; }
+      .hdr-actions { margin-left:0; }
+      .hdr-sub { display:block; }
+      .hero-title { font-size:28px; }
+      .hero-logo-card { flex-direction:column; align-items:flex-start; }
+      .status-bar { border-radius:22px; }
+      .rinner { flex-direction:column; }
+      .rbody { padding:0 18px 18px; }
+      .cover { margin:16px 18px 8px; }
+      .stats-row { grid-template-columns:1fr 1fr; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- FLETCHER LIBRARY PRODUCT HEADER -->
+<header class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-logo-wrap">
+      <img class="hdr-logo" src="logo.png" alt="Fletcher Library"/>
+    </div>
+    <div class="hdr-brand">
+      <div class="hdr-kicker">Fletcher Library</div>
+      <div class="hdr-title">ReaderMatch</div>
+      <div class="hdr-sub">AI-assisted readers’ advisory for our school catalog</div>
+    </div>
+    <div class="hdr-actions" id="hdr-btns"></div>
+  </div>
+</header>
+
+<div id="root"></div>
+<img id="corner-tiger" class="tiger show" src="images/detective_cat_coffee_loop_apng_slow.png" alt=""/>
+
+<script type="text/babel">
+// ── CONSTANTS ────────────────────────────────────────────────────────────
+const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
+const EMBED_URL  = `${WORKER_URL}/embed`;
+const CSV_FILE   = "books_fiction_enriched.csv";
+const ROMAN      = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+const STAGE_MSGS = ["Reviewing the Fletcher catalog…","Interpreting the reader request…","Checking profile context…","Ranking the strongest matches…","Preparing librarian notes…"];
+
+// ── DATA ─────────────────────────────────────────────────────────────────
+const TROPES = [
+  {id:"enemies_to_lovers",label:"Enemies to Lovers",cat:"Romance"},
+  {id:"slow_burn",label:"Slow Burn",cat:"Romance"},
+  {id:"love_triangle",label:"Love Triangle",cat:"Romance"},
+  {id:"forbidden_love",label:"Forbidden Love",cat:"Romance"},
+  {id:"fake_dating",label:"Fake Dating",cat:"Romance"},
+  {id:"second_chance_romance",label:"Second Chance Romance",cat:"Romance"},
+  {id:"fast_paced",label:"Fast-Paced",cat:"Plot"},
+  {id:"action_and_fighting",label:"Action & Fighting",cat:"Plot"},
+  {id:"murder_mystery",label:"Murder Mystery",cat:"Plot"},
+  {id:"heist",label:"Heist",cat:"Plot"},
+  {id:"survival",label:"Survival",cat:"Plot"},
+  {id:"revenge",label:"Revenge",cat:"Plot"},
+  {id:"road_trip",label:"Road Trip",cat:"Plot"},
+  {id:"found_family",label:"Found Family",cat:"Characters"},
+  {id:"searching_for_belonging",label:"Searching for Belonging",cat:"Characters"},
+  {id:"coming_of_age",label:"Coming of Age",cat:"Characters"},
+  {id:"identity_and_self_discovery",label:"Identity & Self-Discovery",cat:"Characters"},
+  {id:"overcoming_adversity",label:"Overcoming Adversity",cat:"Characters"},
+  {id:"characters_with_disabilities",label:"Characters with Disabilities",cat:"Characters"},
+  {id:"deep_topics",label:"Deep Topics",cat:"Themes"},
+  {id:"realistic_fiction",label:"Realistic Fiction",cat:"Themes"},
+  {id:"friendship",label:"Friendship",cat:"Themes"},
+  {id:"sports_story",label:"Sports Story",cat:"Themes"},
+  {id:"drug_use",label:"Drug Use",cat:"Themes"},
+  {id:"abuse",label:"Abuse",cat:"Themes"},
+  {id:"poverty",label:"Poverty",cat:"Themes"},
+  {id:"racism",label:"Racism",cat:"Themes"},
+  {id:"based_on_true_events",label:"Based on True Events",cat:"Themes"},
+  {id:"special_powers_or_abilities",label:"Special Powers / Abilities",cat:"Fantasy & Sci-fi"},
+  {id:"fantasy_mystery",label:"Fantasy Mystery",cat:"Fantasy & Sci-fi"},
+  {id:"magic_school",label:"Magic School",cat:"Fantasy & Sci-fi"},
+  {id:"dystopian",label:"Dystopian",cat:"Fantasy & Sci-fi"},
+  {id:"post_apocalyptic",label:"Post-Apocalyptic",cat:"Fantasy & Sci-fi"},
+  {id:"time_travel",label:"Time Travel",cat:"Fantasy & Sci-fi"},
+  {id:"portal_fantasy",label:"Portal Fantasy",cat:"Fantasy & Sci-fi"},
+  {id:"mythology_retelling",label:"Mythology Retelling",cat:"Fantasy & Sci-fi"},
+  {id:"chosen_one",label:"Chosen One",cat:"Fantasy & Sci-fi"},
+];
+const TROPE_KEYWORDS = {
+  enemies_to_lovers:["enemy","enemies","rival","rivals","hate","hatred","despise","antagonist"],
+  slow_burn:["tension","slowly","gradually","building","eventually"],
+  love_triangle:["triangle","torn","choosing","between"],
+  forbidden_love:["forbidden","secret","romeo","juliet"],
+  fake_dating:["fake","pretend","pretending","act"],
+  second_chance_romance:["second","chance","reunion","rekindled","reconnect"],
+  fast_paced:["fast","thrilling","gripping","action","rapid","pulse"],
+  action_and_fighting:["battle","fight","fighting","war","combat","sword","warrior","weapon"],
+  murder_mystery:["murder","mystery","detective","killer","crime","investigation","suspect","clue","victim"],
+  heist:["heist","steal","theft","con","scheme"],
+  survival:["survival","survive","stranded","wilderness","danger"],
+  revenge:["revenge","vengeance","payback","betray","betrayal"],
+  road_trip:["journey","road","trip","travel","adventure","quest"],
+  found_family:["family","bond","loyalty","found","together"],
+  searching_for_belonging:["belong","belonging","outcast","lonely","fit","place"],
+  coming_of_age:["grow","growing","mature","teen","teenager","adolescent"],
+  identity_and_self_discovery:["identity","discover","herself","himself","themselves","real"],
+  overcoming_adversity:["overcome","struggle","challenge","adversity","hardship"],
+  characters_with_disabilities:["disability","disabled","wheelchair","blind","deaf"],
+  deep_topics:["grief","loss","death","depression","trauma","difficult","profound"],
+  realistic_fiction:["realistic","contemporary","modern","ordinary","everyday"],
+  friendship:["friend","friends","friendship","best","companion"],
+  sports_story:["sport","sports","basketball","football","soccer","team","athlete","game"],
+  drug_use:["drug","drugs","addiction","substance","alcohol"],
+  abuse:["abuse","abusive","violence","domestic","assault","trauma"],
+  poverty:["poor","poverty","homeless","money","economic"],
+  racism:["race","racism","racist","discrimination","prejudice","segregation"],
+  based_on_true_events:["true","historical","real","actual","history"],
+  special_powers_or_abilities:["power","powers","ability","magic","gift","special","supernatural"],
+  fantasy_mystery:["mystery","magic","fantasy","investigate","clue","magical"],
+  magic_school:["school","academy","magic","wizard","witch","spell"],
+  dystopian:["dystopia","dystopian","government","control","rebellion","oppressive","regime"],
+  post_apocalyptic:["apocalypse","apocalyptic","destroyed","collapse","ruins"],
+  time_travel:["time","travel","past","future","century"],
+  portal_fantasy:["portal","another","world","realm","dimension"],
+  mythology_retelling:["myth","mythology","retelling","legend","god","goddess","greek","norse"],
+  chosen_one:["chosen","destined","destiny","prophecy","fate","hero"],
+};
+
+const CATS   = [...new Set(TROPES.map(t=>t.cat))];
+const STOP   = new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
+const GRADES = ["6th","7th","8th"];
+const DEFAULT_ANALYTICS = {totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
+
+// ── UTILITIES ────────────────────────────────────────────────────────────
+const uid      = () => Math.random().toString(36).slice(2,9);
+const tokenize = t => (t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
+const lsLoad   = (k,fb) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;} };
+const lsSave   = (k,v)  => { try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
+function cosine(a,b){ let d=0,na=0,nb=0; for(let i=0;i<a.length;i++){d+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return d/(Math.sqrt(na)*Math.sqrt(nb)||1); }
+function setTiger(v){ const el=document.getElementById('corner-tiger'); if(el) el.className='tiger '+(v?'show':'hide'); }
+
+// ── CANDIDATES ───────────────────────────────────────────────────────────
+async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null){
+  const pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
+  const authorLast=refAuthor?refAuthor.split(',')[0].trim().toLowerCase():null;
+  const sameAuthor=new Set(authorLast?pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title):[]);
+
+  if(bookEmbeddings&&Object.keys(bookEmbeddings).length>0){
+    try{
+      const res=await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
+      if(!res.ok) throw new Error(`embed ${res.status}`);
+      const{embedding:qEmb}=await res.json();
+      const lSet=new Set(likedKws);
+      const scored=pool.map(b=>{
+        const bEmb=bookEmbeddings[b.title];
+        const sim=bEmb?cosine(qEmb,bEmb):0;
+        const toks=tokenize(`${b.enriched_subjects||b.subjects||''} ${b.enriched_summary||b.summary||''}`);
+        const likedBoost=toks.filter(t=>lSet.has(t)).length*0.01;
+        const authorBoost=sameAuthor.has(b.title)?0.15:0;
+        return{...b,_s:sim+likedBoost+authorBoost};
+      }).sort((a,b)=>b._s-a._s);
+      return scored.slice(0,n);
+    }catch(err){console.warn('Embedding failed — keyword fallback:',err);}
+  }
+
+  const kws=tokenize(queryText),kSet=new Set(kws),lSet=new Set(likedKws);
+  let scored=pool.map(b=>{
+    const st=new Set(tokenize(b.enriched_subjects||b.subjects||''));
+    const sm=new Set(tokenize(b.enriched_summary||b.summary||''));
+    const ti=new Set(tokenize(b.title||''));
+    const base=[...kSet].filter(k=>st.has(k)).length*3+[...kSet].filter(k=>sm.has(k)).length+[...kSet].filter(k=>ti.has(k)).length;
+    const liked=[...lSet].filter(k=>st.has(k)).length*4+[...lSet].filter(k=>sm.has(k)).length*2;
+    const authorBoost=sameAuthor.has(b.title)?10:0;
+    return{...b,_s:base+liked+authorBoost};
+  }).filter(b=>b._s>0);
+  if(!scored.length) scored=pool;
+  return scored.sort((a,b)=>b._s-a._s).slice(0,n);
+}
+
+// ── CLAUDE CALL ──────────────────────────────────────────────────────────
+async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote=""){
+  const exclNote=excluded.length?`\n\nDo NOT recommend: ${excluded.join(", ")}`:"";
+  const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.`:"";
+  const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
+  const list=candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.enriched_summary||b.summary||"").slice(0,200)}`).join("\n\n");
+  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
+      system:"You are an expert school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",
+      messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
+  const raw=await res.text();
+  if(!res.ok) throw new Error(`Worker ${res.status}`);
+  let data; try{data=JSON.parse(raw);}catch(e){console.error("Worker JSON error:",raw);throw e;}
+  const text=data.content?.[0]?.text||"[]";
+  const clean=text.replace(/```json|```/g,"").trim();
+  const jsonText=(clean.match(/\[[\s\S]*\]/)||[clean])[0];
+  return JSON.parse(jsonText);
+}
+
+// ── COMPONENTS ───────────────────────────────────────────────────────────
+function Toasts({toasts}){ return <div className="toasts">{toasts.map(t=><div key={t.id} className={`toast ${t.type}`}>{t.msg}</div>)}</div>; }
+
+function CoverImg({isbn}){
+  const[failed,setFailed]=React.useState(false);
+  if(!isbn||failed) return <div className="cover">📖</div>;
+  return <img className="cover" src={`https://covers.openlibrary.org/b/isbn/${isbn.replace(/[^0-9X]/g,"")}-M.jpg`} alt="" onError={()=>setFailed(true)}/>;
+}
+
+function TypewriterText({text}){
+  const[displayed,setDisplayed]=React.useState("");
+  const[done,setDone]=React.useState(false);
+  React.useEffect(()=>{
+    setDisplayed("");setDone(false);let i=0;
+    const iv=setInterval(()=>{if(i<text.length){setDisplayed(text.slice(0,i+1));i++;}else{setDone(true);clearInterval(iv);}},16);
+    return()=>clearInterval(iv);
+  },[text]);
+  return <span className="rreason">{displayed}{!done&&<span className="cursor"/>}</span>;
+}
+
+function NoteField({title,onSave}){
+  const key=`note:${title}`;
+  const[note,setNote]=React.useState(()=>localStorage.getItem(key)||"");
+  const onChange=v=>{setNote(v);localStorage.setItem(key,v);};
+  return <textarea className="note-field" value={note} onChange={e=>onChange(e.target.value)}
+    onBlur={()=>{if(note&&onSave)onSave();}} placeholder="Librarian notes…" rows={1} onFocus={e=>e.target.rows=3}/>;
+}
+
+function ResultCard({book,index,activeProfile,onHeart,onNoteSave,onFeedback}){
+  const[expanded,setExpanded]=React.useState(false);
+  const isLiked=activeProfile?.likedBooks?.includes(book.title);
+  const summary=book.enriched_summary||book.summary;
+  const subjects=book.enriched_subjects||book.subjects||'';
+  const appealText=`${subjects} ${summary||''}`.toLowerCase();
+  const appealTags=TROPES.filter(t=>{
+    const words=TROPE_KEYWORDS[t.id]||[];
+    return words.some(w=>appealText.includes(w));
+  }).slice(0,5);
+  const difficulty=(summary||'').length>650?'Review length/complexity':'Likely accessible';
+  const tone=appealTags.find(t=>/mystery|fantasy|dystopian|sports|friendship/i.test(t.label))?.label || 'Review tone';
+  return <div className="rcard" style={{animationDelay:`${index*0.07}s`}}>
+    <div className="rnum">{index+1}</div>
+    <div className="rinner">
+      <CoverImg isbn={book.isbn}/>
+      <div className="rbody">
+        <div className="rtitle-row">
+          <span className="rtitle">{book.title}</span>
+          {activeProfile&&<button className="heart-btn" title="Add to liked books" onClick={()=>onHeart(book.title)}>
+            {isLiked?"♥":"♡"}
+          </button>}
+        </div>
+        <div className="rmeta">{book.author}{book.series&&<span className="rseries">· {book.series}</span>}</div>
+        <div className="result-section-label">Why this fits</div>
+        <TypewriterText text={book.reason||""}/>
+        {appealTags.length>0&&<div className="appeal-tags">
+          {appealTags.map(t=><span key={t.id} className="appeal-tag">{t.label}</span>)}
+        </div>}
+        <div className="result-section-label">Librarian check</div>
+        <div className="librarian-check">
+          <div className="check-pill"><span className="check-k">Difficulty</span><span className="check-v">{difficulty}</span></div>
+          <div className="check-pill"><span className="check-k">Tone / appeal</span><span className="check-v">{tone}</span></div>
+          <div className="check-pill"><span className="check-k">Content</span><span className="check-v">Review summary</span></div>
+        </div>
+        <div className="data-badges">
+          <span className={`data-badge ${summary?'ok':''}`}>{summary?'✓ Summary':'~ No summary'}</span>
+          <span className={`data-badge ${subjects?'ok':''}`}>{subjects?'✓ Subjects':'~ No subjects'}</span>
+          <span className="data-badge ok">✓ Fletcher catalog</span>
+          <span className="data-badge">Availability not live</span>
+        </div>
+        {summary&&<>
+          <button className="expand-btn" onClick={()=>setExpanded(p=>!p)}>
+            <span className={`earrow${expanded?" open":""}`}>▶</span>
+            {expanded?"Hide catalog summary":"View catalog summary"}
+          </button>
+          {expanded&&<div className="summary-box">{summary}</div>}
+        </>}
+      </div>
+    </div>
+    <div className="feedback-row">
+      {["Good Match","Not a Fit","Already Read","Too Hard","Too Mature"].map(label=><button key={label} className="feedback-btn" onClick={()=>onFeedback&&onFeedback(book,label)}>{label}</button>)}
+    </div>
+    <NoteField title={book.title} onSave={onNoteSave}/>
+  </div>;
+}
+
+function BookSearch({books,exclude,onSelect,placeholder}){
+  const[inp,setInp]=React.useState("");const[sugg,setSugg]=React.useState([]);const[hi,setHi]=React.useState(-1);
+  const onChange=v=>{setInp(v);setHi(-1);if(v.length>1)setSugg(books.filter(b=>(b.title||"").toLowerCase().includes(v.toLowerCase())&&!exclude.has(b.title)).slice(0,6));else setSugg([]);};
+  const pick=b=>{onSelect(b);setInp("");setSugg([]);setHi(-1);};
+  const onKD=e=>{if(!sugg.length)return;if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,sugg.length-1));}else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}else if(e.key==="Enter"&&hi>=0){e.preventDefault();pick(sugg[hi]);}else if(e.key==="Escape"){setSugg([]);setHi(-1);}};
+  return <div className="dd-wrap">
+    <input className="finput" style={{width:"100%"}} value={inp} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder={placeholder||"Type a title…"}/>
+    {sugg.length>0&&<div className="dd">{sugg.map((b,i)=><div key={i} className={`dd-item${hi===i?" hi":""}`} onClick={()=>pick(b)}><span className="dd-title">{b.title}</span><span className="dd-author">{b.author}</span></div>)}</div>}
+  </div>;
+}
+
+function MainInput({value,onChange,onEnter,suggestions,onSelect,clearSugg}){
+  const[hi,setHi]=React.useState(-1);
+  const onKD=e=>{
+    if(suggestions.length){
+      if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,suggestions.length-1));}
+      else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}
+      else if(e.key==="Enter"&&hi>=0){e.preventDefault();onSelect(suggestions[hi]);setHi(-1);}
+      else if(e.key==="Enter"){e.preventDefault();clearSugg();onEnter();}
+      else if(e.key==="Escape"){clearSugg();setHi(-1);}
+    }else if(e.key==="Enter"){e.preventDefault();onEnter();}
+  };
+  return <div className="dd-wrap">
+    <input className="main-input" value={value} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder="Start typing a title…"/>
+    {suggestions.length>0&&<div className="dd">{suggestions.map((b,i)=><div key={i} className={`dd-item${hi===i?" hi":""}`} onClick={()=>{onSelect(b);setHi(-1);}}><span className="dd-title">{b.title}</span><span className="dd-author">{b.author}</span></div>)}</div>}
+  </div>;
+}
+
+function ChipList({items,onRemove,gold}){
+  if(!items.length) return null;
+  return <div className="chips">{items.map((t,i)=><div key={i} className={`chip${gold?" gold":""}`}><span>{t}</span><button className="chip-x" onClick={()=>onRemove(t)}>×</button></div>)}</div>;
+}
+
+function ProfileSummary({profile,onClose}){
+  return <div className="card" style={{marginBottom:16}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+      <div className="card-title" style={{marginBottom:0}}>Profile — {profile.initials} · {profile.grade}</div>
+      <button className="profile-btn" onClick={onClose}>Close</button>
+    </div>
+    {profile.notes&&<div className="summary-sec"><div className="summary-hd">Reading preferences</div><div className="summary-item" style={{fontStyle:"italic"}}>"{profile.notes}"</div></div>}
+    {profile.reluctant&&<div className="summary-sec"><div className="summary-hd">Reader type</div><div className="summary-item"><span className="reluctant-tag">⚡ Reluctant reader</span></div></div>}
+    <div className="summary-sec">
+      <div className="summary-hd">Liked books ({(profile.likedBooks||[]).length})</div>
+      {(profile.likedBooks||[]).length?profile.likedBooks.map((t,i)=><div key={i} className="summary-item">❤ {t}</div>):<div className="summary-item" style={{color:"var(--text3)"}}>None recorded</div>}
+    </div>
+    <div className="summary-sec">
+      <div className="summary-hd">Already read ({(profile.alreadyRead||[]).length})</div>
+      {(profile.alreadyRead||[]).length?profile.alreadyRead.map((t,i)=><div key={i} className="summary-item">✓ {t}</div>):<div className="summary-item" style={{color:"var(--text3)"}}>None recorded</div>}
+    </div>
+  </div>;
+}
+
+function ProfileEditor({profile,books,onSave,onDelete,onCancel}){
+  const isNew=!profile.id;
+  const[initials,setInitials]=React.useState(profile.initials||"");
+  const[grade,setGrade]=React.useState(profile.grade||"6th");
+  const[notes,setNotes]=React.useState(profile.notes||"");
+  const[reluctant,setReluctant]=React.useState(profile.reluctant||false);
+  const[liked,setLiked]=React.useState(profile.likedBooks||[]);
+  const[read,setRead]=React.useState(profile.alreadyRead||[]);
+  const save=()=>{if(!initials.trim()){alert("Please enter initials.");return;}onSave({...profile,id:profile.id||uid(),initials:initials.trim().toUpperCase(),grade,notes,reluctant,likedBooks:liked,alreadyRead:read});};
+  return <div className="editor">
+    <div className="editor-title">{isNew?"New Student Profile":"Edit Student Profile"}</div>
+    <div className="ed-row">
+      <div className="field" style={{flex:"0 0 82px"}}>
+        <label>Initials</label>
+        <input className="finput" value={initials} onChange={e=>setInitials(e.target.value)} maxLength={5} placeholder="A.R." style={{textAlign:"center",fontWeight:600}}/>
+      </div>
+      <div className="field" style={{flex:"0 0 92px"}}>
+        <label>Grade</label>
+        <select className="finput" value={grade} onChange={e=>setGrade(e.target.value)} style={{background:"var(--surface2)"}}>
+          {GRADES.map(g=><option key={g}>{g}</option>)}
+        </select>
+      </div>
+      <div className="field" style={{flex:1,minWidth:130}}>
+        <label>Reading preferences</label>
+        <input className="finput" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="e.g. loves fantasy, avoids romance…"/>
+      </div>
+    </div>
+    <div className={`toggle${reluctant?" on":""}`} onClick={()=>setReluctant(p=>!p)}>
+      <div className={`toggle-sw${reluctant?" on":""}`}><div className="toggle-knob"/></div>
+      <div className="toggle-info"><div className="toggle-lbl">⚡ Reluctant reader</div><div className="toggle-sub">Prioritize short, fast-paced books with high action</div></div>
+    </div>
+    <div style={{marginBottom:12}}>
+      <label className="field" style={{display:"block",marginBottom:6}}><span style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:".07em",color:"var(--text3)"}}>Liked books</span></label>
+      <BookSearch books={books} exclude={new Set(liked)} onSelect={b=>setLiked(prev=>[...prev,b.title])} placeholder="Add a book they enjoy…"/>
+      <ChipList items={liked} onRemove={t=>setLiked(prev=>prev.filter(x=>x!==t))} gold/>
+    </div>
+    <div style={{marginBottom:16}}>
+      <label className="field" style={{display:"block",marginBottom:6}}><span style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:".07em",color:"var(--text3)"}}>Already read</span></label>
+      <BookSearch books={books} exclude={new Set(read)} onSelect={b=>setRead(prev=>[...prev,b.title])} placeholder="Add a book they've finished…"/>
+      <ChipList items={read} onRemove={t=>setRead(prev=>prev.filter(x=>x!==t))}/>
+    </div>
+    <div className="btn-row">
+      <div style={{display:"flex",gap:8}}>
+        <button className="btn btn-primary" onClick={save}>{isNew?"Save Profile":"Update Profile"}</button>
+        <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
+      </div>
+      {!isNew&&<button className="btn btn-danger" onClick={()=>onDelete(profile.id)}>Delete Profile</button>}
+    </div>
+  </div>;
+}
+
+function AnalyticsPanel({analytics}){
+  const topTropes=Object.entries(analytics.tropeSearches||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topBooks=Object.entries(analytics.recommendedBooks||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const sm=analytics.searchModes||{};
+  return <div className="card" style={{marginBottom:16}}>
+    <div className="card-title">Usage Statistics</div>
+    <div className="stats-row">
+      {[["Total Searches",analytics.totalSearches||0],["Find Similar",sm.similar||0],["By Trope",sm.tropes||0],["Describe It",sm.freetext||0]].map(([l,v])=>(
+        <div key={l} className="stat-box"><div className="stat-n">{v}</div><div className="stat-l">{l}</div></div>
+      ))}
+    </div>
+    <div className="stat-cols">
+      <div className="stat-col">
+        <div className="stat-col-h">Top tropes searched</div>
+        {topTropes.length?topTropes.map(([id,n])=>{const label=TROPES.find(t=>t.id===id)?.label||id;return <div key={id} className="stat-row"><span>{label}</span><span>{n}</span></div>;}): <span className="stat-empty">No searches yet</span>}
+      </div>
+      <div className="stat-col">
+        <div className="stat-col-h">Most recommended</div>
+        {topBooks.length?topBooks.map(([title,n])=><div key={title} className="stat-row"><span style={{flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:8}}>{title}</span><span>{n}</span></div>):<span className="stat-empty">No recommendations yet</span>}
+      </div>
+    </div>
+  </div>;
+}
+
+function AboutPanel(){
+  return <div className="card about-card" style={{marginBottom:16}}>
+    <div className="card-title">About / How This Works</div>
+    <p><strong>Fletcher ReaderMatch</strong> is a Fletcher Library readers’ advisory tool built specifically for our school catalog. It uses the Fletcher fiction collection, enriched summaries/subjects, reader profiles, and Claude-assisted ranking to help librarians create stronger recommendation lists.</p>
+    <p><strong>How it works:</strong> 1) enter the student request, 2) ReaderMatch searches the catalog for possible matches, 3) Claude helps rank and explain the strongest options, and 4) the librarian reviews, saves, prints, or adjusts the list.</p>
+    <p><strong>Professional note:</strong> this is a librarian-mediated advisory tool, not a student-facing replacement for professional judgment. Recommendations should be reviewed for fit, content, difficulty, and student context before being handed to a reader.</p>
+    <div className="feature-tags">
+      {["Fletcher Library Catalog","School-specific tool","Librarian review required","Claude-assisted ranking","Reader profiles","Saved lists","Book talk support","Print-ready lists"].map(t=><span key={t} className="ftag">{t}</span>)}
+    </div>
+  </div>;
+}
+
+function SavedListsPanel({savedLists}){
+  return <div className="card" style={{marginBottom:16}}>
+    <div className="card-title">Saved Recommendation Lists</div>
+    {savedLists.length===0?<div className="stat-empty">No saved lists yet. Generate recommendations, then choose Save list.</div>:
+      savedLists.slice(0,8).map(list=><div key={list.id} className="saved-list-row">
+        <div>
+          <div className="saved-list-title">{list.name}</div>
+          <div className="saved-list-meta">{list.books?.length||0} titles · {new Date(list.createdAt).toLocaleDateString()} · {list.profile||'No profile'}</div>
+        </div>
+        <button className="act-btn" onClick={()=>{
+          const text=(list.books||[]).map((b,i)=>`${i+1}. ${b.title} by ${b.author}\n   ${b.reason||''}`).join('\n\n');
+          navigator.clipboard.writeText(`${list.name}\n\n${text}`);
+        }}>Copy</button>
+      </div>)
+    }
+  </div>;
+}
+
+
+function ProfessionalToolsPanel({settings,results,onCopyBookTalk,onCopyDisplay,onExportProfiles,onExportAnalytics,onClearDemoData}){
+  return <div className="card" style={{marginBottom:16}}>
+    <div className="card-title">Professional Demo Tools</div>
+    <div className="tools-grid">
+      <div className="tool-card">
+        <div className="tool-title">Book Talk Mode</div>
+        <div className="tool-copy">Creates short, librarian-friendly hooks from the current recommendation list for book talks or quick hand-selling.</div>
+        <button className="act-btn" onClick={onCopyBookTalk} disabled={!results?.length}>Copy book talk notes</button>
+      </div>
+      <div className="tool-card">
+        <div className="tool-title">Display Builder</div>
+        <div className="tool-copy">Turns the current recommendation set into a themed display or pull-list for the shelves.</div>
+        <button className="act-btn" onClick={onCopyDisplay} disabled={!results?.length}>Copy display list</button>
+      </div>
+      <div className="tool-card">
+        <div className="tool-title">Data Export</div>
+        <div className="tool-copy">Exports demo profiles and analytics from local storage so nothing is trapped in the browser.</div>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          <button className="act-btn" onClick={onExportProfiles}>Export profiles</button>
+          <button className="act-btn" onClick={onExportAnalytics}>Export analytics</button>
+        </div>
+      </div>
+      <div className="tool-card">
+        <div className="tool-title">Demo Settings</div>
+        <div className="setting-row"><span>Catalog source</span><span>{settings.catalogSource}</span></div>
+        <div className="setting-row"><span>Student data</span><span>{settings.studentData}</span></div>
+        <div className="setting-row"><span>Recommendation rule</span><span>{settings.rule}</span></div>
+        <div className="setting-row"><span>Review notice</span><span>On</span></div>
+        <button className="act-btn" style={{marginTop:12}} onClick={onClearDemoData}>Clear local demo data</button>
+      </div>
+    </div>
+  </div>;
+}
+
+function RequestSummaryPanel({mode,query,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike}){
+  const selected=[...selTropes].map(id=>TROPES.find(t=>t.id===id)?.label).filter(Boolean);
+  const priority=priorityTrope?TROPES.find(t=>t.id===priorityTrope)?.label:null;
+  const q=(query||'').toLowerCase();
+  const inferred=[];
+  if(mode==='similar'&&query) inferred.push(`similar appeal to ${query}`);
+  if(q.includes('fantasy')||selected.some(x=>/fantasy|magic|powers/i.test(x))) inferred.push('fantasy / magical elements');
+  if(q.includes('mystery')||selected.some(x=>/mystery/i.test(x))) inferred.push('mystery or investigation');
+  if(q.includes('girl')||q.includes('female')) inferred.push('girl / female lead');
+  if(q.includes('fast')||selected.some(x=>/fast/i.test(x))) inferred.push('fast pacing');
+  if(priority) inferred.unshift(`must-have: ${priority}`);
+  const preferred=[...selected.filter(x=>x!==priority).slice(0,5)];
+  if(activeProfile?.likedBooks?.length) preferred.push(`profile likes: ${activeProfile.likedBooks.slice(0,2).join(', ')}`);
+  if(activeProfile?.reluctant) preferred.push('accessible reluctant-reader fit');
+  const avoids=[...alreadyRead].slice(0,3);
+  if(didntLike) avoids.push(didntLike);
+  if(!inferred.length) inferred.push(mode==='freetext'?'plain-language reader request':'catalog-based match');
+  if(!preferred.length) preferred.push('strong appeal match', 'clear librarian explanation');
+  if(!avoids.length) avoids.push('already-read titles', 'poor fit after librarian review');
+  return <div className="interpret-card">
+    <div className="card-title" style={{marginBottom:6}}>Student Request Summary</div>
+    <div style={{fontSize:13,color:'var(--text2)',lineHeight:1.55}}>Before trusting the list, review how ReaderMatch is interpreting the request.</div>
+    <div className="interpret-grid">
+      <div className="interpret-col"><div className="interpret-h">Must / likely match</div><div className="mini-list">{inferred.slice(0,5).map(x=><span key={x} className="mini-tag">{x}</span>)}</div></div>
+      <div className="interpret-col"><div className="interpret-h">Preferred</div><div className="mini-list">{preferred.slice(0,5).map(x=><span key={x} className="mini-tag soft">{x}</span>)}</div></div>
+      <div className="interpret-col"><div className="interpret-h">Avoid / check</div><div className="mini-list">{avoids.slice(0,5).map(x=><span key={x} className="mini-tag avoid">{x}</span>)}</div></div>
+    </div>
+  </div>;
+}
+
+function downloadText(filename,text,mime='text/plain'){
+  const blob=new Blob([text],{type:mime});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url); a.remove();},0);
+}
+
+function DashboardPanel({bookCount,embedReady,analytics,savedLists,setMode}){
+  const sm=analytics.searchModes||{};
+  const total=analytics.totalSearches||0;
+  const topTrope=Object.entries(analytics.tropeSearches||{}).sort((a,b)=>b[1]-a[1])[0];
+  const topTropeLabel=topTrope?TROPES.find(t=>t.id===topTrope[0])?.label||topTrope[0]:'Not enough data yet';
+  return <div className="fletcher-hero">
+    <div className="hero-grid">
+      <div>
+        <div className="hero-logo-card">
+          <img src="logo.png" alt="Fletcher Library"/>
+          <div>
+            <div className="hero-eyebrow">Built for our school library</div>
+            <div className="hero-title">Fletcher ReaderMatch</div>
+            <p className="hero-copy">A polished readers’ advisory workspace for matching Fletcher students with books from the Fletcher Library collection — powered by the catalog, reader profiles, and librarian judgment.</p>
+          </div>
+        </div>
+      </div>
+      <div className="hero-panel">
+        <div className="card-title" style={{marginBottom:8}}>System Snapshot</div>
+        <div className="hero-panel-row"><span>Catalog</span><span>{bookCount?`${bookCount.toLocaleString()} titles`:"Loading"}</span></div>
+        <div className="hero-panel-row"><span>Semantic search</span><span>{embedReady===true?'Ready':embedReady===null?'Initializing':'Keyword fallback'}</span></div>
+        <div className="hero-panel-row"><span>Total searches</span><span>{total}</span></div>
+        <div className="hero-panel-row"><span>Top request</span><span>{topTropeLabel}</span></div>
+        <div className="hero-panel-row"><span>Saved lists</span><span>{savedLists.length}</span></div>
+      </div>
+    </div>
+  </div>;
+}
+
+function WorkflowSidebar({mode,switchMode,activeProfile,analytics,savedLists}){
+  const items=[
+    {id:'similar',icon:'★',title:'Find Similar',sub:'Start from a book the student already enjoyed.'},
+    {id:'freetext',icon:'✦',title:'Describe It',sub:'Use plain language for a real reader request.'},
+    {id:'tropes',icon:'◆',title:'By Trope',sub:'Browse appeal factors, story elements, and themes.'}
+  ];
+  return <div className="card pro-sidebar-card">
+    <div className="card-title">Recommendation Workspace</div>
+    {items.map(item=><button key={item.id} className={`workflow-btn${mode===item.id?' on':''}`} onClick={()=>switchMode(item.id)}>
+      <span className="workflow-icon">{item.icon}</span>
+      <span><span className="workflow-title">{item.title}</span><span className="workflow-sub">{item.sub}</span></span>
+    </button>)}
+    <div style={{height:1,background:'var(--border)',margin:'14px 0'}}/>
+    <div className="hero-panel-row"><span>Reader profile</span><span>{activeProfile?`${activeProfile.initials} · ${activeProfile.grade}`:'None'}</span></div>
+    <div className="hero-panel-row"><span>Saved lists</span><span>{savedLists.length}</span></div>
+    <div className="hero-panel-row"><span>Searches</span><span>{analytics.totalSearches||0}</span></div>
+  </div>;
+}
+
+function LoadingView({stageMsg}){
+  return <div className="loading-wrap">
+    <div className="loading-card">
+      <div className="card-title" style={{justifyContent:'center'}}>Fletcher ReaderMatch is working</div>
+      <div className="lbars"><div className="lbar"/><div className="lbar"/><div className="lbar"/><div className="lbar"/></div>
+      <div className="ltext">{stageMsg}</div>
+    </div>
+  </div>;
+}
+
+// ── APP// ── APP ──────────────────────────────────────────────────────────────────
+function App(){
+  const[books,setBooks]=React.useState([]);
+  const[bookCount,setBookCount]=React.useState(0);
+  const[bookEmbeddings,setBookEmbeddings]=React.useState(null);
+  const[embedReady,setEmbedReady]=React.useState(null);
+  const[loadError,setLoadError]=React.useState(false);
+  const[profiles,setProfiles]=React.useState(()=>lsLoad("profiles",[]));
+  const[savedLists,setSavedLists]=React.useState(()=>lsLoad("savedLists",[]));
+  const[activeProfileId,setActiveProfileId]=React.useState(null);
+  const[editing,setEditing]=React.useState(null);
+  const[showStats,setShowStats]=React.useState(false);
+  const[showAbout,setShowAbout]=React.useState(false);
+  const[showSummary,setShowSummary]=React.useState(false);
+  const[showLists,setShowLists]=React.useState(false);
+  const[showTools,setShowTools]=React.useState(false);
+  const[analytics,setAnalytics]=React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
+  const[mode,setMode]=React.useState("similar");
+  const[query,setQuery]=React.useState("");
+  const[selTropes,setSelTropes]=React.useState(new Set());
+  const[priorityTrope,setPriorityTrope]=React.useState(null);
+  const[alreadyRead,setAlreadyRead]=React.useState(new Set());
+  const[didntLike,setDidntLike]=React.useState("");
+  const[results,setResults]=React.useState(null);
+  const[loading,setLoading]=React.useState(false);
+  const[loadingMore,setLoadingMore]=React.useState(false);
+  const[stageMsg,setStageMsg]=React.useState(STAGE_MSGS[0]);
+  const[error,setError]=React.useState("");
+  const[suggestions,setSuggestions]=React.useState([]);
+  const[refBook,setRefBook]=React.useState(null);
+  const[shownTitles,setShownTitles]=React.useState(new Set());
+  const[toasts,setToasts]=React.useState([]);
+  const[searchHistory,setSearchHistory]=React.useState([]);
+  const lastSearch=React.useRef(null);
+  const stageRef=React.useRef(null);
+  const resultsRef=React.useRef(null);
+
+  React.useEffect(()=>{
+    fetch(CSV_FILE).then(r=>{if(!r.ok)throw new Error();return r.text();})
+      .then(t=>Papa.parse(t,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);}}))
+      .catch(()=>setLoadError(true));
+  },[]);
+
+  React.useEffect(()=>{
+    fetch('book_embeddings.json').then(r=>{if(!r.ok)throw new Error();return r.json();})
+      .then(d=>{setBookEmbeddings(d);setEmbedReady(true);console.log(`Embeddings: ${Object.keys(d).length} books`);})
+      .catch(()=>{setBookEmbeddings({});setEmbedReady(false);});
+  },[]);
+
+  React.useEffect(()=>{
+    setTiger(!(loading||loadingMore));
+    if(loading||loadingMore){let i=0;stageRef.current=setInterval(()=>{i=(i+1)%STAGE_MSGS.length;setStageMsg(STAGE_MSGS[i]);},2000);}
+    else{if(stageRef.current)clearInterval(stageRef.current);setStageMsg(STAGE_MSGS[0]);}
+    return()=>{if(stageRef.current)clearInterval(stageRef.current);};
+  },[loading,loadingMore]);
+
+  React.useEffect(()=>{
+    if(results?.length&&resultsRef.current) setTimeout(()=>resultsRef.current.scrollIntoView({behavior:'smooth',block:'start'}),150);
+  },[results]);
+
+  const addToast=(msg,type='success')=>{
+    const id=Date.now()+Math.random();
+    setToasts(p=>[...p,{id,msg,type}]);
+    setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),2800);
+  };
+
+  const saveProfiles=p=>{setProfiles(p);lsSave("profiles",p);};
+  const saveAnalytics=a=>{setAnalytics(a);lsSave("analytics",a);};
+  const saveSavedLists=l=>{setSavedLists(l);lsSave("savedLists",l);};
+  const activeProfile=profiles.find(p=>p.id===activeProfileId)||null;
+  const demoSettings={catalogSource:CSV_FILE,studentData:'Initials + local browser storage',rule:'Avoid already-read titles',review:'Librarian review required'};
+
+  const selectProfile=id=>{
+    setActiveProfileId(id);setEditing(null);setResults(null);
+    setShownTitles(new Set());lastSearch.current=null;setShowSummary(false);
+    setAlreadyRead(id?new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]):new Set());
+  };
+
+  const toggleHeart=title=>{
+    if(!activeProfile) return;
+    const liked=activeProfile.likedBooks||[];
+    const nowLiked=!liked.includes(title);
+    const updated=nowLiked?[...liked,title]:liked.filter(t=>t!==title);
+    saveProfiles(profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p));
+    addToast(nowLiked?'❤ Added to liked books':'Removed from liked books');
+  };
+
+  const trackSearch=(m,tropes=[])=>{
+    const a={...analytics,totalSearches:(analytics.totalSearches||0)+1,searchModes:{...analytics.searchModes,[m]:(analytics.searchModes[m]||0)+1},tropeSearches:{...analytics.tropeSearches}};
+    tropes.forEach(t=>{a.tropeSearches[t]=(a.tropeSearches[t]||0)+1;});
+    saveAnalytics(a);
+  };
+
+  const trackRecs=recs=>{
+    const a={...analytics,recommendedBooks:{...analytics.recommendedBooks}};
+    recs.forEach(b=>{a.recommendedBooks[b.title]=(a.recommendedBooks[b.title]||0)+1;});
+    saveAnalytics(a);
+  };
+
+  const addToHistory=(label,m)=>setSearchHistory(p=>[{label,mode:m,id:Date.now()},...p.filter(e=>e.label!==label)].slice(0,5));
+
+  const getLikedKws=()=>{
+    if(!activeProfile?.likedBooks?.length) return[];
+    const objs=books.filter(b=>activeProfile.likedBooks.includes(b.title));
+    const st=objs.map(b=>b.enriched_subjects||b.subjects||"").join(" ");
+    const sm=objs.map(b=>b.enriched_summary||b.summary||"").join(" ");
+    return[...tokenize(st),...tokenize(st),...tokenize(st),...tokenize(sm)];
+  };
+
+  const getLikedThemes=()=>{
+    if(!activeProfile?.likedBooks?.length) return"";
+    const objs=books.filter(b=>activeProfile.likedBooks.includes(b.title));
+    const all=objs.flatMap(b=>(b.enriched_subjects||b.subjects||"").split("|").map(s=>s.trim())).filter(Boolean);
+    const unique=[...new Set(all)].slice(0,12);
+    return unique.length?`\n\nThemes from books this student enjoyed: ${unique.join("; ")}. Prioritize books sharing these themes.`:"";
+  };
+
+  const onQueryChange=val=>{
+    setQuery(val);setRefBook(null);
+    if(mode==="similar"&&val.length>1) setSuggestions(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())).slice(0,6));
+    else setSuggestions([]);
+  };
+
+  const toggleTrope=id=>{
+    setSelTropes(prev=>{
+      const n=new Set(prev);
+      if(!n.has(id)){n.add(id);}
+      else if(priorityTrope!==id){setPriorityTrope(id);}
+      else{n.delete(id);setPriorityTrope(null);}
+      return n;
+    });
+  };
+
+  const switchMode=m=>{
+    setMode(m);setResults(null);setError("");setQuery("");setRefBook(null);
+    setSuggestions([]);setSelTropes(new Set());setPriorityTrope(null);
+    setShownTitles(new Set());lastSearch.current=null;
+  };
+
+  const buildParams=()=>{
+    let ctx="",excl=null,priorityLabel=null;
+    if(mode==="similar"){
+      const ref=refBook||books.find(b=>(b.title||"").toLowerCase()===query.toLowerCase());
+      if(!ref) return null;
+      excl=ref.title;
+      ctx=`A student loved "${ref.title}" by ${ref.author}.\n\nSummary: ${ref.enriched_summary||ref.summary||""}\n\nFind books with similar themes, characters, tone, and plot elements.`;
+    } else if(mode==="tropes"){
+      if(!selTropes.size) return null;
+      const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
+      if(priorityTrope) priorityLabel=TROPES.find(t=>t.id===priorityTrope)?.label;
+      ctx=`A student wants books with: ${labels.join(", ")}. Find the best matches.`;
+    } else {
+      if(!query.trim()) return null;
+      ctx=`A student wants: "${query}". Find the best matches.`;
+    }
+    return{ctx,excl,priorityLabel};
+  };
+
+  const buildQueryText=()=>{
+    if(mode==="similar"&&refBook)
+      return `${refBook.title} ${refBook.author} ${refBook.enriched_subjects||refBook.subjects||""} ${refBook.enriched_summary||refBook.summary||""}`;
+    if(mode==="tropes"){
+      const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
+      return[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])]}))].join(' ');
+    }
+    return query;
+  };
+
+  const runSearch=async(params,shown,isMore=false)=>{
+    const{ctx,excl,priorityLabel}=params;
+    const queryText=buildQueryText();
+    const refAuthor=(mode==='similar'&&refBook)?refBook.author:null;
+    const cands=await getCandidates(books,queryText,bookEmbeddings,getLikedKws(),70,excl,alreadyRead,shown,refAuthor);
+    const prefNote=activeProfile?.notes?`\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.`:"";
+    const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — ONLY recommend fast-paced books with short chapters and high action.`:"";
+    const didntLikeNote=didntLike.trim()?`\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.`:"";
+    const recs=await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote);
+    const enriched=recs.map(r=>({...(books.find(b=>b.title===r.title&&b.author===r.author)||books.find(b=>b.title===r.title)||r),...r}));
+    setShownTitles(new Set([...shown,...enriched.map(b=>b.title)]));
+    if(isMore) setResults(p=>[...(p||[]),...enriched]);
+    else setResults(enriched);
+    trackRecs(enriched);
+  };
+
+  const search=async()=>{
+    setError("");setResults(null);setLoading(true);setShownTitles(new Set());lastSearch.current=null;
+    try{
+      const params=buildParams();
+      if(!params){setError(mode==="similar"?"Please select a title from the list.":mode==="tropes"?"Please select at least one trope.":"Please describe what the student is looking for.");setLoading(false);return;}
+      lastSearch.current=params;
+      const histLabel=mode==="similar"?query:mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(', '):query;
+      addToHistory(histLabel,mode);
+      await runSearch(params,new Set());
+      trackSearch(mode,mode==="tropes"?[...selTropes]:[]);
+    }catch(e){console.error(e);setError("Search failed. Please check your connection and try again.");}
+    setLoading(false);
+  };
+
+  const searchMore=async()=>{
+    if(!lastSearch.current) return;
+    setLoadingMore(true);
+    try{await runSearch(lastSearch.current,shownTitles,true);}
+    catch{setError("Search failed. Please try again.");}
+    setLoadingMore(false);
+  };
+
+  const copyResults=()=>{
+    if(!results?.length) return;
+    const text=results.map((b,i)=>`${ROMAN[i]||i+1}. ${b.title} by ${b.author}\n   ${b.reason||""}`).join('\n\n');
+    navigator.clipboard.writeText(text).then(()=>addToast('Recommendations copied')).catch(()=>addToast('Could not copy','error'));
+  };
+
+  const saveFeedback=(book,label)=>{
+    const entry={id:Date.now()+Math.random(),title:book.title,author:book.author,label,createdAt:new Date().toISOString(),profile:activeProfile?`${activeProfile.initials} · ${activeProfile.grade}`:'No profile'};
+    const current=lsLoad('feedbackLog',[]);
+    lsSave('feedbackLog',[entry,...current].slice(0,200));
+    addToast(`${label} saved for ${book.title}`,'info');
+  };
+
+  const copyBookTalk=()=>{
+    if(!results?.length){addToast('Generate recommendations first','error');return;}
+    const text=`Fletcher Library Book Talk Notes\n${new Date().toLocaleDateString()}\n\n`+results.map((b,i)=>`${i+1}. ${b.title} — ${b.author}\nHook: ${b.reason||'A strong match for this reader request.'}\nBest for: readers who may enjoy ${((b.enriched_subjects||b.subjects||'this genre').split(/[;,]/)[0]||'this genre').trim()}.`).join('\n\n');
+    navigator.clipboard.writeText(text);
+    addToast('Book talk notes copied');
+  };
+
+  const copyDisplayList=()=>{
+    if(!results?.length){addToast('Generate recommendations first','error');return;}
+    const label=query || (mode==='tropes'?[...selTropes].map(id=>TROPES.find(t=>t.id===id)?.label).filter(Boolean).join(', '):'ReaderMatch recommendations');
+    const text=`Fletcher Library Display / Pull List\nTheme: ${label}\nCreated: ${new Date().toLocaleDateString()}\n\n`+results.map((b,i)=>`${i+1}. ${b.title} — ${b.author}`).join('\n');
+    navigator.clipboard.writeText(text);
+    addToast('Display list copied');
+  };
+
+  const exportProfiles=()=>downloadText('fletcher-readermatch-profiles.json',JSON.stringify(profiles,null,2),'application/json');
+  const exportAnalytics=()=>downloadText('fletcher-readermatch-analytics.json',JSON.stringify(analytics,null,2),'application/json');
+  const clearDemoData=()=>{
+    if(!confirm('Clear local demo profiles, saved lists, analytics, notes, and feedback?')) return;
+    Object.keys(localStorage).filter(k=>k.startsWith('note:')||['profiles','savedLists','analytics','feedbackLog'].includes(k)).forEach(k=>localStorage.removeItem(k));
+    addToast('Local demo data cleared. Refresh to reset the app.','info');
+  };
+
+  const saveResults=()=>{
+    if(!results?.length) return;
+    const profileLabel=activeProfile?`${activeProfile.initials} ${activeProfile.grade}`:'No profile';
+    const label=mode==='similar'?`Similar to ${query}`:mode==='tropes'?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(', '):query.slice(0,60);
+    const item={id:uid(),name:label||'Recommendation list',profile:profileLabel,createdAt:new Date().toISOString(),books:results.map(b=>({title:b.title,author:b.author,reason:b.reason}))};
+    saveSavedLists([item,...savedLists].slice(0,25));
+    addToast('Recommendation list saved');
+  };
+
+  const saveProfile=p=>{
+    const updated=profiles.find(x=>x.id===p.id)?profiles.map(x=>x.id===p.id?p:x):[...profiles,p];
+    saveProfiles(updated);setActiveProfileId(p.id);setAlreadyRead(new Set(p.alreadyRead||[]));setEditing(null);
+    addToast('Student profile saved ✓');
+  };
+
+  const deleteProfile=id=>{
+    saveProfiles(profiles.filter(p=>p.id!==id));
+    if(activeProfileId===id){setActiveProfileId(null);setAlreadyRead(new Set());}
+    setEditing(null);addToast('Profile deleted');
+  };
+
+  const loaded=bookCount>0;
+  const modeLbls={similar:"Similar",tropes:"Trope",freetext:"Describe"};
+
+  // Wire header buttons to React state via portal
+  React.useEffect(()=>{
+    const el=document.getElementById('hdr-btns');
+    if(!el) return;
+    ReactDOM.render(<>
+      <button className={`hdr-btn${showAbout?" on":""}`} onClick={()=>{setShowAbout(p=>!p);setShowStats(false);setShowLists(false);setShowTools(false);}}>About</button>
+      <button className={`hdr-btn${showStats?" on":""}`} onClick={()=>{setShowStats(p=>!p);setShowAbout(false);setShowLists(false);setShowTools(false);}}>Insights</button>
+      <button className={`hdr-btn${showLists?" on":""}`} onClick={()=>{setShowLists(p=>!p);setShowAbout(false);setShowStats(false);setShowTools(false);}}>Saved Lists</button>
+      <button className={`hdr-btn${showTools?" on":""}`} onClick={()=>{setShowTools(p=>!p);setShowAbout(false);setShowStats(false);setShowLists(false);}}>Tools</button>
+    </>, el);
+  },[showAbout,showStats,showLists,showTools,savedLists.length,results?.length]);
+
+  return <div className="page-body">
+    <Toasts toasts={toasts}/>
+
+    {/* STATUS BAR */}
+    <div className="status-bar">
+      <div className="status-item"><div className={`dot${loaded?" ready":""}`}/><span>{loaded?`${bookCount.toLocaleString()} titles loaded`:"Loading catalog…"}</span></div>
+      <div className="status-item">
+        <div className={`dot${embedReady===true?" ready":embedReady===null?" spin":""}`}/>
+        <span>{embedReady===null?"Initializing semantic search…":embedReady?"Semantic search ready":"Keyword search active"}</span>
+      </div>
+    </div>
+
+    {showAbout&&<AboutPanel/>}
+    {showStats&&<AnalyticsPanel analytics={analytics}/>}
+    {showLists&&<SavedListsPanel savedLists={savedLists}/>}
+    {showTools&&<ProfessionalToolsPanel settings={demoSettings} results={results} onCopyBookTalk={copyBookTalk} onCopyDisplay={copyDisplayList} onExportProfiles={exportProfiles} onExportAnalytics={exportAnalytics} onClearDemoData={clearDemoData}/>}
+
+    {loadError&&<div className="error-msg">⚠ Could not load the book catalog. Make sure {CSV_FILE} is in your repository.</div>}
+
+
+    <div className="trust-panel">
+      <div className="trust-icon">✓</div>
+      <div>
+        <div className="trust-title">Librarian review required</div>
+        <div className="trust-copy">ReaderMatch supports professional judgment. Review each recommendation for content, tone, difficulty, availability, and student context before handing it to a reader.</div>
+      </div>
+    </div>
+
+    <DashboardPanel bookCount={bookCount} embedReady={embedReady} analytics={analytics} savedLists={savedLists} setMode={switchMode}/>
+
+    {loaded&&<>
+      <div className="workspace-grid">
+        <WorkflowSidebar mode={mode} switchMode={switchMode} activeProfile={activeProfile} analytics={analytics} savedLists={savedLists}/>
+        <div>
+      {/* STUDENT PROFILES */}
+      <div className="section">
+        <div className="sec-label">Student Profile</div>
+        <div className="pills">
+          <button className={`pill${!activeProfileId?" on":""}`} onClick={()=>selectProfile(null)}>No Profile</button>
+          {profiles.map(p=><div key={p.id} style={{display:"flex",alignItems:"center"}}>
+            <button className={`pill${activeProfileId===p.id?" on-l":""}`} onClick={()=>selectProfile(p.id)}>
+              {p.initials} <span style={{fontSize:11,opacity:.7,marginLeft:2}}>{p.grade}</span>
+            </button>
+            {activeProfileId===p.id&&<button className="pill-edit" onClick={()=>setEditing(editing?.id===p.id?null:p)}>✎</button>}
+          </div>)}
+          {profiles.length<10&&<button className="pill-add" onClick={()=>setEditing({initials:"",grade:"6th",notes:"",reluctant:false,likedBooks:[],alreadyRead:[]})}>+ New Profile</button>}
+        </div>
+        {activeProfile&&<div className="profile-meta">
+          {activeProfile.notes&&<span className="profile-note">"{activeProfile.notes}"</span>}
+          <button className="profile-btn" onClick={()=>setShowSummary(p=>!p)}>{showSummary?"Hide":"View profile"}</button>
+          {activeProfile.reluctant&&<span className="reluctant-tag">⚡ Reluctant reader</span>}
+        </div>}
+      </div>
+
+      {showSummary&&activeProfile&&<ProfileSummary profile={activeProfile} onClose={()=>setShowSummary(false)}/>}
+      {editing&&<ProfileEditor profile={editing} books={books} onSave={saveProfile} onDelete={deleteProfile} onCancel={()=>setEditing(null)}/>}
+
+      {!editing&&<>
+        {/* SEARCH HISTORY */}
+        {searchHistory.length>0&&<div className="history">
+          <div className="sec-label" style={{marginBottom:8}}>Recent searches</div>
+          <div className="history-chips">
+            {searchHistory.map(h=><div key={h.id} className="hchip" onClick={()=>{switchMode(h.mode);if(h.mode!=="tropes")setQuery(h.label);}}>
+              <span className="hmode">{modeLbls[h.mode]}</span>
+              <span>{h.label.length>42?h.label.slice(0,42)+'…':h.label}</span>
+            </div>)}
+          </div>
+        </div>}
+
+        {/* SEARCH MODES */}
+        <div className="tabs">
+          {[{id:"similar",label:"Find Similar"},{id:"tropes",label:"By Trope"},{id:"freetext",label:"Describe It"}].map(m=>(
+            <button key={m.id} className={`tab${mode===m.id?" on":""}`} onClick={()=>switchMode(m.id)}>{m.label}</button>
+          ))}
+        </div>
+
+        {mode==="similar"&&<div className="inp-sec">
+          <div className="sec-label">Book title</div>
+          <MainInput value={query} onChange={onQueryChange} onEnter={search} suggestions={suggestions}
+            onSelect={b=>{setRefBook(b);setQuery(b.title);setSuggestions([]);}} clearSugg={()=>setSuggestions([])}/>
+          <div className="inp-hint">Select a title from the suggestions, then click Find Books</div>
+        </div>}
+
+        {mode==="freetext"&&<div className="inp-sec">
+          <div className="sec-label">Describe what the student is looking for</div>
+          <textarea className="main-textarea" value={query} onChange={e=>setQuery(e.target.value)}
+            onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();search();}}}
+            rows={3} placeholder='e.g. "A fantasy with a strong female lead who discovers she has hidden powers"'/>
+          <div className="inp-hint">Press Enter to search · Shift+Enter for a new line</div>
+        </div>}
+
+        {mode==="tropes"&&<div className="inp-sec">
+          <p className="trope-hint">Select one or more tropes · Click again to mark as must-have (★)</p>
+          {CATS.map(cat=><div key={cat} className="trope-sec">
+            <div className="trope-cat">{cat}</div>
+            <div className="trope-chips">
+              {TROPES.filter(t=>t.cat===cat).map(t=>{
+                const on=selTropes.has(t.id),isPrio=priorityTrope===t.id;
+                return <button key={t.id} onClick={()=>toggleTrope(t.id)} className={`tchip${isPrio?" prio":on?" sel":""}`}>
+                  {isPrio?"★ ":""}{t.label}
+                </button>;
+              })}
+            </div>
+          </div>)}
+        </div>}
+
+        {/* ALREADY READ */}
+        <div className="inp-sec">
+          <div className="sec-label">Exclude books already read</div>
+          <BookSearch books={books} exclude={alreadyRead} onSelect={b=>setAlreadyRead(prev=>new Set([...prev,b.title]))} placeholder="Add a title to exclude…"/>
+          <ChipList items={[...alreadyRead]} onRemove={t=>setAlreadyRead(prev=>{const n=new Set(prev);n.delete(t);return n;})}/>
+        </div>
+
+        {/* LIKED BANNER */}
+        {activeProfile?.likedBooks?.length>0&&<div className="liked-banner">
+          <span className="liked-icon">❤</span>
+          <div className="liked-body">
+            <strong>Influencing recommendations</strong>
+            {activeProfile.likedBooks.join(", ")}
+          </div>
+        </div>}
+
+        {/* DIDNT LIKE */}
+        <div className="inp-sec">
+          <div className="sec-label">What didn't the student enjoy? <span style={{color:"var(--text3)",fontWeight:400,textTransform:"none",letterSpacing:0,fontSize:12}}>(optional)</span></div>
+          <input className="main-input" value={didntLike} onChange={e=>setDidntLike(e.target.value)} placeholder='e.g. "too slow, too much romance, confusing ending"'/>
+        </div>
+
+        {error&&<div className="error-msg"><span>⚠</span>{error}</div>}
+
+        {loading&&<LoadingView stageMsg={stageMsg}/>}
+        {loadingMore&&<LoadingView stageMsg={stageMsg}/>}
+
+        {!loading&&<button className="search-btn" onClick={search} disabled={loadingMore}>Find Books</button>}
+
+        {/* RESULTS */}
+        {results&&results.length>0&&!loading&&<div ref={resultsRef}>
+          <RequestSummaryPanel mode={mode} query={query} selTropes={selTropes} priorityTrope={priorityTrope} activeProfile={activeProfile} alreadyRead={alreadyRead} didntLike={didntLike}/>
+          <div className="results-hdr">
+            <span className="results-title">Recommendations</span>
+            <div className="results-line"/>
+            <span className="results-count">{results.length} titles</span>
+          </div>
+          {results.map((b,i)=><ResultCard key={`${b.title}-${i}`} book={b} index={i} activeProfile={activeProfile} onHeart={toggleHeart} onFeedback={saveFeedback} onNoteSave={()=>addToast('Note saved ✓')}/>)}
+          <div className="ractions">
+            <button className="act-btn" onClick={()=>window.print()}>Print</button>
+            <button className="act-btn" onClick={copyResults}>Copy list</button>
+            <button className="act-btn" onClick={saveResults}>Save list</button>
+            <button className="act-btn" onClick={copyBookTalk}>Book talk notes</button>
+            <button className="act-btn" onClick={copyDisplayList}>Display list</button>
+            {!loadingMore&&<button className="act-btn primary" onClick={searchMore}>Load more →</button>}
+          </div>
+        </div>}
+
+        {results&&results.length===0&&!loading&&<div className="empty">
+          <p className="empty-title">No matching titles found.</p>
+          <p className="empty-sub">Try broadening your search or using a different mode.</p>
+          <div className="empty-actions">
+            <div className="echip" onClick={()=>switchMode("freetext")}>Try describing it</div>
+            <div className="echip" onClick={()=>switchMode("tropes")}>Browse by trope</div>
+            <div className="echip" onClick={()=>setResults(null)}>Start over</div>
+          </div>
+        </div>}
+      </>}
+        </div>
+      </div>
+    </>}
+  </div>;
+}
+
+const rootEl=document.getElementById("root");
+if(ReactDOM.createRoot){ReactDOM.createRoot(rootEl).render(<App/>);}
+else{ReactDOM.render(<App/>,rootEl);}
+</script>
+</body>
+</html>

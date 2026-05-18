@@ -624,6 +624,66 @@
       .signal-row { flex-direction:column; }
       .cover { width:58px; height:84px; }
     }
+
+    .fletcher-table{position:relative;width:100%;height:300px;border-radius:12px;overflow:visible;}
+    .table-clip{position:absolute;inset:0;border-radius:12px;overflow:hidden;pointer-events:none;}
+    .table-svg{width:100%;height:100%;display:block;}
+    .table-vignette{position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 0 50px rgba(0,0,0,.45);}
+    .table-overlay{position:absolute;inset:0;border-radius:12px;background:rgba(10,8,4,0);transition:background .4s ease;pointer-events:none;}
+    .table-overlay.dim{background:rgba(10,8,4,.2);}
+    #deckArea{position:absolute;inset:0;}
+    .tbl-lbl{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:8px;z-index:15;pointer-events:none;}
+    .tbl-lbl.show{display:flex;}
+    .tbl-dots{display:flex;gap:6px;}
+    .tbl-dot{width:5px;height:5px;border-radius:50%;background:var(--gold-dk);animation:tblDot 1.4s ease-in-out infinite;}
+    .tbl-dot:nth-child(2){animation-delay:.22s}.tbl-dot:nth-child(3){animation-delay:.44s}
+    .tbl-ltxt{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dk);white-space:nowrap;animation:tfade 1.4s ease-in-out infinite;}
+    @keyframes tblDot{0%,100%{opacity:.25;transform:scale(.75)}50%{opacity:1;transform:scale(1.15)}}
+    .tbl-book{position:absolute;width:80px;height:116px;border-radius:5px;cursor:pointer;top:50%;left:50%;transition:transform .52s cubic-bezier(.22,1.1,.5,1),opacity .28s ease,box-shadow .18s ease;opacity:0;transform:translate(-50%,-50%) scale(.3);box-shadow:2px 3px 10px rgba(0,0,0,.55);}
+    .tbl-book.dealt{opacity:1;}
+    .tbl-book.exiting{transition:transform .25s ease,opacity .2s ease !important;opacity:0 !important;transform:translate(-50%,-50%) scale(.3) !important;}
+    .tbl-book.have-it{opacity:.32;cursor:default;}
+    .tbl-book:not(.have-it):not(.exiting):hover{box-shadow:0 10px 28px rgba(0,0,0,.65) !important;z-index:20 !important;}
+    .tbl-book.tbl-active:not(.exiting):not(.have-it){box-shadow:0 0 0 2.5px var(--gold),0 10px 28px rgba(0,0,0,.65) !important;z-index:20 !important;}
+    .tbl-book-cover{width:100%;height:100%;border-radius:5px;object-fit:cover;display:block;}
+    .tbl-book-fb{width:100%;height:100%;border-radius:5px;display:flex;flex-direction:column;justify-content:space-between;padding:8px 7px 7px 11px;position:relative;overflow:hidden;}
+    .tbl-book-spine{position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:5px 0 0 5px;}
+    .tbl-book-pat{position:absolute;inset:0;opacity:.11;}
+    .tbl-book-top{display:flex;justify-content:space-between;gap:3px;position:relative;z-index:1;}
+    .tbl-book-title{font-size:9.5px;font-weight:700;line-height:1.25;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.95);flex:1;}
+    .tbl-book-num{font-size:8px;font-weight:700;color:var(--gold);flex-shrink:0;}
+    .tbl-book-stamp{font-size:5.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:center;border:1px solid rgba(255,255,255,.18);padding:2px 3px;border-radius:2px;position:relative;z-index:1;align-self:center;}
+    .tbl-have-badge{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:5px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);z-index:10;}
+    .tbl-have-badge span{font-size:7px;font-weight:700;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;padding:3px 5px;border:1px solid rgba(232,184,75,.4);border-radius:3px;background:rgba(0,0,0,.6);}
+    .tbl-sh{position:absolute;top:50%;left:50%;width:76px;height:12px;border-radius:50%;background:rgba(0,0,0,.38);pointer-events:none;opacity:0;transition:opacity .4s ease;}
+    .tbl-sh.show{opacity:1;}
+    .tbl-stack{position:absolute;top:50%;left:50%;width:80px;height:116px;transform:translate(-50%,-50%);z-index:10;}
+    .tbl-stack-card{position:absolute;width:80px;height:116px;border-radius:5px;top:0;left:0;}
+    .tbl-info-area{margin-top:16px;border-top:1px solid var(--border);padding-top:16px;min-height:110px;transition:border-color .5s ease;}
+    .tbl-info-empty{font-size:13px;color:var(--text3);text-align:center;padding:14px 0;font-family:'Lora',serif;font-style:italic;}
+    .tbl-info-card{display:flex;gap:18px;align-items:flex-start;animation:fadeUp .25s cubic-bezier(.22,1,.36,1);}
+    .tbl-cover-big{flex-shrink:0;width:88px;height:130px;object-fit:cover;border-radius:4px 7px 7px 4px;display:block;border:1px solid var(--border);}
+    .tbl-cover-fb{flex-shrink:0;width:88px;height:130px;border-radius:4px 7px 7px 4px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--card2);border:1px solid var(--border);}
+    .tbl-info-right{flex:1;display:flex;flex-direction:column;gap:8px;}
+    .tbl-badges{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+    .fletcher-rec-badge{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);background:var(--card2);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;}
+    .rl-badge{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:20px;}
+    .rl-badge.quick{background:rgba(74,222,128,.08);color:var(--green);border:1px solid rgba(74,222,128,.22);}
+    .rl-badge.standard{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-bd);}
+    .rl-badge.long{background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.22);}
+    .tbl-info-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--cream);line-height:1.3;}
+    .tbl-info-author{font-size:12px;color:var(--text3);font-family:'Lora',serif;}
+    .tbl-info-divider{height:1px;background:var(--border);transition:background .5s ease;}
+    .tbl-info-reason{font-family:'Lora',serif;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;padding-left:10px;border-left:2px solid var(--gold-bd);transition:border-color .5s ease;}
+    .tbl-info-actions{display:flex;gap:8px;flex-wrap:wrap;}
+    .tbl-have-btn{padding:5px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid var(--border2);background:transparent;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;}
+    .tbl-have-btn:hover{border-color:var(--gold);color:var(--gold);}
+    .tbl-have-btn.on{background:var(--gold-dim);border-color:var(--gold-bd);color:var(--gold);}
+    .tbl-heart-sm{padding:4px 10px;font-size:15px;border-radius:6px;cursor:pointer;border:1px solid var(--border2);background:transparent;transition:all .15s;}
+    .tbl-heart-sm:hover{border-color:var(--red);}
+    .tbl-bottom{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;}
+    .tbl-batch{font-size:10px;color:var(--text3);background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;}
+    @keyframes dustFly{0%{opacity:.7;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
   </style>
 </head>
 <body>
@@ -734,6 +794,27 @@ function parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,acti
   return{mustHave:must.slice(0,6),softPreferences:prefer.slice(0,8),avoidSignals:avoid.slice(0,6),originalQuery:mode==="similar"?(refBook?.title||query):mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(", "):query};
 }
 
+
+// __ TABLE ANIMATION __
+const TBL_POS=[{fx:-185,fy:-72,rot:-4},{fx:0,fy:-75,rot:2},{fx:185,fy:-72,rot:-3},{fx:-185,fy:72,rot:3},{fx:0,fy:75,rot:-2},{fx:185,fy:72,rot:5}];
+const TBL_PAT=[c=>`<svg width="80" height="116" xmlns="http://www.w3.org/2000/svg">${[10,22,34,46,58,70,82,94,106].map(y=>`<line x1="0" y1="${y}" x2="80" y2="${y}" stroke="${c}" stroke-width="1"/>`).join('')}</svg>`,c=>`<svg width="80" height="116" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="80" y2="116" stroke="${c}" stroke-width="1"/><line x1="20" y1="0" x2="80" y2="88" stroke="${c}" stroke-width="1"/><line x1="40" y1="0" x2="80" y2="58" stroke="${c}" stroke-width="1"/></svg>`,c=>`<svg width="80" height="116" xmlns="http://www.w3.org/2000/svg">${[12,28,44,60,76,92,108].map(y=>[12,36,60].map(x=>`<circle cx="${x+(y%24===12?12:0)}" cy="${y}" r="3" fill="${c}"/>`).join('')).join('')}</svg>`];
+const TBL_CLR=['#1A3A5C','#5C1A1A','#1A3020','#3D2800','#2A1A40','#2A1010'];
+const TBL_SPN=['#0D2240','#3D0E0E','#0E1F14','#291A00','#1A0F2A','#1A0808'];
+let _tblRock=null,_tblStgInt=null,_tblStgIdx=0,_tblBkEls=[],_tblBooks=[];
+let tblOnTap=null;
+function tblSvg(s){return 'data:image/svg+xml;base64,'+btoa(s);}
+function tblBuildStack(){const a=document.getElementById('deckArea');if(!a||document.getElementById('tblStack'))return;const sw=document.createElement('div');sw.id='tblStack';sw.className='tbl-stack';[-7,-3,3,6].forEach((ang,i)=>{const c=document.createElement('div');c.className='tbl-stack-card';c.style.cssText=`background:${['#141210','#181510','#1C1710','#1E1A10'][i]};border:1px solid #2A2418;border-radius:5px;transform:translate(${[-5,-2,2,5][i]}px,${[-3,-1,1,2][i]}px) rotate(${ang}deg);`;sw.appendChild(c);});const top=document.createElement('div');top.className='tbl-stack-card';top.style.cssText='background:#201D12;border:1px solid #3A3020;border-radius:5px;display:flex;align-items:center;justify-content:center;transition:transform .3s ease;';top.innerHTML='<div style="text-align:center"><div style="font-size:22px;color:#E8B84B;font-weight:700;font-family:Fraunces,serif">F</div><div style="font-size:6px;color:#4A4030;letter-spacing:.14em;text-transform:uppercase;margin-top:5px;font-weight:700">Fletcher</div></div>';sw.appendChild(top);a.appendChild(sw);}
+function tblStartRock(f){tblStopRock();const sw=document.getElementById('tblStack');if(!sw)return;let d=1;_tblRock=setInterval(()=>{if(sw.lastElementChild)sw.lastElementChild.style.transform=`rotate(${d*(f?3:2)}deg)`;d*=-1;},f?320:700);}
+function tblStopRock(){if(_tblRock){clearInterval(_tblRock);_tblRock=null;}const sw=document.getElementById('tblStack');if(sw&&sw.lastElementChild)sw.lastElementChild.style.transform='rotate(0deg)';}
+function tblStartLoad(){const lbl=document.getElementById('tblLoadingLbl'),ov=document.getElementById('tableOverlay');if(lbl)lbl.classList.add('show');if(ov)ov.classList.add('dim');_tblStgIdx=0;const txt=document.getElementById('tblLoadingTxt');if(txt)txt.textContent=STAGE_MSGS[0];_tblStgInt=setInterval(()=>{_tblStgIdx=(_tblStgIdx+1)%STAGE_MSGS.length;const t=document.getElementById('tblLoadingTxt');if(t)t.textContent=STAGE_MSGS[_tblStgIdx];},1800);}
+function tblStopLoad(){const lbl=document.getElementById('tblLoadingLbl'),ov=document.getElementById('tableOverlay');if(lbl)lbl.classList.remove('show');if(ov)ov.classList.remove('dim');if(_tblStgInt){clearInterval(_tblStgInt);_tblStgInt=null;}}
+function tblDust(){const a=document.getElementById('deckArea');if(!a)return;for(let i=0;i<10;i++){const d=document.createElement('div');const dx=(Math.random()-.5)*80,dy=(Math.random()-.5)*60;d.style.cssText=`position:absolute;top:50%;left:50%;width:4px;height:4px;border-radius:50%;background:#A07C28;opacity:0;--dx:${dx}px;--dy:${dy}px;animation:dustFly .7s ease-out ${i*35}ms forwards;pointer-events:none;z-index:30;`;a.appendChild(d);setTimeout(()=>d.remove(),900+i*35);}}
+function tblRmStack(){const sw=document.getElementById('tblStack');if(sw){sw.style.transition='opacity .22s';sw.style.opacity='0';setTimeout(()=>sw.remove(),240);}}
+function tblMkBooks(books){const a=document.getElementById('deckArea');if(!a)return;a.querySelectorAll('.tbl-book,.tbl-sh').forEach(el=>el.remove());_tblBkEls=[];_tblBooks=books;books.forEach((b,i)=>{const p=TBL_POS[i];const sh=document.createElement('div');sh.className='tbl-sh';sh.id=`tblSh${i}`;sh.style.transform=`translate(calc(-50% + ${p.fx}px),calc(-50% + ${p.fy+62}px)) rotate(${p.rot}deg)`;a.appendChild(sh);const el=document.createElement('div');el.className='tbl-book';el.style.setProperty('--fx',p.fx+'px');el.style.setProperty('--fy',p.fy+'px');el.style.setProperty('--rot',p.rot+'deg');el.style.zIndex=i+2;const ci=i%TBL_CLR.length;const isbn=(b.isbn||'').replace(/[^0-9X]/g,'');const img=document.createElement('img');img.className='tbl-book-cover';img.alt=b.title||'';img.src=`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`;img.onerror=()=>{el.innerHTML='';const pu=tblSvg(TBL_PAT[i%TBL_PAT.length]('#fff'));el.innerHTML=`<div class="tbl-book-fb" style="background:${TBL_CLR[ci]}"><div class="tbl-book-spine" style="background:${TBL_SPN[ci]}"></div><div class="tbl-book-pat" style="background-image:url('${pu}');background-size:cover"></div><div class="tbl-book-top"><div class="tbl-book-title">${b.title||''}</div><div class="tbl-book-num">${ROMAN[i]||i+1}</div></div><div class="tbl-book-stamp">Fletcher Library</div></div>`;};el.appendChild(img);el.onclick=()=>{if(tblOnTap&&!el.classList.contains('have-it'))tblOnTap(b,i,TBL_CLR[ci]);};a.appendChild(el);_tblBkEls.push(el);});}
+function tblDeal(delay){_tblBkEls.forEach((el,i)=>{const p=TBL_POS[i];setTimeout(()=>{el.style.transform=`translate(calc(-50% + ${p.fx}px),calc(-50% + ${p.fy}px)) rotate(${p.rot}deg) scale(1)`;el.classList.add('dealt');setTimeout(()=>{const sh=document.getElementById(`tblSh${i}`);if(sh)sh.classList.add('show');},180);},delay+i*90);});}
+function tblExit(){_tblBkEls.forEach((el,i)=>{setTimeout(()=>el.classList.add('exiting'),i*28);const sh=document.getElementById(`tblSh${i}`);if(sh)sh.classList.remove('show');});}
+function tblSetActive(idx){_tblBkEls.forEach((el,j)=>{if(!el.classList.contains('have-it')){el.classList.toggle('tbl-active',j===idx);el.style.zIndex=j===idx?20:j+2;}});}
+function tblSyncHave(haveSet){_tblBkEls.forEach((el,i)=>{const b=_tblBooks[i];if(!b)return;const h=haveSet.has(b.title);el.classList.toggle('have-it',h);if(h)el.classList.remove('tbl-active');let badge=el.querySelector('.tbl-have-badge');if(h&&!badge){badge=document.createElement('div');badge.className='tbl-have-badge';badge.innerHTML='<span>Checked Out</span>';el.appendChild(badge);}else if(!h&&badge)badge.remove();});}
 // ── CANDIDATES ───────────────────────────────────────────────────────────
 async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null){
   const pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
@@ -1028,6 +1109,18 @@ function LoadingView({stageMsg}){
   </div>;
 }
 
+
+function TblCoverImg({isbn,color}){
+  const[fail,setFail]=React.useState(false);
+  if(!isbn||fail) return <div className="tbl-cover-fb" style={{background:color||'var(--card2)'}}>📖</div>;
+  return <img className="tbl-cover-big" src={`https://covers.openlibrary.org/b/isbn/${(isbn||'').replace(/[^0-9X]/g,'')}-M.jpg`} alt="" onError={()=>setFail(true)}/>;
+}
+function TblReadingLevel({pages}){
+  const p=parseInt(pages);if(!pages||isNaN(p))return null;
+  const[cls,lbl]=p<250?['quick','Quick Read']:p<=350?['standard','Standard']:['long','Long Haul'];
+  return <span className={`rl-badge ${cls}`}>{lbl} · {p}pp</span>;
+}
+
 // ── APP ──────────────────────────────────────────────────────────────────
 function App(){
   const[books,setBooks]=React.useState([]);
@@ -1062,6 +1155,11 @@ function App(){
   const[savedLists,setSavedLists]=React.useState(()=>lsLoad("savedLists",[]));
   const[showSavedLists,setShowSavedLists]=React.useState(false);
   const lastSearch=React.useRef(null);
+  const[activeBook,setActiveBook]=React.useState(null);
+  const[activeBookColor,setActiveBookColor]=React.useState('#1E1C2A');
+  const[haveItSet,setHaveItSet]=React.useState(new Set());
+  const[tblBatchLabel,setTblBatchLabel]=React.useState('');
+  const[tableVisible,setTableVisible]=React.useState(false);
   const structuredRef=React.useRef(null);
   const stageRef=React.useRef(null);
   const resultsRef=React.useRef(null);
@@ -1098,12 +1196,21 @@ function App(){
     </>);
   },[showAbout,showStats]);
 
+  React.useEffect(()=>{
+    tblOnTap=(book,idx,color)=>{setActiveBook(book);setActiveBookColor(color);tblSetActive(idx);};
+  },[]);
+  React.useEffect(()=>{tblSyncHave(haveItSet);},[haveItSet]);
+  React.useEffect(()=>{
+    if(loading&&tableVisible){tblMkBooks([]);tblBuildStack();tblStartRock(true);tblStartLoad();}
+    if(!loading&&tableVisible){tblStopLoad();tblStopRock();tblDust();tblRmStack();tblMkBooks(results||[]);setTimeout(()=>tblDeal(0),280);}
+  },[loading]);
+
   const addToast=(msg,type='success')=>{const id=Date.now()+Math.random();setToasts(p=>[...p,{id,msg,type}]);setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),2800);};
   const saveProfiles=p=>{setProfiles(p);lsSave("profiles",p);};
   const saveAnalytics=a=>{setAnalytics(a);lsSave("analytics",a);};
   const activeProfile=profiles.find(p=>p.id===activeProfileId)||null;
 
-  const selectProfile=id=>{setActiveProfileId(id);setEditing(null);setResults(null);setShownTitles(new Set());lastSearch.current=null;setShowSummary(false);setStructuredRequest(null);setAlreadyRead(id?new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]):new Set());};
+  const selectProfile=id=>{setActiveProfileId(id);setEditing(null);setResults(null);setShownTitles(new Set());lastSearch.current=null;setShowSummary(false);setStructuredRequest(null);setAlreadyRead(id?new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]):new Set());setTableVisible(false);setActiveBook(null);setHaveItSet(new Set());tblMkBooks([]);};
   const toggleHeart=title=>{if(!activeProfile)return;const liked=activeProfile.likedBooks||[];const nowLiked=!liked.includes(title);const updated=nowLiked?[...liked,title]:liked.filter(t=>t!==title);saveProfiles(profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p));addToast(nowLiked?'❤ Added to liked books':'Removed from liked books');};
   const markFeedback=(title,key)=>{const next={...feedback,[title]:{...(feedback[title]||{}),[key]:!(feedback[title]?.[key])}};setFeedback(next);lsSave("feedback",next);addToast("Feedback saved ✓");};
 
@@ -1128,7 +1235,7 @@ function App(){
   const getLikedThemes=()=>{if(!activeProfile?.likedBooks?.length)return"";const objs=books.filter(b=>activeProfile.likedBooks.includes(b.title));const all=objs.flatMap(b=>(b.enriched_subjects||b.subjects||"").split("|").map(s=>s.trim())).filter(Boolean);const unique=[...new Set(all)].slice(0,12);return unique.length?`\n\nThemes from books this student enjoyed: ${unique.join("; ")}. Prioritize books sharing these themes.`:"";};
   const onQueryChange=val=>{setQuery(val);setRefBook(null);if(mode==="similar"&&val.length>1)setSuggestions(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())).slice(0,6));else setSuggestions([]);};
   const toggleTrope=id=>{setSelTropes(prev=>{const n=new Set(prev);if(!n.has(id)){n.add(id);}else if(priorityTrope!==id){setPriorityTrope(id);}else{n.delete(id);setPriorityTrope(null);}return n;});};
-  const switchMode=m=>{setMode(m);setResults(null);setError("");setQuery("");setRefBook(null);setStructuredRequest(null);setSuggestions([]);setSelTropes(new Set());setPriorityTrope(null);setShownTitles(new Set());lastSearch.current=null;};
+  const switchMode=m=>{setMode(m);setResults(null);setError("");setQuery("");setRefBook(null);setStructuredRequest(null);setSuggestions([]);setSelTropes(new Set());setPriorityTrope(null);setShownTitles(new Set());lastSearch.current=null;setTableVisible(false);setActiveBook(null);setHaveItSet(new Set());tblMkBooks([]);};
 
   const buildParams=()=>{
     let ctx="",excl=null,priorityLabel=null;
@@ -1159,10 +1266,13 @@ function App(){
     if(isMore) setResults(p=>[...(p||[]),...enriched]);
     else setResults(enriched);
     trackRecs(enriched);
+    tblMkBooks(enriched);
+    setTblBatchLabel(isMore?'Batch 2':'Batch 1');
   };
 
   const search=async()=>{
     setError("");setResults(null);setLoading(true);setShownTitles(new Set());lastSearch.current=null;setStructuredRequest(null);
+    setActiveBook(null);setHaveItSet(new Set());setTableVisible(true);
     try{
       const params=buildParams();
       if(!params){setError(mode==="similar"?"Please select a title from the suggestions.":mode==="tropes"?"Please select at least one trope.":"Please describe what the student is looking for.");setLoading(false);return;}
@@ -1178,7 +1288,16 @@ function App(){
     setLoading(false);
   };
 
-  const searchMore=async()=>{if(!lastSearch.current)return;setLoadingMore(true);try{await runSearch(lastSearch.current,shownTitles,true);}catch{setError("Search failed.");}setLoadingMore(false);};
+  const searchMore=async()=>{
+    if(!lastSearch.current)return;
+    setLoadingMore(true);setActiveBook(null);
+    tblExit();
+    setTimeout(()=>{tblBuildStack();tblStartRock(true);tblStartLoad();},6*28+200);
+    try{await runSearch(lastSearch.current,shownTitles,true);}catch{setError("Search failed.");}
+    setLoadingMore(false);
+  };
+  const bookAccent=hex=>{if(!hex||!hex.startsWith('#'))return'var(--border)';const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},.4)`;};
+  const tblPrintList=()=>{if(!results?.length)return;const books=results.filter(b=>!haveItSet.has(b.title));if(!books.length){addToast('All marked checked out','info');return;}const html=`<html><head><title>Fletcher Library</title><style>body{font-family:Georgia,serif;padding:32px;max-width:680px;margin:0 auto}h1{font-size:24px}.meta{color:#666;font-size:13px;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #9B6540}.book{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid #E8D8B8;break-inside:avoid}.bnum{font-size:11px;font-weight:700;color:#9B6540;width:20px;flex-shrink:0}.btit{font-size:15px;font-weight:700;margin-bottom:2px}.baut{font-size:12px;color:#7A5A30;margin-bottom:6px;font-style:italic}.blv{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:20px;border:1px solid;display:inline-block;margin-bottom:6px}.ql{color:#2D7A4A;border-color:#2D7A4A}.st{color:#9B6540;border-color:#9B6540}.lh{color:#A0402A;border-color:#A0402A}.brsn{font-size:13px;color:#5A4030;line-height:1.6;font-style:italic}.footer{margin-top:24px;padding-top:12px;border-top:1px solid #E8D8B8;font-size:10px;color:#B0906A;text-align:center;text-transform:uppercase}</style></head><body><h1>Fletcher Library</h1><div class="meta">Recommended \xb7 ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>${books.map((b,i)=>{const p=parseInt(b.pages);const rl=!b.pages||isNaN(p)?null:p<250?['ql','Quick Read']:p<=350?['st','Standard']:['lh','Long Haul'];return\`<div class="book"><div class="bnum">${ROMAN[i]||i+1}</div><div><div class="btit">${b.title}</div><div class="baut">${b.author||''}</div>${rl?\`<span class="blv ${rl[0]}">${rl[1]}\xb7${p}pp</span>\`:''}<div class="brsn">${b.reason||''}</div></div></div>\`;}).join('')}<div class="footer">The Fletcher Library Recommends</div></body></html>`;const w=window.open('','_blank');w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),400);};
   const copyResults=()=>{if(!results?.length)return;const text=results.map((b,i)=>`${ROMAN[i]||i+1}. ${b.title} by ${b.author}\n   ${b.reason||""}`).join('\n\n');navigator.clipboard.writeText(text).then(()=>addToast('📋 Copied')).catch(()=>addToast('Could not copy','error'));};
   const saveProfile=p=>{const updated=profiles.find(x=>x.id===p.id)?profiles.map(x=>x.id===p.id?p:x):[...profiles,p];saveProfiles(updated);setActiveProfileId(p.id);setAlreadyRead(new Set(p.alreadyRead||[]));setEditing(null);addToast('Profile saved ✓');};
   const deleteProfile=id=>{saveProfiles(profiles.filter(p=>p.id!==id));if(activeProfileId===id){setActiveProfileId(null);setAlreadyRead(new Set());}setEditing(null);addToast('Profile deleted');};
@@ -1258,22 +1377,62 @@ function App(){
 
         {structuredRequest&&!loading&&<ConstraintPanel structured={structuredRequest}/>}
 
-        {/* RESULTS GRID */}
-        {results&&results.length>0&&!loading&&<div ref={resultsRef}>
-          <div className="results-hdr">
-            <span className="results-title">Recommendations</span>
-            <div className="results-line"/>
-            <span className="results-count">{results.length} titles</span>
+        {tableVisible&&<div style={{marginTop:16}}>
+          <div className="fletcher-table" id="fletcherTable">
+            <div className="table-clip">
+              <svg className="table-svg" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <rect width="640" height="300" fill="#9B6540"/>
+                <path d="M0,14 Q160,10 320,15 Q480,20 640,14" stroke="#7A4D28" strokeWidth="2.5" fill="none" opacity="0.5"/>
+                <path d="M0,42 Q160,38 320,43 Q480,48 640,42" stroke="#B07848" strokeWidth="1.5" fill="none" opacity="0.4"/>
+                <path d="M0,88 Q160,92 320,87 Q480,82 640,89" stroke="#C4885C" strokeWidth="1.5" fill="none" opacity="0.35"/>
+                <path d="M0,137 Q160,133 320,138 Q480,143 640,137" stroke="#B07848" strokeWidth="1.5" fill="none" opacity="0.38"/>
+                <path d="M0,189 Q160,193 320,188 Q480,183 640,190" stroke="#C4885C" strokeWidth="1.5" fill="none" opacity="0.36"/>
+                <path d="M0,244 Q160,240 320,245 Q480,250 640,244" stroke="#B07848" strokeWidth="1.5" fill="none" opacity="0.38"/>
+                <ellipse cx="105" cy="88" rx="24" ry="15" stroke="#6B4020" strokeWidth="1.5" fill="none" opacity="0.28"/>
+                <ellipse cx="530" cy="200" rx="19" ry="12" stroke="#6B4020" strokeWidth="1.5" fill="none" opacity="0.24"/>
+                <rect width="640" height="300" fill="url(#tsheen)"/>
+                <defs><radialGradient id="tsheen" cx="50%" cy="35%" r="65%"><stop offset="0%" stopColor="rgba(255,255,255,0.1)"/><stop offset="55%" stopColor="rgba(255,255,255,0.02)"/><stop offset="100%" stopColor="rgba(0,0,0,0.22)"/></radialGradient></defs>
+              </svg>
+              <div className="table-vignette"></div>
+            </div>
+            <div className="table-overlay" id="tableOverlay"></div>
+            <div className="tbl-lbl" id="tblLoadingLbl">
+              <div className="tbl-dots"><div className="tbl-dot"/><div className="tbl-dot"/><div className="tbl-dot"/></div>
+              <div className="tbl-ltxt" id="tblLoadingTxt">Scanning…</div>
+            </div>
+            <div id="deckArea"></div>
           </div>
-          <div className="results-grid">
-            {results.map((b,i)=><ResultCard key={`${b.title}-${i}`} book={b} index={i} activeProfile={activeProfile} onHeart={toggleHeart} onNoteSave={()=>addToast('Note saved ✓')} onFeedback={markFeedback} feedbackState={feedback}/>)}
+          <div className="tbl-info-area" style={{borderColor:activeBook?bookAccent(activeBookColor):'var(--border)'}}>
+            {!activeBook&&<div className="tbl-info-empty">{results&&results.length>0?'Tap a book to see the full recommendation':'Searching…'}</div>}
+            {activeBook&&<div className="tbl-info-card">
+              <TblCoverImg isbn={activeBook.isbn} color={activeBookColor}/>
+              <div className="tbl-info-right">
+                <div className="tbl-badges">
+                  <span className="fletcher-rec-badge">The Fletcher Library Recommends</span>
+                  <TblReadingLevel pages={activeBook.pages}/>
+                </div>
+                <div>
+                  <div className="tbl-info-title">{activeBook.title}</div>
+                  <div className="tbl-info-author">{activeBook.author}{activeBook.series&&` · ${activeBook.series}`}</div>
+                </div>
+                <div className="tbl-info-divider" style={{background:bookAccent(activeBookColor)}}></div>
+                <div className="tbl-info-reason" style={{borderLeftColor:bookAccent(activeBookColor)}}>{activeBook.reason}</div>
+                <div className="tbl-info-actions">
+                  <button className={`tbl-have-btn${haveItSet.has(activeBook.title)?' on':''}`} onClick={()=>{const t=activeBook.title;setHaveItSet(p=>{const n=new Set(p);n.has(t)?n.delete(t):n.add(t);return n;});}}>
+                    {haveItSet.has(activeBook.title)?'✓ Marked as checked out':'Mark as checked out'}
+                  </button>
+                  {activeProfile&&<button className="tbl-heart-sm" onClick={()=>toggleHeart(activeBook.title)}>{activeProfile.likedBooks?.includes(activeBook.title)?'♥':'♡'}</button>}
+                </div>
+              </div>
+            </div>}
           </div>
-          <div className="ractions">
-            <button className="act-btn" onClick={()=>window.print()}>🖨 Print</button>
-            <button className="act-btn" onClick={copyResults}>📋 Copy</button>
-            <button className="act-btn primary" onClick={saveCurrentList}>♡ Save List</button>
+          {results&&results.length>0&&!loading&&<div className="tbl-bottom">
             {!loadingMore&&<button className="act-btn primary" onClick={searchMore}>Load more →</button>}
-          </div>
+            <button className="act-btn" onClick={tblPrintList}>Print list</button>
+            <button className="act-btn" onClick={copyResults}>Copy</button>
+            <button className="act-btn primary" onClick={saveCurrentList}>Save List</button>
+            {tblBatchLabel&&<span className="tbl-batch">{tblBatchLabel}</span>}
+          </div>}
           <div style={{textAlign:"center",marginTop:12}}>
             <button className="profile-btn" onClick={()=>setShowSavedLists(p=>!p)}>{showSavedLists?"Hide saved lists":"View saved lists"}{savedLists.length>0?` (${savedLists.length})`:""}</button>
           </div>

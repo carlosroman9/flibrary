@@ -816,33 +816,12 @@ function tblExit(){_tblBkEls.forEach((el,i)=>{setTimeout(()=>el.classList.add('e
 function tblSetActive(idx){_tblBkEls.forEach((el,j)=>{if(!el.classList.contains('have-it')){el.classList.toggle('tbl-active',j===idx);el.style.zIndex=j===idx?20:j+2;}});}
 function tblSyncHave(haveSet){_tblBkEls.forEach((el,i)=>{const b=_tblBooks[i];if(!b)return;const h=haveSet.has(b.title);el.classList.toggle('have-it',h);if(h)el.classList.remove('tbl-active');let badge=el.querySelector('.tbl-have-badge');if(h&&!badge){badge=document.createElement('div');badge.className='tbl-have-badge';badge.innerHTML='<span>Checked Out</span>';el.appendChild(badge);}else if(!h&&badge)badge.remove();});}
 // ── CANDIDATES ───────────────────────────────────────────────────────────
-async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null,searchMode='similar'){
+function getCandidates(books,queryText,likedKws=[],n=35,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null){
   const pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
   const authorLast=refAuthor?refAuthor.split(',')[0].trim().toLowerCase():null;
   const sameAuthor=new Set(authorLast?pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title):[]);
-
-  // Series boost for Find Similar — guarantees same-series books are in the candidate pool
   const refBook_=excl?books.find(b=>b.title===excl):null;
   const sameSeries=new Set(refBook_?.series?pool.filter(b=>b.series&&b.series===refBook_.series).map(b=>b.title):[]);
-
-  // ── Describe It: try embedding first, fall back to keyword ──────────
-  if(searchMode==='freetext'&&bookEmbeddings&&Object.keys(bookEmbeddings).length>0){
-    try{
-      const res=await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
-      if(!res.ok) throw new Error(`embed ${res.status}`);
-      const{embedding:qEmb}=await res.json();
-      const lSet=new Set(likedKws);
-      return pool.map(b=>{
-        const bEmb=bookEmbeddings[b.title],sim=bEmb?cosine(qEmb,bEmb):0;
-        const toks=tokenize(`${b.enriched_subjects||b.subjects||''} ${b.enriched_summary||b.summary||''}`);
-        const lb=toks.filter(t=>lSet.has(t)).length*0.01;
-        const ab=sameAuthor.has(b.title)?0.15:0;
-        return{...b,_s:sim+lb+ab};
-      }).sort((a,b)=>b._s-a._s).slice(0,n);
-    }catch(err){console.warn('Embedding failed, using keyword fallback:',err);}
-  }
-
-  // ── Find Similar + By Trope: pure keyword scoring ───────────────────
   const kws=tokenize(queryText),kSet=new Set(kws),lSet=new Set(likedKws);
   let scored=pool.map(b=>{
     const st=new Set(tokenize(b.enriched_subjects||b.subjects||''));
@@ -854,7 +833,6 @@ async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,exc
     const series=sameSeries.has(b.title)?15:0;
     return{...b,_s:base+liked+auth+series};
   });
-  // For series matches, include even if keyword score is 0
   scored=scored.filter(b=>b._s>0||sameSeries.has(b.title));
   if(!scored.length) scored=pool;
   return scored.sort((a,b)=>b._s-a._s).slice(0,n);
@@ -902,9 +880,7 @@ Return only valid JSON arrays, no markdown, no text outside the JSON.`;
   // UPGRADE 3: Lite chain-of-thought — brief reasoning before JSON output
   const userPrompt=`${ctx}${prioNote}${likedNote}${advNote}${structNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}
 
-Before selecting, think through 2-3 sentences: what does this specific reader need right now, and what qualities should the strongest picks share?
-
-Then select the 6 best matches from the catalog below. The JSON array must be the final thing you output — nothing after it.
+Select the 6 best matches from the catalog below. Return ONLY the JSON array — no other text.
 
 [{"title":"...","author":"...","reason":"2-3 sentence personalized explanation"}]
 
@@ -914,7 +890,7 @@ ${list}`;
   // UPGRADE 4: max_tokens bumped from 1000 to 2000
   const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
     model:"claude-sonnet-4-6",
-    max_tokens:2000,
+    max_tokens:1000,
     system:systemPrompt,
     messages:[{role:"user",content:userPrompt}]
   })});
@@ -1151,8 +1127,9 @@ function HistoryCover({isbn,patIdx}){
     alt="" onError={()=>setFail(true)}/>;
 }
 
-function SessionHistoryPanel({books,onSelect,haveItSet,activeBook}){
+function SessionHistoryPanel({books,onSelect,haveItSet,activeBook,onMarkCheckedOut}){
   const[open,setOpen]=React.useState(false);
+  const[expandedTitle,setExpandedTitle]=React.useState(null);
   const rl=pages=>{const p=parseInt(pages);if(!pages||isNaN(p))return null;return p<250?['quick','Quick Read']:p<=350?['standard','Standard']:['long','Long Haul'];};
   const sets=React.useMemo(()=>{
     const s={};
@@ -1161,6 +1138,41 @@ function SessionHistoryPanel({books,onSelect,haveItSet,activeBook}){
   },[books]);
   const numSets=Object.keys(sets).length;
   if(!books.length) return null;
+
+  const toggleExpand=(b)=>setExpandedTitle(t=>t===b.title?null:b.title);
+
+  const InlineDetail=({b,ci})=>{
+    const level=rl(b.pages);
+    const isChecked=haveItSet.has(b.title);
+    return <div style={{gridColumn:'1/-1',background:'var(--card2)',border:'1px solid var(--gold-bd)',borderRadius:10,padding:16,marginTop:-4,animation:'fadeUp .2s ease both'}}>
+      <div style={{display:'flex',gap:14,marginBottom:b.reason||b.summary?12:0}}>
+        <div style={{flexShrink:0}}>
+          <HistoryCover isbn={b.isbn} patIdx={books.indexOf(b)} large/>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:700,color:'var(--cream)',lineHeight:1.25,marginBottom:4}}>{b.title}</div>
+          <div style={{fontSize:12,color:'var(--text3)',fontFamily:"'Lora',serif",fontStyle:'italic',marginBottom:6}}>{b.author}</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:6,alignItems:'center'}}>
+            {level&&<span className={`rl-badge ${level[0]}`}>{level[1]}{b.pages&&` · ${b.pages}pp`}</span>}
+            {b.series&&<span style={{fontSize:10,color:'var(--gold)',fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:600}}>#{b.series}</span>}
+          </div>
+        </div>
+      </div>
+      {b.reason&&<div style={{fontSize:12,color:'var(--text2)',lineHeight:1.7,fontFamily:"'Lora',serif",fontStyle:'italic',borderLeft:'2px solid var(--gold-bd)',paddingLeft:10,marginBottom:b.summary?10:12}}>{b.reason}</div>}
+      {b.summary&&<div style={{fontSize:11,color:'var(--text3)',lineHeight:1.65,fontFamily:"'Lora',serif",background:'var(--card)',borderRadius:6,padding:'8px 10px',marginBottom:12}}>{b.summary}</div>}
+      <div style={{display:'flex',gap:8'}}>
+        <button className="act-btn" onClick={()=>onMarkCheckedOut&&onMarkCheckedOut(b.title)}
+          style={{fontSize:10,padding:'5px 12px',background:isChecked?'var(--gold-dim)':'transparent',border:'1px solid var(--gold-bd)',color:isChecked?'var(--gold)':'var(--text3)',borderRadius:6,cursor:'pointer',letterSpacing:'.05em'}}>
+          {isChecked?'✓ Checked Out':'Mark Checked Out'}
+        </button>
+        <button className="act-btn" onClick={()=>setExpandedTitle(null)}
+          style={{fontSize:10,padding:'5px 12px',background:'transparent',border:'1px solid var(--border)',color:'var(--text3)',borderRadius:6,cursor:'pointer'}}>
+          Close
+        </button>
+      </div>
+    </div>;
+  };
+
   return <div style={{marginTop:20,borderTop:'1px solid var(--border)',paddingTop:16}}>
     <button onClick={()=>setOpen(p=>!p)} style={{background:'none',border:'none',cursor:'pointer',display:'flex',alignItems:'center',gap:10,padding:0,marginBottom:open?18:0,width:'100%',textAlign:'left'}}>
       <span style={{color:'var(--gold)',fontSize:14,flexShrink:0}}>{open?'▾':'▸'}</span>
@@ -1180,22 +1192,27 @@ function SessionHistoryPanel({books,onSelect,haveItSet,activeBook}){
             const ci=books.indexOf(b)%TBL_CLR.length;
             const level=rl(b.pages);
             const isChecked=haveItSet.has(b.title);
-            const isActive=activeBook?.title===b.title;
-            return <div key={b.title+i} onClick={()=>onSelect(b,TBL_CLR[ci])}
-              style={{cursor:'pointer',background:'var(--card)',border:`1px solid ${isActive?'var(--gold)':'var(--border)'}`,borderRadius:10,padding:'10px 12px',opacity:isChecked?.4:1,transition:'border-color .15s,opacity .15s,box-shadow .15s',boxShadow:isActive?'0 0 0 1px var(--gold-bd)':'none',position:'relative'}}
-              onMouseEnter={e=>{if(!isActive)e.currentTarget.style.borderColor='var(--gold-bd)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';}}
-              onMouseLeave={e=>{if(!isActive)e.currentTarget.style.borderColor=isActive?'var(--gold)':'var(--border)';if(!isActive)e.currentTarget.style.boxShadow='none';}}>
-              {isChecked&&<span style={{position:'absolute',top:8,right:8,fontSize:8,fontWeight:700,color:'var(--gold)',letterSpacing:'.08em',textTransform:'uppercase',background:'var(--gold-dim)',border:'1px solid var(--gold-bd)',borderRadius:3,padding:'1px 5px'}}>Checked Out</span>}
-              <div style={{display:'flex',gap:10,marginBottom:b.reason?8:0}}>
-                <HistoryCover isbn={b.isbn} patIdx={books.indexOf(b)}/>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:700,color:'var(--cream)',lineHeight:1.25,marginBottom:3,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{b.title}</div>
-                  <div style={{fontSize:11,color:'var(--text3)',fontFamily:"'Lora',serif",fontStyle:'italic',marginBottom:6,overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{b.author}</div>
-                  {level&&<span className={`rl-badge ${level[0]}`} style={{fontSize:8,padding:'1px 7px'}}>{level[1]}</span>}
+            const isExpanded=expandedTitle===b.title;
+            return <React.Fragment key={b.title+i}>
+              <div onClick={()=>toggleExpand(b)}
+                style={{cursor:'pointer',background:'var(--card)',border:`1px solid ${isExpanded?'var(--gold)':'var(--border)'}`,borderRadius:10,padding:'10px 12px',opacity:isChecked?.45:1,transition:'border-color .15s,box-shadow .15s',boxShadow:isExpanded?'0 0 0 1px var(--gold-bd)':'none',position:'relative'}}
+                onMouseEnter={e=>{if(!isExpanded){e.currentTarget.style.borderColor='var(--gold-bd)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';}}}
+                onMouseLeave={e=>{if(!isExpanded){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.boxShadow='none';}}}>
+                {isChecked&&<span style={{position:'absolute',top:7,right:7,fontSize:7,fontWeight:700,color:'var(--gold)',letterSpacing:'.08em',textTransform:'uppercase',background:'var(--gold-dim)',border:'1px solid var(--gold-bd)',borderRadius:3,padding:'1px 5px'}}>Out</span>}
+                <div style={{display:'flex',gap:10,marginBottom:b.reason?6:0}}>
+                  <HistoryCover isbn={b.isbn} patIdx={books.indexOf(b)}/>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:700,color:'var(--cream)',lineHeight:1.25,marginBottom:3,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{b.title}</div>
+                    <div style={{fontSize:11,color:'var(--text3)',fontFamily:"'Lora',serif",fontStyle:'italic',marginBottom:6,overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{b.author}</div>
+                    {level&&<span className={`rl-badge ${level[0]}`} style={{fontSize:8,padding:'1px 7px'}}>{level[1]}</span>}
+                  </div>
                 </div>
+                {b.reason&&!isExpanded&&<div style={{fontSize:11,color:'var(--text2)',lineHeight:1.65,fontFamily:"'Lora',serif",fontStyle:'italic',borderLeft:'2px solid var(--gold-bd)',paddingLeft:8,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{b.reason}</div>}
+                {isExpanded&&<div style={{fontSize:10,color:'var(--gold)',fontFamily:"'Plus Jakarta Sans',sans-serif",marginTop:4,letterSpacing:'.05em'}}>▲ tap to close</div>}
               </div>
-              {b.reason&&<div style={{fontSize:11,color:'var(--text2)',lineHeight:1.65,fontFamily:"'Lora',serif",fontStyle:'italic',borderLeft:'2px solid var(--gold-bd)',paddingLeft:8,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{b.reason}</div>}
-            </div>;
+              {isExpanded&&i%2===1&&<InlineDetail b={b} ci={ci}/>}
+              {isExpanded&&i%2===0&&<InlineDetail b={b} ci={ci}/>}
+            </React.Fragment>;
           })}
         </div>
       </div>)}
@@ -1350,7 +1367,7 @@ function App(){
     const queryText=buildQueryText();
     const refAuthor=(mode==='similar'&&refBook)?refBook.author:null;
     const advisoryNote=advisoryTextForProfile(activeProfile);
-    const cands=await getCandidates(books,queryText,bookEmbeddings,getLikedKws(),70,excl,alreadyRead,shown,refAuthor,mode);
+    const cands=getCandidates(books,queryText,getLikedKws(),35,excl,alreadyRead,shown,refAuthor);
     const prefNote=activeProfile?.notes?`\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.`:"";
     const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — ONLY recommend fast-paced books with short chapters and high action.`:"";
     const didntLikeNote=didntLike.trim()?`\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.`:"";
@@ -1392,8 +1409,14 @@ function App(){
     if(!lastSearch.current)return;
     setLoadingMore(true);setActiveBook(null);
     tblExit();
-    setTimeout(()=>{tblBuildStack();tblStartRock(true);tblStartLoad();},6*28+200);
-    try{await runSearch(lastSearch.current,shownTitles,true);}catch{setError("Search failed.");}
+    await new Promise(r=>setTimeout(r,6*28+200));
+    tblBuildStack();tblStartRock(true);tblStartLoad();
+    try{
+      await runSearch(lastSearch.current,shownTitles,true);
+      tblStopLoad();tblStopRock();tblDust();tblRmStack();
+      await new Promise(r=>setTimeout(r,280));
+      tblDeal(0);
+    }catch{setError("Search failed.");}
     setLoadingMore(false);
   };
   const bookAccent=hex=>{if(!hex||!hex.startsWith('#'))return'var(--border)';const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},.4)`;};
@@ -1563,6 +1586,7 @@ function App(){
           onSelect={(b,color)=>{setActiveBook(b);setActiveBookColor(color||TBL_CLR[0]);tblSetActive(results?results.findIndex(r=>r.title===b.title):-1);}}
           haveItSet={haveItSet}
           activeBook={activeBook}
+          onMarkCheckedOut={title=>setHaveItSet(prev=>{const n=new Set(prev);n.has(title)?n.delete(title):n.add(title);return n;})}
         />}
 
         {results&&results.length===0&&!loading&&<div className="empty"><p className="empty-title">No matching titles found.</p><p className="empty-sub">Try broadening your search or switching modes.</p><div className="empty-actions"><div className="echip" onClick={()=>switchMode("freetext")}>Try describing it</div><div className="echip" onClick={()=>switchMode("tropes")}>Browse by trope</div><div className="echip" onClick={()=>setResults(null)}>Start over</div></div></div>}

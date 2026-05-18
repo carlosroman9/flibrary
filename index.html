@@ -3,254 +3,663 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The Fletcher Library Archives</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Special+Elite&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <title>Fletcher Library Assistant</title>
+  <link rel="icon" href="logo.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
+    @font-face {
+      font-family: "SNF Little Star";
+      src: url("snflittlestar (1).ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg:#1a1510; --bg2:#211c15; --bg3:#2a2318;
-      --amber:#c9922a; --amber2:#e8b040;
-      --text:#f0e4cc; --text2:#c8b898; --text3:#8a7a60;
-      --border:#3d3020; --border2:#c9922a55;
-      --paper:#f5edd8; --paper2:#ede0c4;
+      --black:    #06050A;
+      --ink:      #0E0C14;
+      --card:     #12101A;
+      --card2:    #1A1825;
+      --card3:    #221F30;
+      --gold:     #E8B84B;
+      --gold2:    #F5CF7A;
+      --gold-dk:  #A07C28;
+      --gold-dim: rgba(232,184,75,.08);
+      --gold-bd:  rgba(232,184,75,.25);
+      --cream:    #F2E8D5;
+      --cream2:   #E8D8BB;
+      --text:     #EDE4D3;
+      --text2:    #BFB49A;
+      --text3:    #7A7060;
+      --border:   #1E1C2A;
+      --border2:  #2A2838;
+      --green:    #4ADE80;
+      --red:      #F87171;
+      --red-dim:  rgba(248,113,113,.1);
     }
-    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; font-size:16px; -webkit-font-smoothing:antialiased;
-      background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px),repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px); }
-    body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:.035;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      background-repeat:repeat; background-size:128px 128px; }
-    #root { max-width:740px; margin:0 auto; padding:0 1.5rem 5rem; }
 
-    /* CORNER TIGERS */
-    .tiger-corner { position:fixed; bottom:32px; right:32px; z-index:10; pointer-events:none; user-select:none; width:120px; transition:opacity .4s ease; }
-    .tiger-corner.hidden { opacity:0; }
-    .tiger-corner.visible { opacity:.9; }
+    html { scroll-behavior: smooth; }
 
-    /* HEADER */
-    .header { padding:2.5rem 0 0; margin-bottom:2rem; position:relative; }
-    .header-inner { display:flex; align-items:center; gap:1.5rem; padding-bottom:1rem; border-bottom:3px double var(--amber); }
-    .logo-badge { position:relative; flex-shrink:0; }
-    .logo-badge img { width:100px; height:100px; object-fit:contain; filter:sepia(.6) contrast(1.1); animation:tigerBreath 4s ease-in-out infinite; }
-    .logo-badge::after { content:''; position:absolute; inset:-4px; border:2px solid var(--amber); border-radius:50%; opacity:0; animation:eyeGlow 4s ease-in-out infinite; }
-    @keyframes tigerBreath { 0%,100%{transform:scale(1);filter:sepia(.6) contrast(1.1)} 50%{transform:scale(1.03);filter:sepia(.3) contrast(1.2) drop-shadow(0 0 8px #c9922a88)} }
-    @keyframes eyeGlow { 0%,40%,100%{opacity:0;transform:scale(1)} 60%,80%{opacity:1;transform:scale(1.05)} }
-    .header-text { flex:1; }
-    .case-label { font-family:'Special Elite',serif; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--amber); margin-bottom:4px; }
-    .title { font-family:'Playfair Display',serif; font-size:34px; font-weight:900; color:var(--text); line-height:1; margin-bottom:6px; }
-    .subtitle { font-family:'Crimson Text',serif; font-size:16px; font-style:italic; color:var(--text2); }
-    .header-meta { display:flex; justify-content:space-between; align-items:center; padding:8px 0 0; }
-    .stamp { font-family:'Special Elite',serif; font-size:12px; letter-spacing:.1em; color:var(--text2); text-transform:uppercase; }
-    .ledger-btn { font-family:'Special Elite',serif; font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding:5px 12px; background:transparent; color:var(--text2); border:1px solid var(--border); border-radius:3px; cursor:pointer; transition:all .2s; }
-    .ledger-btn:hover,.ledger-btn.active { color:var(--amber); border-color:var(--amber); background:var(--bg2); }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      /* Subtle paper grain via CSS */
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23grain)' opacity='0.035'/%3E%3C/svg%3E");
+    }
 
-    /* ANALYTICS */
-    .analytics-panel { background:var(--bg2); border:1px solid var(--border2); border-top:3px solid var(--amber); padding:16px; margin-bottom:20px; font-family:'Special Elite',serif; }
-    .analytics-title { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--amber); margin-bottom:12px; }
-    .analytics-stats { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-    .stat-box { flex:1; min-width:60px; background:var(--bg3); border:1px solid var(--border); padding:10px; text-align:center; }
-    .stat-num { font-size:24px; font-weight:700; color:var(--amber2); font-family:'Playfair Display',serif; }
-    .stat-label { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
-    .analytics-cols { display:flex; gap:16px; flex-wrap:wrap; }
-    .analytics-col { flex:1; min-width:160px; }
-    .analytics-col-title { font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--text3); margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:4px; }
-    .analytics-row { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; border-bottom:1px dotted var(--border); color:var(--text2); font-family:'Crimson Text',serif; }
-    .analytics-row span:last-child { color:var(--amber); font-weight:600; flex-shrink:0; margin-left:8px; }
-    .analytics-empty { font-size:13px; color:var(--text3); font-style:italic; font-family:'Crimson Text',serif; }
+    /* ── HERO ─────────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--gold-bd);
+    }
 
-    /* PROFILES */
-    .section-label { font-family:'Special Elite',serif; font-size:12px; text-transform:uppercase; letter-spacing:.15em; color:var(--text2); margin-bottom:8px; }
-    .profile-bar { margin-bottom:20px; }
-    .profile-pills { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-    .pill { padding:5px 14px; font-size:12px; font-family:'Special Elite',serif; letter-spacing:.05em; border:1px solid var(--border); background:transparent; color:var(--text3); cursor:pointer; transition:all .2s; border-radius:2px; }
-    .pill:hover { border-color:var(--amber); color:var(--text); }
-    .pill.active { background:var(--amber); border-color:var(--amber); color:var(--bg); font-weight:700; }
-    .pill.active-left { border-radius:2px 0 0 2px; background:var(--amber); border-color:var(--amber); color:var(--bg); font-weight:700; border-right:none; }
-    .pill-edit { padding:5px 9px; border-radius:0 2px 2px 0; background:var(--bg2); border:1px solid var(--amber); border-left:none; color:var(--amber); cursor:pointer; font-size:12px; }
-    .pill-add { padding:5px 12px; font-size:14px; border:1px dashed var(--border); background:transparent; color:var(--text3); cursor:pointer; line-height:1; border-radius:2px; }
-    .pill-add:hover { border-color:var(--amber); color:var(--amber); }
-    .profile-note { margin-top:8px; font-size:14px; color:var(--text3); font-style:italic; font-family:'Crimson Text',serif; }
-    .summary-view-btn { font-family:'Special Elite',serif; font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:4px 10px; background:transparent; color:var(--text3); border:1px solid var(--border); border-radius:2px; cursor:pointer; transition:all .2s; }
-    .summary-view-btn:hover { color:var(--amber); border-color:var(--amber); }
+    /* radial glow */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse at 50% 20%,
+        rgba(232,184,75,.16) 0%,
+        rgba(232,184,75,.06) 35%,
+        transparent 70%);
+      pointer-events: none;
+    }
 
-    /* RELUCTANT TOGGLE */
-    .reluctant-toggle { display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:10px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:2px; cursor:pointer; transition:border-color .2s; }
-    .reluctant-toggle:hover,.reluctant-toggle.on { border-color:var(--amber); }
-    .toggle-switch { width:36px; height:20px; background:var(--border); border-radius:10px; position:relative; transition:background .2s; flex-shrink:0; }
-    .toggle-switch.on { background:var(--amber); }
-    .toggle-knob { position:absolute; top:3px; left:3px; width:14px; height:14px; background:#fff; border-radius:50%; transition:left .2s; }
-    .toggle-switch.on .toggle-knob { left:19px; }
-    .toggle-label { font-family:'Special Elite',serif; font-size:12px; color:var(--text2); letter-spacing:.05em; }
-    .toggle-sub { font-family:'Crimson Text',serif; font-size:12px; color:var(--text3); font-style:italic; }
+    /* paper grain overlay on hero */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,184,75,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,184,75,.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse at 50% 0%, black 20%, transparent 72%);
+    }
 
-    /* SUMMARY PANEL */
-    .summary-panel { background:var(--bg2); border:1px solid var(--border2); border-top:3px solid var(--amber); padding:16px; margin-bottom:20px; }
-    .summary-panel-title { font-family:'Special Elite',serif; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--amber); margin-bottom:12px; }
-    .summary-section { margin-bottom:12px; }
-    .summary-section-label { font-family:'Special Elite',serif; font-size:9px; text-transform:uppercase; letter-spacing:.12em; color:var(--text3); margin-bottom:5px; border-bottom:1px dotted var(--border); padding-bottom:3px; }
-    .summary-empty { font-family:'Crimson Text',serif; font-size:13px; color:var(--text3); font-style:italic; }
-    .summary-book { font-family:'Crimson Text',serif; font-size:13px; color:var(--text2); padding:2px 0; border-bottom:1px dotted var(--border); }
+    .hero-inner { position: relative; z-index: 1; }
 
-    /* EDITOR */
-    .editor { background:var(--bg2); border:1px solid var(--border2); border-top:3px solid var(--amber); padding:16px; margin-bottom:20px; }
-    .editor-row { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
-    .field-group { display:flex; flex-direction:column; gap:4px; }
-    .field-label { font-family:'Special Elite',serif; font-size:9px; text-transform:uppercase; letter-spacing:.15em; color:var(--text3); }
-    .field-input { padding:8px 11px; font-size:14px; background:var(--bg3); border:1px solid var(--border); color:var(--text); font-family:'Crimson Text',serif; outline:none; transition:border-color .2s; border-radius:2px; }
-    .field-input:focus { border-color:var(--amber); }
-    .field-input::placeholder { color:var(--text3); }
+    /* Logo ring */
+    .logo-ring {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      margin: 0 auto 32px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      background: radial-gradient(circle, rgba(232,184,75,.1) 0%, transparent 70%);
+      box-shadow:
+        0 0 0 1px var(--gold-bd),
+        0 0 0 10px rgba(232,184,75,.05),
+        0 0 80px rgba(232,184,75,.14);
+    }
 
-    /* TABS */
-    .tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:20px; gap:2px; }
-    .tab { padding:8px 20px; font-size:12px; font-family:'Special Elite',serif; letter-spacing:.12em; text-transform:uppercase; background:var(--bg2); border:1px solid var(--border); border-bottom:none; cursor:pointer; color:var(--text2); transition:all .2s; margin-bottom:-2px; }
-    .tab:hover { color:var(--text); background:var(--bg3); }
-    .tab.active { background:var(--bg); color:var(--amber2); border-color:var(--amber); border-bottom:2px solid var(--bg); }
+    /* slow spinning dashed ring */
+    .logo-ring::before {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      border: 1px dashed rgba(232,184,75,.2);
+      animation: spin 24s linear infinite;
+    }
 
-    /* INPUTS */
-    .input-wrap { margin-bottom:16px; }
-    .main-input { width:100%; padding:12px 14px; font-size:15px; background:var(--bg2); border:1px solid var(--border); border-bottom:2px solid var(--border); color:var(--text); font-family:'Crimson Text',serif; outline:none; transition:border-color .2s; border-radius:2px; }
-    .main-input:focus { border-color:var(--amber); }
-    .main-input::placeholder { color:var(--text3); font-style:italic; }
-    .main-textarea { width:100%; padding:12px 14px; font-size:15px; background:var(--bg2); border:1px solid var(--border); color:var(--text); font-family:'Crimson Text',serif; outline:none; resize:vertical; line-height:1.7; border-radius:2px; transition:border-color .2s; }
-    .main-textarea:focus { border-color:var(--amber); }
+    /* diamond ornaments on ring */
+    .logo-ring::after {
+      content: '◆';
+      position: absolute;
+      top: -22px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--gold);
+      opacity: .7;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hero-logo {
+      width: 108px; height: 108px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 28px rgba(232,184,75,.35));
+      animation: breathe 5s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%,100% { filter: drop-shadow(0 6px 28px rgba(232,184,75,.35)); }
+      50%      { filter: drop-shadow(0 8px 40px rgba(232,184,75,.55)); }
+    }
+
+    .hero-eyebrow {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-family: "SNF Little Star", 'Fraunces', serif;
+      font-size: clamp(36px, 7vw, 64px);
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 10px;
+      letter-spacing: .04em;
+    }
+
+    .hero-subtitle {
+      font-family: 'Lora', serif;
+      font-size: 16px;
+      font-style: italic;
+      color: var(--text2);
+      margin-bottom: 32px;
+    }
+
+    /* Gold ornamental divider */
+    .ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: .2em;
+      opacity: .6;
+    }
+    .ornament::before, .ornament::after {
+      content: '';
+      width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .ornament::after { transform: scaleX(-1); }
+
+    .hero-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .hero-btn {
+      padding: 8px 20px;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: .06em;
+      border: 1px solid var(--gold-bd);
+      background: transparent;
+      color: var(--text2);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .hero-btn:hover, .hero-btn.on {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    /* ── STATUS BAR ───────────────────────────────────────────────────── */
+    .status-bar {
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+      padding: 10px 24px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+    .status-item { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: var(--text3); }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+    .dot.ready { background: var(--green); box-shadow: 0 0 8px rgba(74,222,128,.5); }
+    .dot.spin  { background: var(--gold); animation: pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ── PAGE BODY ────────────────────────────────────────────────────── */
+    #root { max-width: 900px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+    .page { padding-top: 32px; }
+
+    /* ── TOASTS ───────────────────────────────────────────────────────── */
+    .toasts { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+    .toast { font-size:13px; font-weight:600; padding:10px 22px; border-radius:100px; box-shadow:0 8px 32px rgba(0,0,0,.7); animation:tIn .2s ease both; white-space:nowrap; border:1px solid; }
+    .toast.success { background:#071A0C; color:var(--green); border-color:rgba(74,222,128,.3); }
+    .toast.error   { background:#1A0707; color:var(--red);   border-color:rgba(248,113,113,.3); }
+    .toast.info    { background:var(--card2); color:var(--text); border-color:var(--border2); }
+    @keyframes tIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── GOLD SECTION DIVIDER ─────────────────────────────────────────── */
+    .gold-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 28px 0 20px;
+      color: var(--gold);
+      font-size: 10px;
+    }
+    .gold-divider span { font-family:'Fraunces',serif; font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap; }
+    .gold-divider::before, .gold-divider::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--gold-bd)); }
+    .gold-divider::after { transform:scaleX(-1); }
+
+    /* ── SECTION LABEL ────────────────────────────────────────────────── */
+    .sec-label { font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--text3); margin-bottom:10px; }
+
+    /* ── PANELS ───────────────────────────────────────────────────────── */
+    .panel { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; margin-bottom:16px; }
+    .panel-title { font-family:'Fraunces',serif; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+    .panel-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+
+    .about-card p { font-family:'Lora',serif; font-size:15px; color:var(--text2); line-height:1.8; margin-bottom:10px; }
+    .about-card strong { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; color:var(--text); }
+    .ftags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .ftag { padding:4px 12px; background:var(--gold-dim); border:1px solid var(--gold-bd); border-radius:100px; font-size:11px; font-weight:600; color:var(--gold2); }
+
+    /* ── ANALYTICS ────────────────────────────────────────────────────── */
+    .stats-row { display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+    .stat-box { flex:1; min-width:80px; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:16px 12px; text-align:center; }
+    .stat-n { font-family:'Fraunces',serif; font-size:30px; font-weight:900; color:var(--gold); line-height:1; }
+    .stat-l { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); margin-top:6px; }
+    .stat-cols { display:flex; gap:20px; flex-wrap:wrap; }
+    .stat-col { flex:1; min-width:150px; }
+    .stat-col-h { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text3); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    .stat-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:5px 0; border-bottom:1px solid var(--border); color:var(--text2); }
+    .stat-row:last-child { border-bottom:none; }
+    .stat-row span:last-child { font-weight:700; color:var(--gold); }
+    .stat-empty { font-family:'Lora',serif; font-size:14px; color:var(--text3); font-style:italic; }
+
+    /* ── PROFILE PILLS ────────────────────────────────────────────────── */
+    .section { margin-bottom:24px; }
+    .pills { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .pill { padding:7px 18px; font-size:13px; font-weight:500; border:1px solid var(--border2); background:transparent; color:var(--text2); cursor:pointer; transition:all .15s; border-radius:100px; }
+    .pill:hover { border-color:var(--gold); color:var(--gold); }
+    .pill.on { background:var(--gold); border-color:var(--gold); color:#000; font-weight:700; box-shadow:0 4px 18px rgba(232,184,75,.3); }
+    .pill.on-l { border-radius:100px 0 0 100px; background:var(--gold); border-color:var(--gold); color:#000; font-weight:700; border-right:none; }
+    .pill-edit { padding:7px 11px; border-radius:0 100px 100px 0; background:var(--card2); border:1px solid var(--gold); border-left:none; color:var(--gold); cursor:pointer; font-size:13px; transition:all .15s; }
+    .pill-edit:hover { background:var(--gold-dim); }
+    .pill-add { padding:7px 18px; font-size:13px; font-weight:500; border:1.5px dashed var(--border2); background:transparent; color:var(--text3); cursor:pointer; border-radius:100px; transition:all .15s; }
+    .pill-add:hover { border-color:var(--gold); color:var(--gold); }
+    .profile-meta { margin-top:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .profile-note { font-family:'Lora',serif; font-size:14px; color:var(--text2); font-style:italic; }
+    .profile-btn { font-size:12px; font-weight:600; padding:4px 14px; border:1px solid var(--border2); background:transparent; color:var(--text3); border-radius:7px; cursor:pointer; transition:all .15s; }
+    .profile-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .reluctant-tag { font-size:11px; font-weight:700; color:#000; background:var(--gold); border-radius:100px; padding:3px 10px; }
+    .advisory-badge { font-size:11px; font-weight:600; color:var(--gold2); letter-spacing:.04em; }
+
+    /* ── EDITOR ───────────────────────────────────────────────────────── */
+    .editor { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; margin-bottom:16px; }
+    .editor-title { font-family:'Fraunces',serif; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+    .editor-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+    .ed-row { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+    .field { display:flex; flex-direction:column; gap:5px; }
+    .field label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text3); }
+    .finput { padding:10px 13px; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; background:var(--card2); border:1px solid var(--border2); color:var(--text); border-radius:9px; outline:none; transition:border-color .15s,box-shadow .15s; }
+    .finput:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
+    .finput::placeholder { color:var(--text3); }
+    .toggle { display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--card2); border:1px solid var(--border2); border-radius:10px; cursor:pointer; transition:all .15s; margin-bottom:12px; }
+    .toggle:hover, .toggle.on { border-color:var(--gold); background:var(--gold-dim); }
+    .toggle-sw { width:38px; height:22px; background:var(--border2); border-radius:11px; position:relative; transition:background .15s; flex-shrink:0; }
+    .toggle-sw.on { background:var(--gold); }
+    .toggle-knob { position:absolute; top:3px; left:3px; width:16px; height:16px; background:#fff; border-radius:50%; transition:left .15s; box-shadow:0 1px 4px rgba(0,0,0,.5); }
+    .toggle-sw.on .toggle-knob { left:19px; }
+    .toggle-lbl { font-size:13px; font-weight:600; color:var(--text); }
+    .toggle-sub { font-size:12px; color:var(--text3); }
+
+    /* ── ADVISORY BOX ─────────────────────────────────────────────────── */
+    .advisory-box { margin:12px 0; border:1px solid var(--gold-bd); border-radius:12px; background:linear-gradient(135deg,var(--gold-dim),transparent); padding:16px; }
+    .advisory-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+    .advisory-copy { font-family:'Lora',serif; font-size:14px; color:var(--text2); line-height:1.6; margin-bottom:12px; font-style:italic; }
+    .advisory-field { width:100%; padding:10px 13px; font-size:14px; font-family:'Lora',serif; background:var(--card2); border:1px solid var(--border2); color:var(--text); border-radius:9px; outline:none; resize:vertical; line-height:1.6; min-height:80px; transition:border-color .15s; }
+    .advisory-field:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
+    .advisory-field::placeholder { color:var(--text3); }
+    .signal-row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+    .signal-col { flex:1; min-width:160px; display:flex; flex-direction:column; gap:5px; }
+    .signal-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); }
+    .signal-input { padding:8px 12px; font-size:13px; font-family:'Plus Jakarta Sans',sans-serif; background:var(--card2); border:1px solid var(--border2); color:var(--text); border-radius:9px; outline:none; transition:border-color .15s; }
+    .signal-input:focus { border-color:var(--gold); }
+    .signal-input::placeholder { color:var(--text3); }
+
+    /* ── SUMMARY ──────────────────────────────────────────────────────── */
+    .sum-hd { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text3); margin-bottom:6px; padding-bottom:5px; border-bottom:1px solid var(--border); }
+    .sum-sec { margin-bottom:12px; }
+    .sum-item { font-family:'Lora',serif; font-size:14px; color:var(--text2); padding:2px 0; }
+    .signal-pills { display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
+    .signal-pill { font-size:11px; font-weight:600; padding:3px 10px; border-radius:100px; border:1px solid var(--gold-bd); color:var(--gold2); background:var(--gold-dim); }
+    .signal-pill.avoid { border-color:rgba(248,113,113,.3); color:var(--red); background:rgba(248,113,113,.07); }
+
+    /* ── SEARCH MODE TABS ─────────────────────────────────────────────── */
+    .mode-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px; }
+    .mode-tab {
+      padding:16px 12px;
+      background:var(--card);
+      border:1px solid var(--border2);
+      border-radius:12px;
+      cursor:pointer;
+      transition:all .18s;
+      text-align:center;
+      font-family:'Plus Jakarta Sans',sans-serif;
+    }
+    .mode-tab:hover { border-color:var(--gold-bd); background:var(--card2); }
+    .mode-tab.on { border-color:var(--gold); background:var(--gold-dim); box-shadow:0 4px 20px rgba(232,184,75,.1); }
+    .mode-tab-icon { font-size:22px; margin-bottom:6px; display:block; }
+    .mode-tab-label { font-size:13px; font-weight:700; color:var(--text); display:block; margin-bottom:2px; }
+    .mode-tab.on .mode-tab-label { color:var(--gold); }
+    .mode-tab-desc { font-size:11px; color:var(--text3); font-family:'Lora',serif; font-style:italic; }
+
+    /* ── INPUTS ───────────────────────────────────────────────────────── */
+    .inp-sec { margin-bottom:20px; }
+    .main-input { width:100%; padding:13px 16px; font-size:15px; font-family:'Plus Jakarta Sans',sans-serif; background:var(--card); border:1px solid var(--border2); color:var(--text); border-radius:10px; outline:none; transition:border-color .15s,box-shadow .15s; }
+    .main-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
+    .main-input::placeholder { color:var(--text3); }
+    .main-textarea { width:100%; padding:13px 16px; font-size:15px; font-family:'Lora',serif; background:var(--card); border:1px solid var(--border2); color:var(--text); border-radius:10px; outline:none; resize:vertical; line-height:1.75; transition:border-color .15s,box-shadow .15s; }
+    .main-textarea:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
     .main-textarea::placeholder { color:var(--text3); font-style:italic; }
+    .inp-hint { font-size:12px; color:var(--text3); margin-top:6px; }
 
-    /* DROPDOWN */
-    .dropdown { position:absolute; top:100%; left:0; right:0; z-index:30; background:var(--bg2); border:1px solid var(--amber); margin-top:2px; box-shadow:4px 4px 0 rgba(0,0,0,.4); overflow:hidden; }
-    .dropdown-item { padding:10px 14px; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px dotted var(--border); transition:background .15s; font-family:'Crimson Text',serif; }
-    .dropdown-item:last-child { border-bottom:none; }
-    .dropdown-item:hover,.dropdown-item.highlighted { background:var(--bg3); }
-    .dropdown-title { color:var(--text); font-weight:600; }
-    .dropdown-author { color:var(--text3); font-size:13px; margin-left:8px; flex-shrink:0; font-style:italic; }
+    /* ── DROPDOWN ─────────────────────────────────────────────────────── */
+    .dd-wrap { position:relative; }
+    .dd { position:absolute; top:calc(100% + 5px); left:0; right:0; z-index:50; background:var(--card2); border:1px solid var(--border2); border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,.8); overflow:hidden; }
+    .dd-item { padding:11px 16px; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; gap:8px; border-bottom:1px solid var(--border); transition:background .1s; }
+    .dd-item:last-child { border-bottom:none; }
+    .dd-item:hover, .dd-item.hi { background:var(--card3); }
+    .dd-title { color:var(--text); font-weight:500; }
+    .dd-author { color:var(--text3); font-size:12px; flex-shrink:0; font-style:italic; font-family:'Lora',serif; }
 
-    /* TROPES */
-    .trope-section { margin-bottom:14px; }
-    .trope-cat { font-family:'Special Elite',serif; font-size:10px; text-transform:uppercase; letter-spacing:.15em; color:var(--text3); margin-bottom:8px; }
-    .trope-chips { display:flex; flex-wrap:wrap; gap:6px; }
-    .trope-chip { padding:5px 12px; font-size:12px; font-family:'Special Elite',serif; letter-spacing:.04em; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text3); transition:all .2s; border-radius:2px; }
-    .trope-chip:hover { border-color:var(--amber); color:var(--text2); }
-    .trope-chip.selected { background:var(--bg3); border-color:var(--text3); color:var(--text); }
-    .trope-chip.priority { background:var(--amber); border-color:var(--amber2); color:var(--bg); font-weight:700; }
-    .trope-hint { font-size:14px; color:var(--text3); font-style:italic; margin-bottom:12px; font-family:'Crimson Text',serif; }
+    /* ── TROPES ───────────────────────────────────────────────────────── */
+    .trope-sec { margin-bottom:16px; }
+    .trope-cat { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.14em; color:var(--gold2); margin-bottom:8px; font-family:'Plus Jakarta Sans',sans-serif; }
+    .trope-chips { display:flex; flex-wrap:wrap; gap:7px; }
+    .tchip { padding:6px 14px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border2); background:transparent; color:var(--text2); transition:all .15s; border-radius:100px; }
+    .tchip:hover { border-color:var(--gold-bd); color:var(--gold2); }
+    .tchip.sel { background:var(--gold-dim); border-color:var(--gold-bd); color:var(--gold2); font-weight:600; }
+    .tchip.prio { background:var(--gold); border-color:var(--gold); color:#000; font-weight:700; box-shadow:0 4px 14px rgba(232,184,75,.3); }
+    .trope-hint { font-family:'Lora',serif; font-size:14px; color:var(--text3); font-style:italic; margin-bottom:16px; }
 
-    /* CHIPS */
-    .chips-wrap { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
-    .chip { display:flex; align-items:center; gap:4px; padding:4px 10px; background:var(--bg3); border:1px solid var(--border); font-size:12px; color:var(--text2); font-family:'Crimson Text',serif; border-radius:2px; }
-    .chip-remove { background:none; border:none; cursor:pointer; color:var(--text3); padding:0; font-size:16px; line-height:1; }
-    .chip-remove:hover { color:var(--amber); }
-    .chip.gold { border-color:var(--amber); color:var(--amber2); background:var(--bg2); }
+    /* ── CHIPS ────────────────────────────────────────────────────────── */
+    .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .chip { display:flex; align-items:center; gap:5px; padding:4px 12px; background:var(--card2); border:1px solid var(--border2); font-size:13px; color:var(--text2); border-radius:100px; font-family:'Lora',serif; }
+    .chip.gold { border-color:var(--gold-bd); color:var(--gold2); background:var(--gold-dim); }
+    .chip-x { background:none; border:none; cursor:pointer; color:var(--text3); padding:0; font-size:16px; line-height:1; transition:color .1s; }
+    .chip-x:hover { color:var(--red); }
 
-    /* LIKED BANNER */
-    .liked-banner { margin-bottom:16px; padding:10px 14px; background:var(--bg2); border-left:3px solid var(--amber); font-size:14px; font-family:'Crimson Text',serif; }
-    .liked-banner strong { color:var(--amber2); }
-    .liked-banner span { color:var(--text2); }
+    /* ── LIKED BANNER ─────────────────────────────────────────────────── */
+    .liked-banner { display:flex; align-items:flex-start; gap:10px; padding:13px 16px; background:rgba(232,184,75,.06); border:1px solid var(--gold-bd); border-radius:10px; margin-bottom:20px; }
+    .liked-body { font-family:'Lora',serif; font-size:14px; color:var(--text2); line-height:1.5; }
+    .liked-body strong { font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--gold); display:block; margin-bottom:3px; }
 
-    /* BUTTON */
-    .ask-btn { position:relative; width:100%; padding:15px; font-family:'Playfair Display',serif; font-size:16px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; background:var(--amber); color:var(--bg); border:none; cursor:pointer; transition:all .2s; box-shadow:4px 4px 0 rgba(0,0,0,.4); margin-bottom:28px; overflow:hidden; }
-    .ask-btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent); transition:left .5s; }
-    .ask-btn:hover::before { left:100%; }
-    .ask-btn:hover { background:var(--amber2); box-shadow:6px 6px 0 rgba(0,0,0,.5); transform:translate(-1px,-1px); }
-    .ask-btn:active { transform:translate(2px,2px); box-shadow:2px 2px 0 rgba(0,0,0,.4); }
-    .ask-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    /* ── HISTORY ──────────────────────────────────────────────────────── */
+    .history { margin-bottom:20px; }
+    .hchips { display:flex; flex-wrap:wrap; gap:6px; }
+    .hchip { display:flex; align-items:center; gap:7px; padding:6px 14px; background:var(--card); border:1px solid var(--border2); border-radius:100px; font-size:12px; font-weight:500; color:var(--text2); cursor:pointer; transition:all .15s; }
+    .hchip:hover { border-color:var(--gold); color:var(--gold); }
+    .hmode { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); }
 
-    /* RESULTS */
-    .results-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; position:relative; overflow:hidden; }
-    .results-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; font-style:italic; color:var(--amber2); white-space:nowrap; }
-    .results-line { flex:1; height:1px; background:linear-gradient(to right,var(--amber),transparent); }
-    .results-count { font-family:'Special Elite',serif; font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; white-space:nowrap; }
-    .filed-stamp { position:absolute; right:80px; top:50%; transform:translateY(-50%) rotate(-12deg); font-family:'Special Elite',serif; font-size:20px; font-weight:700; color:#8b202088; border:3px solid #8b202088; padding:2px 10px; letter-spacing:.15em; text-transform:uppercase; pointer-events:none; animation:stampIn .35s cubic-bezier(.2,1.4,.4,1) both; }
-    @keyframes stampIn { from{transform:translateY(-50%) rotate(-12deg) scale(2.5);opacity:0} to{transform:translateY(-50%) rotate(-12deg) scale(1);opacity:1} }
+    /* ── SEARCH BUTTON ────────────────────────────────────────────────── */
+    .search-btn {
+      width:100%; padding:16px;
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:15px; font-weight:700; letter-spacing:.06em;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+      color:#000; border:none; border-radius:12px;
+      cursor:pointer; transition:all .2s; margin-bottom:28px;
+      position:relative; overflow:hidden;
+      box-shadow:0 4px 24px rgba(232,184,75,.3);
+    }
+    .search-btn::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent); transition:left .5s; }
+    .search-btn:hover { box-shadow:0 6px 32px rgba(232,184,75,.45); transform:translateY(-1px); }
+    .search-btn:hover::after { left:100%; }
+    .search-btn:active { transform:translateY(0); }
+    .search-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
 
-    /* RESULT CARDS */
-    .result-card { position:relative; padding:16px; margin-bottom:14px; background:var(--bg2); border:1px solid var(--border); border-top:2px solid var(--amber); box-shadow:3px 3px 0 rgba(0,0,0,.3); animation:fadeUp .4s ease both; }
-    .result-card::before { content:attr(data-num); position:absolute; top:-1px; right:12px; font-family:'Playfair Display',serif; font-size:11px; font-style:italic; color:var(--bg); background:var(--amber); padding:1px 8px; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-    .result-inner { display:flex; gap:14px; }
-    .cover { width:60px; height:86px; flex-shrink:0; background:var(--bg3); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:22px; object-fit:cover; transition:transform .2s,box-shadow .2s; }
-    .cover:hover { transform:scale(1.06); box-shadow:3px 3px 12px rgba(201,146,42,.3); }
-    .result-body { flex:1; min-width:0; }
-    .result-title-row { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:3px; }
-    .result-title { font-family:'Playfair Display',serif; font-weight:700; font-size:17px; color:var(--text); line-height:1.2; }
-    .heart-btn { background:none; border:none; cursor:pointer; font-size:20px; padding:0; flex-shrink:0; line-height:1; transition:transform .2s; }
-    .heart-btn:hover { transform:scale(1.2); }
-    .result-meta { font-size:13px; color:var(--text3); margin-bottom:8px; font-family:'Special Elite',serif; }
-    .result-series { margin-left:6px; color:var(--amber); }
-    .result-reason { font-family:'Special Elite',serif; font-size:13px; color:var(--text2); line-height:1.7; border-left:2px solid var(--amber); padding-left:10px; }
-    .cursor { display:inline-block; width:2px; height:13px; background:var(--amber); margin-left:1px; animation:blink .7s step-end infinite; vertical-align:middle; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-    .expand-btn { margin-top:8px; background:none; border:none; cursor:pointer; font-family:'Special Elite',serif; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); padding:0; display:flex; align-items:center; gap:5px; }
-    .expand-btn:hover { color:var(--amber); }
-    .expand-arrow { display:inline-block; transition:transform .25s; font-size:9px; }
-    .expand-arrow.open { transform:rotate(90deg); }
-    .summary-box { margin-top:8px; padding:10px 12px; background:var(--bg3); border-left:2px solid var(--border); font-family:'Crimson Text',serif; font-size:14px; color:var(--text2); line-height:1.6; font-style:italic; animation:fadeUp .2s ease; }
-    .note-field { width:100%; margin-top:12px; padding:7px 10px; font-size:13px; background:var(--bg3); border:1px dashed var(--border); color:var(--text2); resize:none; font-family:'Special Elite',serif; outline:none; line-height:1.6; border-radius:2px; }
-    .note-field:focus { border-color:var(--amber); }
-    .note-field::placeholder { color:var(--text3); }
+    /* ── CONSTRAINT PANEL ─────────────────────────────────────────────── */
+    .constraint-panel { background:var(--card); border:1px solid var(--gold-bd); border-radius:12px; padding:18px; margin-bottom:24px; }
+    .constraint-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+    .constraint-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+    .constraint-query { font-family:'Lora',serif; font-size:14px; color:var(--text2); font-style:italic; margin-bottom:12px; }
+    .constraint-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .constraint-card { background:var(--card2); border:1px solid var(--border2); border-radius:10px; padding:12px; }
+    .constraint-card h4 { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+    .constraint-card.must h4   { color:var(--gold); }
+    .constraint-card.prefer h4 { color:var(--text3); }
+    .constraint-card.avoid h4  { color:var(--red); }
+    .constraint-pills { display:flex; flex-wrap:wrap; gap:5px; }
+    .cpill { font-size:11px; font-weight:600; padding:3px 9px; border-radius:100px; border:1px solid; }
+    .cpill.must   { border-color:var(--gold-bd); color:var(--gold2); background:var(--gold-dim); }
+    .cpill.prefer { border-color:var(--border2); color:var(--text3); background:transparent; }
+    .cpill.avoid  { border-color:rgba(248,113,113,.3); color:var(--red); background:rgba(248,113,113,.07); }
 
-    /* MORE / MISC */
-    .more-btn { display:block; margin:20px auto 0; padding:10px 28px; font-family:'Special Elite',serif; font-size:12px; letter-spacing:.1em; text-transform:uppercase; background:transparent; color:var(--amber); border:1px solid var(--amber); cursor:pointer; transition:all .2s; border-radius:2px; }
-    .more-btn:hover { background:var(--amber); color:var(--bg); box-shadow:3px 3px 0 rgba(0,0,0,.3); }
-    .more-btn:disabled { opacity:.4; cursor:not-allowed; }
-    .error-msg { font-size:14px; color:#e07070; font-style:italic; margin-bottom:14px; font-family:'Crimson Text',serif; }
-    .empty-msg { font-size:17px; color:var(--text3); font-style:italic; font-family:'Playfair Display',serif; text-align:center; padding:2rem 0; }
-    .ornament { text-align:center; color:var(--amber); font-size:14px; margin:8px 0 22px; letter-spacing:.4em; font-family:'Playfair Display',serif; }
-    .btn-primary { padding:8px 16px; font-size:13px; background:var(--amber); color:var(--bg); border:none; cursor:pointer; font-family:'Special Elite',serif; box-shadow:2px 2px 0 rgba(0,0,0,.3); border-radius:2px; }
-    .btn-primary:hover { background:var(--amber2); }
-    .btn-secondary { padding:8px 14px; font-size:13px; background:transparent; color:var(--text2); border:1px solid var(--border); cursor:pointer; font-family:'Special Elite',serif; border-radius:2px; }
-    .btn-danger { padding:8px 14px; font-size:13px; background:transparent; color:#e07070; border:1px solid #8b404044; cursor:pointer; font-family:'Special Elite',serif; border-radius:2px; }
+    /* ── RESULTS HEADER ───────────────────────────────────────────────── */
+    .results-hdr { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+    .results-title { font-family:'Fraunces',serif; font-size:26px; font-weight:700; color:var(--cream); letter-spacing:-.02em; font-style:italic; }
+    .results-line { flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+    .results-count { font-size:12px; font-weight:600; color:var(--text3); white-space:nowrap; }
 
-    /* LOADING TIGER VIDEO */
-    .loading-tiger-video {
-      width: 220px;
-      max-width: 100%;
-      height: auto;
-      display: block;
-      margin: 0 auto 14px;
-      border-radius: 8px;
-      box-shadow: 4px 4px 0 rgba(0,0,0,.35);
-      border: 1px solid var(--border2);
-      background: var(--bg2);
+    /* ── RESULT CARD GRID ─────────────────────────────────────────────── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
     }
 
-    /* TYPEWRITER LOADING */
-    .typewriter-loading { padding:2.5rem 0 2rem; text-align:center; margin-bottom:28px; }
-    .tw-paper { display:inline-block; background:var(--paper); border:1px solid var(--paper2); box-shadow:4px 4px 0 rgba(0,0,0,.4); padding:24px 32px; max-width:420px; width:100%; position:relative; }
-    .tw-paper::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:repeating-linear-gradient(90deg,var(--bg3) 0px,var(--bg3) 8px,transparent 8px,transparent 12px); }
-    .tw-lines { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
-    .tw-line { height:2px; background:#c8b898; border-radius:1px; animation:twLine 2s ease-in-out infinite; }
-    .tw-line:nth-child(1){width:80%;animation-delay:0s} .tw-line:nth-child(2){width:95%;animation-delay:.15s} .tw-line:nth-child(3){width:70%;animation-delay:.3s} .tw-line:nth-child(4){width:88%;animation-delay:.45s}
-    @keyframes twLine { 0%,100%{opacity:.3} 50%{opacity:.8} }
-    .tw-text { font-family:'Special Elite',serif; font-size:13px; letter-spacing:.1em; color:var(--bg3); text-transform:uppercase; border-top:1px solid var(--paper2); padding-top:12px; animation:twTextFade 1.5s ease-in-out infinite; }
-    @keyframes twTextFade { 0%,100%{opacity:.5} 50%{opacity:1} }
+    .rcard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      animation: fadeUp .4s ease both;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
 
-    /* MOBILE */
-    @media(max-width:540px){
-      .header-inner{flex-direction:column;align-items:flex-start;gap:1rem}
-      .logo-badge img{width:80px;height:80px} .title{font-size:26px}
-      .tabs{overflow-x:auto} .tab{padding:8px 14px;font-size:11px}
-      .ask-btn{font-size:14px;padding:13px}
-      .loading-tiger-video{width:180px}
-      .result-card{padding:12px} .result-title{font-size:15px}
-      .editor-row{flex-direction:column} .analytics-cols{flex-direction:column}
+    /* gold accent bar along top */
+    .rcard::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .rcard:hover::before { opacity: 1; }
+    .rcard:hover { border-color:var(--gold-bd); box-shadow:0 10px 40px rgba(0,0,0,.5); transform:translateY(-3px); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    /* card number badge */
+    .rnum {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-bd);
+      font-family: 'Fraunces', serif;
+      font-size: 11px; font-weight: 700;
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, color .2s;
+    }
+    .rcard:hover .rnum { background: var(--gold); color: #000; }
+
+    /* cover + body */
+    .rinner { display:flex; gap:14px; margin-bottom:12px; }
+    .cover {
+      width: 68px; height: 98px;
+      flex-shrink: 0;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      object-fit: cover;
+      transition: transform .2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,.4);
+    }
+    .cover:hover { transform: scale(1.04) rotate(-1deg); }
+    .rbody { flex:1; min-width:0; }
+    .rtitle { font-family:'Fraunces',serif; font-weight:700; font-size:16px; color:var(--cream); line-height:1.2; letter-spacing:-.01em; margin-bottom:4px; padding-right:28px; }
+    .rmeta { font-size:12px; font-weight:500; color:var(--text3); margin-bottom:10px; }
+    .rseries { color:var(--gold2); margin-left:5px; font-weight:600; }
+
+    /* reason text */
+    .rreason { font-family:'Lora',serif; font-size:13px; color:var(--text2); line-height:1.65; border-left:2px solid var(--gold-bd); padding-left:10px; margin-bottom:10px; }
+    .cursor { display:inline-block; width:2px; height:12px; background:var(--gold); margin-left:2px; animation:blink .7s step-end infinite; vertical-align:middle; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* heart button */
+    .heart-btn { position:absolute; top:14px; right:44px; background:none; border:none; cursor:pointer; font-size:18px; padding:0; line-height:1; transition:transform .15s; }
+    .heart-btn:hover { transform:scale(1.25); }
+
+    /* expand */
+    .expand-btn { background:none; border:none; cursor:pointer; font-size:12px; font-weight:600; color:var(--text3); padding:0; display:flex; align-items:center; gap:4px; transition:color .15s; margin-bottom:10px; }
+    .expand-btn:hover { color:var(--gold); }
+    .earrow { display:inline-block; transition:transform .2s; font-size:9px; }
+    .earrow.open { transform:rotate(90deg); }
+    .sum-box { margin-bottom:10px; padding:10px 12px; background:var(--card2); border-radius:8px; font-family:'Lora',serif; font-size:13px; color:var(--text2); line-height:1.7; font-style:italic; border-left:2px solid var(--gold-bd); animation:fadeUp .2s ease; }
+
+    /* note field */
+    .note-field { width:100%; padding:9px 12px; font-size:12px; font-family:'Plus Jakarta Sans',sans-serif; background:var(--card2); border:1.5px dashed var(--border2); color:var(--text); resize:none; outline:none; line-height:1.6; border-radius:8px; transition:border-color .15s; margin-top:auto; }
+    .note-field:focus { border-color:var(--gold); border-style:solid; box-shadow:0 0 0 3px var(--gold-dim); }
+    .note-field::placeholder { color:var(--text3); font-size:11px; }
+
+    /* feedback row */
+    .feedback-row { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+    .feedback-btn { padding:4px 10px; font-size:11px; font-weight:600; background:transparent; border:1px solid var(--border2); color:var(--text3); border-radius:100px; cursor:pointer; transition:all .15s; }
+    .feedback-btn:hover { border-color:var(--gold-bd); color:var(--gold2); }
+    .feedback-btn.on { background:var(--gold-dim); border-color:var(--gold-bd); color:var(--gold2); }
+    .feedback-btn.on.negative { background:rgba(248,113,113,.07); border-color:rgba(248,113,113,.3); color:var(--red); }
+
+    /* ── RESULTS ACTIONS ──────────────────────────────────────────────── */
+    .ractions { display:flex; gap:8px; justify-content:center; margin-top:4px; margin-bottom:16px; flex-wrap:wrap; }
+    .act-btn { padding:9px 22px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:600; background:var(--card); border:1px solid var(--border2); color:var(--text2); border-radius:10px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:6px; }
+    .act-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .act-btn.primary { border-color:var(--gold-bd); color:var(--gold2); }
+    .act-btn.primary:hover { background:var(--gold-dim); border-color:var(--gold); }
+
+    /* ── SAVED LISTS ──────────────────────────────────────────────────── */
+    .saved-panel { margin-top:28px; }
+    .saved-panel-title { font-family:'Fraunces',serif; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+    .saved-panel-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+    .saved-item { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:10px; transition:border-color .2s; }
+    .saved-item:hover { border-color:var(--gold-bd); }
+    .saved-item-title { font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:var(--cream); margin-bottom:4px; font-style:italic; }
+    .saved-item-meta { font-size:12px; font-weight:500; color:var(--text3); margin-bottom:10px; }
+    .saved-books { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px; }
+    .saved-book-pill { font-size:11px; font-weight:600; padding:3px 10px; border-radius:100px; border:1px solid var(--gold-bd); color:var(--gold2); background:var(--gold-dim); }
+    .saved-item-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .saved-act { padding:6px 14px; font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; font-weight:600; background:transparent; border:1px solid var(--border2); color:var(--text2); border-radius:8px; cursor:pointer; transition:all .15s; }
+    .saved-act:hover { border-color:var(--gold); color:var(--gold); }
+    .saved-act.del:hover { border-color:rgba(248,113,113,.4); color:var(--red); }
+    .saved-empty { text-align:center; padding:20px; font-family:'Lora',serif; font-size:15px; color:var(--text3); font-style:italic; border:1px dashed var(--border2); border-radius:12px; }
+
+    /* ── LOADING ──────────────────────────────────────────────────────── */
+    .loading-wrap { text-align:center; padding:3rem 0 2rem; }
+    .loading-emblem { width:80px; height:80px; border-radius:50%; border:1px solid var(--gold-bd); display:flex; align-items:center; justify-content:center; margin:0 auto 24px; position:relative; background:var(--gold-dim); }
+    .loading-emblem::before { content:''; position:absolute; inset:-8px; border-radius:50%; border:1px dashed var(--gold-bd); animation:spin 4s linear infinite; }
+    .loading-emblem-txt { font-family:'Fraunces',serif; font-size:28px; font-weight:900; color:var(--gold); animation:pulse 1.5s ease-in-out infinite; }
+    .loading-card { display:inline-block; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px 30px; max-width:360px; width:100%; }
+    .lbars { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+    .lbar { height:3px; background:var(--card3); border-radius:2px; overflow:hidden; position:relative; }
+    .lbar::after { content:''; position:absolute; top:0; left:-100%; height:100%; background:linear-gradient(90deg,transparent,var(--gold2),transparent); border-radius:2px; animation:lslide 1.8s ease-in-out infinite; }
+    .lbar:nth-child(1)::after{width:80%}.lbar:nth-child(2)::after{width:95%;animation-delay:.15s}.lbar:nth-child(3)::after{width:70%;animation-delay:.3s}.lbar:nth-child(4)::after{width:88%;animation-delay:.45s}
+    @keyframes lslide { 0%{left:-100%} 100%{left:110%} }
+    .ltext { font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; border-top:1px solid var(--border); padding-top:14px; animation:tfade 1.5s ease-in-out infinite; }
+    @keyframes tfade { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+    /* ── EMPTY ────────────────────────────────────────────────────────── */
+    .empty { text-align:center; padding:3.5rem 0; }
+    .empty-title { font-family:'Fraunces',serif; font-size:22px; font-style:italic; color:var(--text2); margin-bottom:6px; }
+    .empty-sub { font-size:13px; color:var(--text3); margin-bottom:24px; }
+    .empty-actions { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+    .echip { padding:9px 20px; font-size:13px; font-weight:600; background:var(--card); border:1.5px solid var(--border2); border-radius:100px; cursor:pointer; color:var(--text2); transition:all .15s; }
+    .echip:hover { border-color:var(--gold); color:var(--gold); }
+
+    /* ── ERROR ────────────────────────────────────────────────────────── */
+    .error-msg { font-size:13px; font-weight:500; color:var(--red); margin-bottom:14px; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--red-dim); border:1px solid rgba(248,113,113,.2); border-radius:10px; }
+
+    /* ── BUTTONS ──────────────────────────────────────────────────────── */
+    .btn-row { display:flex; gap:8px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .btn { padding:10px 20px; font-size:13px; font-weight:600; border-radius:9px; cursor:pointer; transition:all .15s; font-family:'Plus Jakarta Sans',sans-serif; }
+    .btn-primary { background:var(--gold); color:#000; border:none; box-shadow:0 2px 14px rgba(232,184,75,.3); }
+    .btn-primary:hover { background:var(--gold2); }
+    .btn-secondary { background:transparent; color:var(--text2); border:1px solid var(--border2); }
+    .btn-secondary:hover { border-color:var(--text2); color:var(--text); }
+    .btn-danger { background:transparent; color:var(--red); border:1px solid rgba(248,113,113,.25); }
+    .btn-danger:hover { background:var(--red-dim); }
+
+    /* ── PRINT ────────────────────────────────────────────────────────── */
+    @media print {
+      .hero,.toasts,.search-btn,.ractions,.mode-tabs,.history,.status-bar,.feedback-row,.saved-panel { display:none !important; }
+      body { background:#fff; color:#000; }
+      .results-grid { grid-template-columns:1fr; }
+      .rcard { border:1px solid #ccc; box-shadow:none; page-break-inside:avoid; background:#fff; }
+      .rtitle,.results-title { color:#000; }
+      .rreason,.rmeta { color:#444; }
+      #root { max-width:100%; padding:1rem; }
+    }
+
+    /* ── MOBILE ───────────────────────────────────────────────────────── */
+    @media(max-width:640px) {
+      .hero { padding:3rem 1.5rem 3rem; }
+      .logo-ring { width:130px; height:130px; }
+      .hero-logo { width:88px; height:88px; }
+      .hero-title { font-size:32px; }
+      .results-grid { grid-template-columns:1fr; }
+      .mode-tabs { grid-template-columns:1fr; gap:8px; }
+      .rcard { padding:14px; }
+      .rtitle { font-size:15px; }
+      .ed-row { flex-direction:column; }
+      .stat-cols { flex-direction:column; }
+      .ractions { flex-direction:column; align-items:stretch; }
+      .act-btn { justify-content:center; }
+      .constraint-grid { grid-template-columns:1fr; }
+      .signal-row { flex-direction:column; }
+      .cover { width:58px; height:84px; }
     }
   </style>
 </head>
 <body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="logo-ring">
+      <img class="hero-logo" src="logo.png" alt="Fletcher Library"/>
+    </div>
+    <div class="hero-eyebrow">Fletcher Middle School Library</div>
+    <h1 class="hero-title">Library Assistant</h1>
+    <div class="ornament">◆ &nbsp; ◆ &nbsp; ◆</div>
+    <p class="hero-subtitle">Curated book recommendations for every reader</p>
+    <div class="hero-btns" id="hero-btns"></div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-item"><div class="dot spin" id="catalog-dot"></div><span id="catalog-txt">Loading catalog…</span></div>
+  <div class="status-item"><div class="dot spin" id="embed-dot"></div><span id="embed-txt">Initializing semantic search…</span></div>
+</div>
+
 <div id="root"></div>
 
-<!-- Corner tigers -->
-<img id="coffee-tiger" class="tiger-corner visible" src="images/detective_cat_coffee_loop_apng_slow.png" alt=""/>
-
 <script type="text/babel">
-const WORKER_URL="https://anthropic-proxy.roman-carlos09.workers.dev";
-const CSV_FILE="books_fiction.csv";
-const LOGO_FILE="logo.png";
-const ROMAN=["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+// ── CONSTANTS ────────────────────────────────────────────────────────────
+const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
+const EMBED_URL  = `${WORKER_URL}/embed`;
+const CSV_FILE   = "books_fiction_enriched.csv";
+const ROMAN      = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+const STAGE_MSGS = ["Scanning the catalog…","Analyzing your request…","Finding the best matches…","Ranking by relevance…","Almost ready…"];
 
-const TROPES=[
+// ── DATA ─────────────────────────────────────────────────────────────────
+const TROPES = [
   {id:"enemies_to_lovers",label:"Enemies to Lovers",cat:"Romance"},
   {id:"slow_burn",label:"Slow Burn",cat:"Romance"},
   {id:"love_triangle",label:"Love Triangle",cat:"Romance"},
@@ -289,112 +698,135 @@ const TROPES=[
   {id:"mythology_retelling",label:"Mythology Retelling",cat:"Fantasy & Sci-fi"},
   {id:"chosen_one",label:"Chosen One",cat:"Fantasy & Sci-fi"},
 ];
+const TROPE_KEYWORDS={enemies_to_lovers:["enemy","enemies","rival","rivals","hate","hatred","despise","antagonist"],slow_burn:["tension","slowly","gradually","building","eventually"],love_triangle:["triangle","torn","choosing","between"],forbidden_love:["forbidden","secret","romeo","juliet"],fake_dating:["fake","pretend","pretending","act"],second_chance_romance:["second","chance","reunion","rekindled","reconnect"],fast_paced:["fast","thrilling","gripping","action","rapid","pulse"],action_and_fighting:["battle","fight","fighting","war","combat","sword","warrior","weapon"],murder_mystery:["murder","mystery","detective","killer","crime","investigation","suspect","clue","victim"],heist:["heist","steal","theft","con","scheme"],survival:["survival","survive","stranded","wilderness","danger"],revenge:["revenge","vengeance","payback","betray","betrayal"],road_trip:["journey","road","trip","travel","adventure","quest"],found_family:["family","bond","loyalty","found","together"],searching_for_belonging:["belong","belonging","outcast","lonely","fit","place"],coming_of_age:["grow","growing","mature","teen","teenager","adolescent"],identity_and_self_discovery:["identity","discover","herself","himself","themselves","real"],overcoming_adversity:["overcome","struggle","challenge","adversity","hardship"],characters_with_disabilities:["disability","disabled","wheelchair","blind","deaf"],deep_topics:["grief","loss","death","depression","trauma","difficult","profound"],realistic_fiction:["realistic","contemporary","modern","ordinary","everyday"],friendship:["friend","friends","friendship","best","companion"],sports_story:["sport","sports","basketball","football","soccer","team","athlete","game"],drug_use:["drug","drugs","addiction","substance","alcohol"],abuse:["abuse","abusive","violence","domestic","assault","trauma"],poverty:["poor","poverty","homeless","money","economic"],racism:["race","racism","racist","discrimination","prejudice","segregation"],based_on_true_events:["true","historical","real","actual","history"],special_powers_or_abilities:["power","powers","ability","magic","gift","special","supernatural"],fantasy_mystery:["mystery","magic","fantasy","investigate","clue","magical"],magic_school:["school","academy","magic","wizard","witch","spell"],dystopian:["dystopia","dystopian","government","control","rebellion","oppressive","regime"],post_apocalyptic:["apocalypse","apocalyptic","destroyed","collapse","ruins"],time_travel:["time","travel","past","future","century"],portal_fantasy:["portal","another","world","realm","dimension"],mythology_retelling:["myth","mythology","retelling","legend","god","goddess","greek","norse"],chosen_one:["chosen","destined","destiny","prophecy","fate","hero"]};
+const CATS   = [...new Set(TROPES.map(t=>t.cat))];
+const STOP   = new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
+const GRADES = ["6th","7th","8th"];
+const DEFAULT_ANALYTICS = {totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
 
-const TROPE_KEYWORDS={
-  enemies_to_lovers:["enemy","enemies","rival","rivals","hate","hatred","despise","antagonist"],
-  slow_burn:["tension","slowly","gradually","building","eventually"],
-  love_triangle:["triangle","torn","choosing","between"],
-  forbidden_love:["forbidden","secret","romeo","juliet"],
-  fake_dating:["fake","pretend","pretending","act"],
-  second_chance_romance:["second","chance","reunion","rekindled","reconnect"],
-  fast_paced:["fast","thrilling","gripping","action","rapid","pulse"],
-  action_and_fighting:["battle","fight","fighting","war","combat","sword","warrior","weapon"],
-  murder_mystery:["murder","mystery","detective","killer","crime","investigation","suspect","clue","victim"],
-  heist:["heist","steal","theft","con","scheme"],
-  survival:["survival","survive","stranded","wilderness","danger"],
-  revenge:["revenge","vengeance","payback","betray","betrayal"],
-  road_trip:["journey","road","trip","travel","adventure","quest"],
-  found_family:["family","bond","loyalty","found","together"],
-  searching_for_belonging:["belong","belonging","outcast","lonely","fit","place"],
-  coming_of_age:["grow","growing","mature","teen","teenager","adolescent"],
-  identity_and_self_discovery:["identity","discover","herself","himself","themselves","real"],
-  overcoming_adversity:["overcome","struggle","challenge","adversity","hardship"],
-  characters_with_disabilities:["disability","disabled","wheelchair","blind","deaf"],
-  deep_topics:["grief","loss","death","depression","trauma","difficult","profound"],
-  realistic_fiction:["realistic","contemporary","modern","ordinary","everyday"],
-  friendship:["friend","friends","friendship","best","companion"],
-  sports_story:["sport","sports","basketball","football","soccer","team","athlete","game"],
-  drug_use:["drug","drugs","addiction","substance","alcohol"],
-  abuse:["abuse","abusive","violence","domestic","assault","trauma"],
-  poverty:["poor","poverty","homeless","money","economic"],
-  racism:["race","racism","racist","discrimination","prejudice","segregation"],
-  based_on_true_events:["true","historical","real","actual","history"],
-  special_powers_or_abilities:["power","powers","ability","magic","gift","special","supernatural"],
-  fantasy_mystery:["mystery","magic","fantasy","investigate","clue","magical"],
-  magic_school:["school","academy","magic","wizard","witch","spell"],
-  dystopian:["dystopia","dystopian","government","control","rebellion","oppressive","regime"],
-  post_apocalyptic:["apocalypse","apocalyptic","destroyed","collapse","ruins"],
-  time_travel:["time","travel","past","future","century"],
-  portal_fantasy:["portal","another","world","realm","dimension"],
-  mythology_retelling:["myth","mythology","retelling","legend","god","goddess","greek","norse"],
-  chosen_one:["chosen","destined","destiny","prophecy","fate","hero"],
-};
+// ── UTILITIES ────────────────────────────────────────────────────────────
+const uid      = () => Math.random().toString(36).slice(2,9);
+const tokenize = t => (t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
+const lsLoad   = (k,fb) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;} };
+const lsSave   = (k,v)  => { try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
+function cosine(a,b){ let d=0,na=0,nb=0; for(let i=0;i<a.length;i++){d+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return d/(Math.sqrt(na)*Math.sqrt(nb)||1); }
+function splitSignals(v){ if(Array.isArray(v)) return v.map(x=>String(x).trim()).filter(Boolean); return String(v||"").split(/[,;\n]/).map(x=>x.trim()).filter(Boolean); }
+function advisoryTextForProfile(p){ if(!p) return ""; const t=splitSignals(p.tasteSignals),a=splitSignals(p.avoidSignals),parts=[]; if(p.advisoryNotes) parts.push(`Librarian advisory notes: ${p.advisoryNotes}`); if(t.length) parts.push(`Reader taste signals: ${t.join(", ")}`); if(a.length) parts.push(`Avoid or be cautious with: ${a.join(", ")}`); return parts.join("\n"); }
+function updateStatus(id,cls,txt){ const d=document.getElementById(`${id}-dot`),l=document.getElementById(`${id}-txt`); if(d) d.className=`dot ${cls}`; if(l) l.textContent=txt; }
 
-const CATS=[...new Set(TROPES.map(t=>t.cat))];
-const STOP=new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
-const GRADES=["6th","7th","8th"];
-const DEFAULT_ANALYTICS={totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
-
-const uid=()=>Math.random().toString(36).slice(2,9);
-const tokenize=t=>(t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
-const shuffle=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-const lsLoad=(k,fb)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}};
-const lsSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
-
-// Coffee tiger visibility during loading
-function setCoffeeTigerVisible(visible){
-  const coffee=document.getElementById('coffee-tiger');
-  if(!coffee) return;
-  coffee.className = visible ? 'tiger-corner visible' : 'tiger-corner hidden';
+function parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike}){
+  const q=(query||"").toLowerCase(), adv=advisoryTextForProfile(activeProfile).toLowerCase(), combined=`${q} ${adv} ${(didntLike||"").toLowerCase()}`;
+  const must=[],prefer=[],avoid=[];
+  const add=(arr,v)=>{ if(v&&!arr.some(x=>x.toLowerCase()===v.toLowerCase())) arr.push(v); };
+  if(mode==="similar"&&refBook){ add(must,`Similar appeal to "${refBook.title}"`); add(prefer,"Matching tone, pacing, and themes"); }
+  if(mode==="tropes") TROPES.filter(t=>selTropes.has(t.id)).forEach(t=>{ if(t.id===priorityTrope) add(must,t.label); else add(prefer,t.label); });
+  const rules=[["Fantasy or magical elements",/fantasy|magic|magical|spell|witch|powers?/,"prefer"],["Mystery / investigation",/mystery|murder|detective|clue|crime/,"prefer"],["Girl / female protagonist",/girl|female|heroine/,"prefer"],["Sports element",/sports?|basketball|football|soccer|athlete/,"prefer"],["Romance element",/romance|love|crush|enemies to lovers/,"prefer"],["Fast-paced",/fast|action|exciting|adventure|short chapters/,"prefer"],["Accessible / reluctant-reader",/easy|reluctant|short|accessible/,"prefer"],["Realistic fiction",/realistic|contemporary|real life/,"prefer"],["No animal protagonists",/not animals?|no animals?|not dragons?/,"avoid"],["Avoid heavy romance",/no romance|avoid romance|romance.?light/,"avoid"],["Avoid slow pacing",/not slow|avoid slow|too slow/,"avoid"]];
+  rules.forEach(([label,re,type])=>{ if(re.test(combined)) add(type==="avoid"?avoid:prefer,label); });
+  splitSignals(activeProfile?.tasteSignals).forEach(s=>add(prefer,s));
+  splitSignals(activeProfile?.avoidSignals).forEach(s=>add(avoid,s));
+  if(activeProfile?.reluctant) add(prefer,"Reluctant-reader friendly pacing");
+  if(activeProfile?.likedBooks?.length) add(prefer,`Appeal from liked books: ${activeProfile.likedBooks.slice(0,3).join(", ")}`);
+  if(alreadyRead?.size) add(avoid,`${alreadyRead.size} already-read title${alreadyRead.size===1?"":"s"} excluded`);
+  if(didntLike?.trim()) add(avoid,`Qualities similar to: "${didntLike.trim()}"`);
+  if(!must.length) add(must,"Relevant titles from the Fletcher catalog");
+  if(!prefer.length) add(prefer,"Strong reader appeal match");
+  if(!avoid.length) add(avoid,"No extra exclusions");
+  return{mustHave:must.slice(0,6),softPreferences:prefer.slice(0,8),avoidSignals:avoid.slice(0,6),originalQuery:mode==="similar"?(refBook?.title||query):mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(", "):query};
 }
 
-
-function getCandidates(books,kws,priorityKws=[],likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),doShuffle=false){
-  const kSet=new Set(kws),pSet=new Set(priorityKws),lSet=new Set(likedKws);
-  let pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
-  let scored=pool.map(b=>{
-    const subjectToks=new Set(tokenize(b.subjects||""));
-    const summaryToks=new Set(tokenize(b.summary||""));
-    const titleToks=new Set(tokenize(b.title||""));
-    const base=[...kSet].filter(k=>subjectToks.has(k)).length*3+[...kSet].filter(k=>summaryToks.has(k)).length+[...kSet].filter(k=>titleToks.has(k)).length;
-    const boost=[...pSet].filter(k=>subjectToks.has(k)).length*5+[...pSet].filter(k=>summaryToks.has(k)).length*2;
-    const liked=[...lSet].filter(k=>subjectToks.has(k)).length*4+[...lSet].filter(k=>summaryToks.has(k)).length*2;
-    return{...b,_s:base+boost+liked};
-  }).filter(b=>b._s>0);
+// ── CANDIDATES ───────────────────────────────────────────────────────────
+async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null){
+  const pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
+  const authorLast=refAuthor?refAuthor.split(',')[0].trim().toLowerCase():null;
+  const sameAuthor=new Set(authorLast?pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title):[]);
+  if(bookEmbeddings&&Object.keys(bookEmbeddings).length>0){
+    try{
+      const res=await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
+      if(!res.ok) throw new Error(`embed ${res.status}`);
+      const{embedding:qEmb}=await res.json();
+      const lSet=new Set(likedKws);
+      return pool.map(b=>{ const bEmb=bookEmbeddings[b.title],sim=bEmb?cosine(qEmb,bEmb):0,toks=tokenize(`${b.enriched_subjects||b.subjects||''} ${b.enriched_summary||b.summary||''}`),lb=toks.filter(t=>lSet.has(t)).length*0.01,ab=sameAuthor.has(b.title)?0.15:0; return{...b,_s:sim+lb+ab}; }).sort((a,b)=>b._s-a._s).slice(0,n);
+    }catch(err){console.warn('Embedding failed:',err);}
+  }
+  const kws=tokenize(queryText),kSet=new Set(kws),lSet=new Set(likedKws);
+  let scored=pool.map(b=>{ const st=new Set(tokenize(b.enriched_subjects||b.subjects||'')),sm=new Set(tokenize(b.enriched_summary||b.summary||'')),ti=new Set(tokenize(b.title||'')); const base=[...kSet].filter(k=>st.has(k)).length*3+[...kSet].filter(k=>sm.has(k)).length+[...kSet].filter(k=>ti.has(k)).length,liked=[...lSet].filter(k=>st.has(k)).length*4+[...lSet].filter(k=>sm.has(k)).length*2; return{...b,_s:base+liked+(sameAuthor.has(b.title)?10:0)}; }).filter(b=>b._s>0);
   if(!scored.length) scored=pool;
-  scored=doShuffle?shuffle(scored):scored.sort((a,b)=>b._s-a._s);
-  return scored.slice(0,n);
+  return scored.sort((a,b)=>b._s-a._s).slice(0,n);
 }
 
-async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote=""){
+// ── CLAUDE ── UPGRADED ───────────────────────────────────────────────────
+async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote="",advisoryNote="",structured=null){
+
+  // UPGRADE 1: Richer candidate metadata — pages, reading level, series, subjects
+  const list=candidates.map((b,i)=>{
+    const pages=b.pages?`${b.pages}pp`:'';
+    const rl=b.pages?(b.pages<250?'Quick Read':b.pages<=350?'Standard':'Long Haul'):'';
+    const series=b.series?`Series: ${b.series}`:'';
+    const meta=[pages,rl,series].filter(Boolean).join(' · ');
+    const subjects=(b.enriched_subjects||b.subjects||'').split('|').slice(0,5).filter(Boolean).join(', ');
+    const summary=(b.enriched_summary||b.summary||'').slice(0,260);
+    return `${i+1}. "${b.title}" by ${b.author}${meta?` [${meta}]`:''}
+   Subjects: ${subjects||'—'}
+   ${summary}`;
+  }).join("\n\n");
+
   const exclNote=excluded.length?`\n\nDo NOT recommend: ${excluded.join(", ")}`:"";
   const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.`:"";
   const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
-  const list=candidates.map((b,i)=>`${i+1}. "${b.title}" by ${b.author}\n   ${(b.summary||"").slice(0,200)}`).join("\n\n");
+  const advNote=advisoryNote?`\n\nLibrarian advisory notes:\n${advisoryNote}`:"";
+  const structNote=structured?`\n\nStructured reader model:\nMust have: ${structured.mustHave.join(", ")}\nPrefer: ${structured.softPreferences.join(", ")}\nAvoid/check: ${structured.avoidSignals.join(", ")}`:"";
 
-  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
-      system:"You are a school librarian recommending middle school and YA fiction. Return only valid JSON arrays, no markdown.",
-      messages:[{role:"user",content:`${ctx}${prioNote}${likedNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}\n\nChoose 6 best matches:\n\n${list}\n\nReturn ONLY: [{"title":"...","author":"...","reason":"1-2 sentence explanation"}]`}]})});
+  // UPGRADE 2: Improved system prompt with specific librarian reasoning guidance
+  const systemPrompt=`You are an expert school librarian at Fletcher Middle School recommending middle school and YA fiction.
+
+Your goal is to match students with books they will genuinely love and actually finish — not just books that are thematically adjacent.
+
+When selecting picks:
+- Prioritize books the student is likely to finish, not just start
+- For reluctant readers, fast pacing, short chapters, and a strong hook on page one matter more than literary merit
+- Series starters are valuable — they create reading momentum
+- Match emotional register: a student going through something hard may need levity; a bored reader may need intensity
+- Aim for variety in tone, length, and genre across your 6 picks
+- Never recommend books the student has already read or disliked
+
+For each pick write a 2-3 sentence reason that explains specifically why THIS student would connect with this book — not a generic summary.
+
+Return only valid JSON arrays, no markdown, no text outside the JSON.`;
+
+  // UPGRADE 3: Lite chain-of-thought — brief reasoning before JSON output
+  const userPrompt=`${ctx}${prioNote}${likedNote}${advNote}${structNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}
+
+Before selecting, think through 2-3 sentences: what does this specific reader need right now, and what qualities should the strongest picks share?
+
+Then select the 6 best matches from the catalog below. The JSON array must be the final thing you output — nothing after it.
+
+[{"title":"...","author":"...","reason":"2-3 sentence personalized explanation"}]
+
+Catalog:
+${list}`;
+
+  // UPGRADE 4: max_tokens bumped from 1000 to 2000
+  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    model:"claude-sonnet-4-6",
+    max_tokens:2000,
+    system:systemPrompt,
+    messages:[{role:"user",content:userPrompt}]
+  })});
 
   const raw=await res.text();
-  if(!res.ok){
-    console.error("Claude worker error:",res.status,raw);
-    throw new Error(`Claude worker returned ${res.status}`);
-  }
-
-  let data;
-  try{ data=JSON.parse(raw); }
-  catch(err){
-    console.error("Worker did not return JSON:",raw);
-    throw err;
-  }
-
+  if(!res.ok) throw new Error(`Worker ${res.status}`);
+  let data;try{data=JSON.parse(raw);}catch(e){throw e;}
   const text=data.content?.[0]?.text||"[]";
-  const cleaned=text.replace(/```json|```/g,"").trim();
-  const jsonText=(cleaned.match(/\[[\s\S]*\]/)||[cleaned])[0];
+  const clean=text.replace(/```json|```/g,"").trim();
+  // UPGRADE 5: More robust extraction — finds JSON array of objects specifically,
+  // handles any CoT reasoning text that may appear before the JSON
+  const jsonMatch=clean.match(/\[\s*\{[\s\S]*\}\s*\]/);
+  const jsonText=jsonMatch?jsonMatch[0]:clean;
   return JSON.parse(jsonText);
 }
+
+// ── COMPONENTS ───────────────────────────────────────────────────────────
+function Toasts({toasts}){ return <div className="toasts">{toasts.map(t=><div key={t.id} className={`toast ${t.type}`}>{t.msg}</div>)}</div>; }
 
 function CoverImg({isbn}){
   const[failed,setFailed]=React.useState(false);
@@ -405,125 +837,112 @@ function CoverImg({isbn}){
 function TypewriterText({text}){
   const[displayed,setDisplayed]=React.useState("");
   const[done,setDone]=React.useState(false);
-  React.useEffect(()=>{
-    setDisplayed("");setDone(false);let i=0;
-    const iv=setInterval(()=>{if(i<text.length){setDisplayed(text.slice(0,i+1));i++;}else{setDone(true);clearInterval(iv);}},18);
-    return()=>clearInterval(iv);
-  },[text]);
-  return <span className="result-reason">{displayed}{!done&&<span className="cursor"/>}</span>;
+  React.useEffect(()=>{setDisplayed("");setDone(false);let i=0;const iv=setInterval(()=>{if(i<text.length){setDisplayed(text.slice(0,i+1));i++;}else{setDone(true);clearInterval(iv);}},16);return()=>clearInterval(iv);},[text]);
+  return <span className="rreason">{displayed}{!done&&<span className="cursor"/>}</span>;
 }
 
-function NoteField({title}){
+function NoteField({title,onSave}){
   const key=`note:${title}`;
   const[note,setNote]=React.useState(()=>localStorage.getItem(key)||"");
   const onChange=v=>{setNote(v);localStorage.setItem(key,v);};
-  return <textarea className="note-field" value={note} onChange={e=>onChange(e.target.value)} placeholder="Detective's notes…" rows={1}
-    onFocus={e=>e.target.rows=3} onBlur={e=>{if(!note)e.target.rows=1;}}/>;
+  return <textarea className="note-field" value={note} onChange={e=>onChange(e.target.value)} onBlur={()=>{if(note&&onSave)onSave();}} placeholder="Librarian notes…" rows={1} onFocus={e=>e.target.rows=3}/>;
 }
 
-function ResultCard({book,index,activeProfile,onHeart}){
-  const[expanded,setExpanded]=React.useState(false);
-  const isLiked=activeProfile?.likedBooks?.includes(book.title);
-  return <div className="result-card" data-num={ROMAN[index]||index+1} style={{animationDelay:`${index*0.08}s`}}>
-    <div className="result-inner">
-      <CoverImg isbn={book.isbn}/>
-      <div className="result-body">
-        <div className="result-title-row">
-          <span className="result-title">{book.title}</span>
-          {activeProfile&&<button className="heart-btn" onClick={()=>onHeart(book.title)} style={{color:isLiked?"#e05030":"var(--border)"}}>
-            {isLiked?"♥":"♡"}
-          </button>}
-        </div>
-        <div className="result-meta">{book.author}{book.series&&<span className="result-series">· {book.series}</span>}</div>
-        <TypewriterText text={book.reason||""}/>
-        {book.summary&&<>
-          <button className="expand-btn" onClick={()=>setExpanded(p=>!p)}>
-            <span className={`expand-arrow${expanded?" open":""}`}>▶</span>
-            {expanded?"Hide summary":"Read the blurb"}
-          </button>
-          {expanded&&<div className="summary-box">{book.summary}</div>}
-        </>}
-      </div>
+function ConstraintPanel({structured}){
+  if(!structured) return null;
+  return <div className="constraint-panel">
+    <div className="constraint-title">How we read this request</div>
+    {structured.originalQuery&&<div className="constraint-query">"{structured.originalQuery}"</div>}
+    <div className="constraint-grid">
+      <div className="constraint-card must"><h4>Must Have</h4><div className="constraint-pills">{structured.mustHave.map((x,i)=><span key={i} className="cpill must">{x}</span>)}</div></div>
+      <div className="constraint-card prefer"><h4>Preferred</h4><div className="constraint-pills">{structured.softPreferences.map((x,i)=><span key={i} className="cpill prefer">{x}</span>)}</div></div>
+      <div className="constraint-card avoid"><h4>Avoid / Check</h4><div className="constraint-pills">{structured.avoidSignals.map((x,i)=><span key={i} className="cpill avoid">{x}</span>)}</div></div>
     </div>
-    <NoteField title={book.title}/>
   </div>;
 }
 
-function BookSearch({books,exclude,onSelect,placeholder}){
-  const[inp,setInp]=React.useState("");
-  const[sugg,setSugg]=React.useState([]);
-  const[hi,setHi]=React.useState(-1);
-  const onChange=v=>{setInp(v);setHi(-1);if(v.length>1)setSugg(books.filter(b=>(b.title||"").toLowerCase().includes(v.toLowerCase())&&!exclude.has(b.title)).slice(0,6));else setSugg([]);};
-  const pick=b=>{onSelect(b);setInp("");setSugg([]);setHi(-1);};
-  const onKD=e=>{
-    if(!sugg.length) return;
-    if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,sugg.length-1));}
-    else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}
-    else if(e.key==="Enter"&&hi>=0){e.preventDefault();pick(sugg[hi]);}
-    else if(e.key==="Escape"){setSugg([]);setHi(-1);}
-  };
-  return <div style={{position:"relative"}}>
-    <input className="field-input" style={{width:"100%"}} value={inp} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder={placeholder||"Type a title…"}/>
-    {sugg.length>0&&<div className="dropdown">
-      {sugg.map((b,i)=><div key={i} className={`dropdown-item${hi===i?" highlighted":""}`} onClick={()=>pick(b)}>
-        <span className="dropdown-title">{b.title}</span><span className="dropdown-author">{b.author}</span>
-      </div>)}
-    </div>}
-  </div>;
-}
-
-function MainInput({value,onChange,onEnter,suggestions,onSelectSuggestion,clearSuggestions}){
-  const[hi,setHi]=React.useState(-1);
-  const onKD=e=>{
-    if(suggestions.length){
-      if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,suggestions.length-1));}
-      else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}
-      else if(e.key==="Enter"&&hi>=0){e.preventDefault();onSelectSuggestion(suggestions[hi]);setHi(-1);}
-      else if(e.key==="Enter"){e.preventDefault();clearSuggestions();onEnter();}
-      else if(e.key==="Escape"){clearSuggestions();setHi(-1);}
-    } else if(e.key==="Enter"){e.preventDefault();onEnter();}
-  };
-  return <div style={{position:"relative"}}>
-    <input className="main-input" value={value} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder="Start typing a title…"/>
-    {suggestions.length>0&&<div className="dropdown">
-      {suggestions.map((b,i)=><div key={i} className={`dropdown-item${hi===i?" highlighted":""}`} onClick={()=>{onSelectSuggestion(b);setHi(-1);}}>
-        <span className="dropdown-title">{b.title}</span><span className="dropdown-author">{b.author}</span>
-      </div>)}
-    </div>}
-  </div>;
-}
-
-function ChipList({items,onRemove,gold}){
-  if(!items.length) return null;
-  return <div className="chips-wrap">
-    {items.map((t,i)=><div key={i} className={gold?"chip gold":"chip"}>
-      <span>{t}</span><button className="chip-remove" onClick={()=>onRemove(t)}>×</button>
+function SavedListsPanel({savedLists,onOpen,onDelete,onPrint,onCopy}){
+  if(!savedLists.length) return <div className="saved-panel"><div className="saved-panel-title">Saved Lists</div><div className="saved-empty">No saved lists yet. Generate recommendations and click "Save List."</div></div>;
+  return <div className="saved-panel">
+    <div className="saved-panel-title">Saved Lists</div>
+    {savedLists.map(list=><div key={list.id} className="saved-item">
+      <div className="saved-item-title">{list.name}</div>
+      <div className="saved-item-meta">{new Date(list.createdAt).toLocaleDateString()} · {list.books?.length||0} titles{list.profileName?` · ${list.profileName}`:""}</div>
+      <div className="saved-books">{(list.books||[]).slice(0,5).map(b=><span key={b.title} className="saved-book-pill">{b.title}</span>)}{list.books?.length>5&&<span className="saved-book-pill">+{list.books.length-5} more</span>}</div>
+      <div className="saved-item-actions">
+        <button className="saved-act" onClick={()=>onOpen(list)}>Open</button>
+        <button className="saved-act" onClick={()=>onPrint(list)}>Print</button>
+        <button className="saved-act" onClick={()=>onCopy(list)}>Copy</button>
+        <button className="saved-act del" onClick={()=>onDelete(list.id)}>Delete</button>
+      </div>
     </div>)}
   </div>;
 }
 
-function StudentSummary({profile,onClose}){
-  return <div className="summary-panel">
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-      <div className="summary-panel-title">Case Summary — {profile.initials} · {profile.grade}</div>
-      <button className="summary-view-btn" onClick={onClose}>Close</button>
+function ResultCard({book,index,activeProfile,onHeart,onNoteSave,onFeedback,feedbackState}){
+  const[expanded,setExpanded]=React.useState(false);
+  const isLiked=activeProfile?.likedBooks?.includes(book.title);
+  const summary=book.enriched_summary||book.summary;
+  const fb=feedbackState?.[book.title]||{};
+  const feedbackItems=[["good","Good Match",false],["notfit","Not a Fit",true],["hard","Too Hard",true],["mature","Content Check",true]];
+  return <div className="rcard" style={{animationDelay:`${index*0.06}s`}}>
+    <div className="rnum">{ROMAN[index]||index+1}</div>
+    {activeProfile&&<button className="heart-btn" onClick={()=>onHeart(book.title)} style={{color:isLiked?"#F87171":"var(--border2)"}}>{isLiked?"♥":"♡"}</button>}
+    <div className="rinner">
+      <CoverImg isbn={book.isbn}/>
+      <div className="rbody">
+        <div className="rtitle">{book.title}</div>
+        <div className="rmeta">{book.author}{book.series&&<span className="rseries">· {book.series}</span>}</div>
+        <TypewriterText text={book.reason||""}/>
+      </div>
     </div>
-    {profile.notes&&<div className="summary-section">
-      <div className="summary-section-label">On file</div>
-      <div style={{fontFamily:"'Crimson Text',serif",fontSize:14,color:"var(--text2)",fontStyle:"italic"}}>"{profile.notes}"</div>
+    {summary&&<>
+      <button className="expand-btn" onClick={()=>setExpanded(p=>!p)}><span className={`earrow${expanded?" open":""}`}>▶</span>{expanded?"Hide summary":"Read summary"}</button>
+      {expanded&&<div className="sum-box">{summary}</div>}
+    </>}
+    <NoteField title={book.title} onSave={onNoteSave}/>
+    <div className="feedback-row">{feedbackItems.map(([key,label,negative])=>(
+      <button key={key} className={`feedback-btn${fb[key]?" on"+(negative?" negative":""):""}`} onClick={()=>onFeedback&&onFeedback(book.title,key)}>{label}</button>
+    ))}</div>
+  </div>;
+}
+
+function BookSearch({books,exclude,onSelect,placeholder}){
+  const[inp,setInp]=React.useState("");const[sugg,setSugg]=React.useState([]);const[hi,setHi]=React.useState(-1);
+  const onChange=v=>{setInp(v);setHi(-1);if(v.length>1)setSugg(books.filter(b=>(b.title||"").toLowerCase().includes(v.toLowerCase())&&!exclude.has(b.title)).slice(0,6));else setSugg([]);};
+  const pick=b=>{onSelect(b);setInp("");setSugg([]);setHi(-1);};
+  const onKD=e=>{if(!sugg.length)return;if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,sugg.length-1));}else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}else if(e.key==="Enter"&&hi>=0){e.preventDefault();pick(sugg[hi]);}else if(e.key==="Escape"){setSugg([]);setHi(-1);}};
+  return <div className="dd-wrap"><input className="finput" style={{width:"100%"}} value={inp} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder={placeholder||"Type a title…"}/>{sugg.length>0&&<div className="dd">{sugg.map((b,i)=><div key={i} className={`dd-item${hi===i?" hi":""}`} onClick={()=>pick(b)}><span className="dd-title">{b.title}</span><span className="dd-author">{b.author}</span></div>)}</div>}</div>;
+}
+
+function MainInput({value,onChange,onEnter,suggestions,onSelect,clearSugg}){
+  const[hi,setHi]=React.useState(-1);
+  const onKD=e=>{if(suggestions.length){if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,suggestions.length-1));}else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}else if(e.key==="Enter"&&hi>=0){e.preventDefault();onSelect(suggestions[hi]);setHi(-1);}else if(e.key==="Enter"){e.preventDefault();clearSugg();onEnter();}else if(e.key==="Escape"){clearSugg();setHi(-1);}}else if(e.key==="Enter"){e.preventDefault();onEnter();}};
+  return <div className="dd-wrap"><input className="main-input" value={value} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder="Start typing a title…"/>{suggestions.length>0&&<div className="dd">{suggestions.map((b,i)=><div key={i} className={`dd-item${hi===i?" hi":""}`} onClick={()=>{onSelect(b);setHi(-1);}}><span className="dd-title">{b.title}</span><span className="dd-author">{b.author}</span></div>)}</div>}</div>;
+}
+
+function ChipList({items,onRemove,gold}){
+  if(!items.length) return null;
+  return <div className="chips">{items.map((t,i)=><div key={i} className={`chip${gold?" gold":""}`}><span>{t}</span><button className="chip-x" onClick={()=>onRemove(t)}>×</button></div>)}</div>;
+}
+
+function ProfileSummary({profile,onClose}){
+  const taste=splitSignals(profile.tasteSignals),avoid=splitSignals(profile.avoidSignals);
+  return <div className="panel" style={{marginBottom:16}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+      <div className="panel-title" style={{marginBottom:0}}>Profile — {profile.initials} · {profile.grade}</div>
+      <button className="profile-btn" onClick={onClose}>Close</button>
+    </div>
+    {profile.notes&&<div className="sum-sec"><div className="sum-hd">Reading preferences</div><div className="sum-item" style={{fontStyle:"italic"}}>"{profile.notes}"</div></div>}
+    {profile.reluctant&&<div className="sum-sec"><div className="sum-hd">Reader type</div><div className="sum-item"><span className="reluctant-tag">⚡ Reluctant reader</span></div></div>}
+    {(profile.advisoryNotes||taste.length||avoid.length)&&<div className="sum-sec">
+      <div className="sum-hd">Reader advisory notes</div>
+      {profile.advisoryNotes&&<div className="sum-item" style={{fontStyle:"italic",marginBottom:8}}>"{profile.advisoryNotes}"</div>}
+      {taste.length>0&&<><div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:"var(--text3)",margin:"6px 0 4px"}}>Taste signals</div><div className="signal-pills">{taste.map(t=><span key={t} className="signal-pill">{t}</span>)}</div></>}
+      {avoid.length>0&&<><div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:"var(--text3)",margin:"8px 0 4px"}}>Avoid / caution</div><div className="signal-pills">{avoid.map(t=><span key={t} className="signal-pill avoid">{t}</span>)}</div></>}
     </div>}
-    {profile.reluctant&&<div className="summary-section">
-      <div className="summary-section-label">Reader type</div>
-      <div style={{fontFamily:"'Special Elite',serif",fontSize:12,color:"var(--amber)"}}>⚡ Reluctant reader — short chapters, fast pacing</div>
-    </div>}
-    <div className="summary-section">
-      <div className="summary-section-label">Liked books ({(profile.likedBooks||[]).length})</div>
-      {(profile.likedBooks||[]).length?profile.likedBooks.map((t,i)=><div key={i} className="summary-book">❤ {t}</div>):<span className="summary-empty">No liked books yet</span>}
-    </div>
-    <div className="summary-section">
-      <div className="summary-section-label">Already read ({(profile.alreadyRead||[]).length})</div>
-      {(profile.alreadyRead||[]).length?profile.alreadyRead.map((t,i)=><div key={i} className="summary-book">✓ {t}</div>):<span className="summary-empty">No books on record</span>}
-    </div>
+    <div className="sum-sec"><div className="sum-hd">Liked books ({(profile.likedBooks||[]).length})</div>{(profile.likedBooks||[]).length?profile.likedBooks.map((t,i)=><div key={i} className="sum-item">❤ {t}</div>):<div className="sum-item" style={{color:"var(--text3)"}}>None recorded</div>}</div>
+    <div className="sum-sec"><div className="sum-hd">Already read ({(profile.alreadyRead||[]).length})</div>{(profile.alreadyRead||[]).length?profile.alreadyRead.map((t,i)=><div key={i} className="sum-item">✓ {t}</div>):<div className="sum-item" style={{color:"var(--text3)"}}>None recorded</div>}</div>
   </div>;
 }
 
@@ -533,47 +952,45 @@ function ProfileEditor({profile,books,onSave,onDelete,onCancel}){
   const[grade,setGrade]=React.useState(profile.grade||"6th");
   const[notes,setNotes]=React.useState(profile.notes||"");
   const[reluctant,setReluctant]=React.useState(profile.reluctant||false);
+  const[advisoryNotes,setAdvisoryNotes]=React.useState(profile.advisoryNotes||"");
+  const[tasteSignals,setTasteSignals]=React.useState(splitSignals(profile.tasteSignals).join(", "));
+  const[avoidSignals,setAvoidSignals]=React.useState(splitSignals(profile.avoidSignals).join(", "));
   const[liked,setLiked]=React.useState(profile.likedBooks||[]);
   const[read,setRead]=React.useState(profile.alreadyRead||[]);
-  const save=()=>{if(!initials.trim()){alert("Please enter initials.");return;}onSave({...profile,id:profile.id||uid(),initials:initials.trim().toUpperCase(),grade,notes,reluctant,likedBooks:liked,alreadyRead:read});};
+  const save=()=>{if(!initials.trim()){alert("Please enter initials.");return;}onSave({...profile,id:profile.id||uid(),initials:initials.trim().toUpperCase(),grade,notes,reluctant,advisoryNotes,tasteSignals:splitSignals(tasteSignals),avoidSignals:splitSignals(avoidSignals),likedBooks:liked,alreadyRead:read});};
   return <div className="editor">
-    <div style={{fontFamily:"'Special Elite',serif",fontSize:11,letterSpacing:".15em",textTransform:"uppercase",color:"var(--amber)",marginBottom:12}}>{isNew?"New Case File":"Edit Case File"}</div>
-    <div className="editor-row">
-      <div className="field-group" style={{flex:"0 0 76px"}}>
-        <label className="field-label">Initials</label>
-        <input className="field-input" value={initials} onChange={e=>setInitials(e.target.value)} maxLength={5} placeholder="A.R." style={{textAlign:"center",fontWeight:700}}/>
-      </div>
-      <div className="field-group" style={{flex:"0 0 86px"}}>
-        <label className="field-label">Grade</label>
-        <select className="field-input" value={grade} onChange={e=>setGrade(e.target.value)} style={{background:"var(--bg3)"}}>
-          {GRADES.map(g=><option key={g}>{g}</option>)}
-        </select>
-      </div>
-      <div className="field-group" style={{flex:1,minWidth:130}}>
-        <label className="field-label">Reading preferences</label>
-        <input className="field-input" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="loves fantasy, avoids romance…"/>
+    <div className="editor-title">{isNew?"New Student Profile":"Edit Student Profile"}</div>
+    <div className="ed-row">
+      <div className="field" style={{flex:"0 0 82px"}}><label>Initials</label><input className="finput" value={initials} onChange={e=>setInitials(e.target.value)} maxLength={5} placeholder="A.R." style={{textAlign:"center",fontWeight:700}}/></div>
+      <div className="field" style={{flex:"0 0 92px"}}><label>Grade</label><select className="finput" value={grade} onChange={e=>setGrade(e.target.value)} style={{background:"var(--card2)"}}>{GRADES.map(g=><option key={g}>{g}</option>)}</select></div>
+      <div className="field" style={{flex:1,minWidth:130}}><label>Reading preferences</label><input className="finput" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="e.g. loves fantasy, avoids romance…"/></div>
+    </div>
+    <div className={`toggle${reluctant?" on":""}`} onClick={()=>setReluctant(p=>!p)}>
+      <div className={`toggle-sw${reluctant?" on":""}`}><div className="toggle-knob"/></div>
+      <div><div className="toggle-lbl">⚡ Reluctant reader</div><div className="toggle-sub">Prioritize short, fast-paced books with high action</div></div>
+    </div>
+    <div className="advisory-box">
+      <div className="advisory-title">Reader Advisory Notes</div>
+      <div className="advisory-copy">Capture what this reader responds to. These notes go directly to Claude and improve recommendation quality.</div>
+      <textarea className="advisory-field" value={advisoryNotes} onChange={e=>setAdvisoryNotes(e.target.value)} placeholder="Example: Loved Amari because of the hidden magical world, girl protagonist, and mystery. Avoid animal protagonists and slow openings."/>
+      <div className="signal-row">
+        <div className="signal-col"><div className="signal-label">Taste signals (comma-separated)</div><input className="signal-input" value={tasteSignals} onChange={e=>setTasteSignals(e.target.value)} placeholder="hidden magic, fast pacing, girl protagonist"/></div>
+        <div className="signal-col"><div className="signal-label">Avoid / caution (comma-separated)</div><input className="signal-input" value={avoidSignals} onChange={e=>setAvoidSignals(e.target.value)} placeholder="animal protagonists, slow opening"/></div>
       </div>
     </div>
-    <div className={`reluctant-toggle${reluctant?" on":""}`} onClick={()=>setReluctant(p=>!p)}>
-      <div className={`toggle-switch${reluctant?" on":""}`}><div className="toggle-knob"/></div>
-      <div><div className="toggle-label">⚡ Reluctant reader</div><div className="toggle-sub">Prioritize short chapters, fast pacing, high action</div></div>
-    </div>
-    <div style={{marginBottom:10}}>
-      <label className="field-label" style={{display:"block",marginBottom:5}}>Liked books</label>
-      <BookSearch books={books} exclude={new Set(liked)} onSelect={b=>setLiked(prev=>[...prev,b.title])} placeholder="Add a book they love…"/>
+    <div style={{marginBottom:12}}>
+      <div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:"var(--text3)",marginBottom:6}}>Liked books</div>
+      <BookSearch books={books} exclude={new Set(liked)} onSelect={b=>setLiked(prev=>[...prev,b.title])} placeholder="Add a book they enjoy…"/>
       <ChipList items={liked} onRemove={t=>setLiked(prev=>prev.filter(x=>x!==t))} gold/>
     </div>
-    <div style={{marginBottom:14}}>
-      <label className="field-label" style={{display:"block",marginBottom:5}}>Already read</label>
-      <BookSearch books={books} exclude={new Set(read)} onSelect={b=>setRead(prev=>[...prev,b.title])} placeholder="Add a book they've read…"/>
+    <div style={{marginBottom:16}}>
+      <div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:"var(--text3)",marginBottom:6}}>Already read</div>
+      <BookSearch books={books} exclude={new Set(read)} onSelect={b=>setRead(prev=>[...prev,b.title])} placeholder="Add a book they've finished…"/>
       <ChipList items={read} onRemove={t=>setRead(prev=>prev.filter(x=>x!==t))}/>
     </div>
-    <div style={{display:"flex",gap:8,justifyContent:"space-between"}}>
-      <div style={{display:"flex",gap:8}}>
-        <button className="btn-primary" onClick={save}>{isNew?"File the Case":"Save Changes"}</button>
-        <button className="btn-secondary" onClick={onCancel}>Cancel</button>
-      </div>
-      {!isNew&&<button className="btn-danger" onClick={()=>onDelete(profile.id)}>Close Case</button>}
+    <div className="btn-row">
+      <div style={{display:"flex",gap:8}}><button className="btn btn-primary" onClick={save}>{isNew?"Save Profile":"Update Profile"}</button><button className="btn btn-secondary" onClick={onCancel}>Cancel</button></div>
+      {!isNew&&<button className="btn btn-danger" onClick={()=>onDelete(profile.id)}>Delete Profile</button>}
     </div>
   </div>;
 }
@@ -582,51 +999,46 @@ function AnalyticsPanel({analytics}){
   const topTropes=Object.entries(analytics.tropeSearches||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const topBooks=Object.entries(analytics.recommendedBooks||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const sm=analytics.searchModes||{};
-  return <div className="analytics-panel">
-    <div className="analytics-title">The Ledger</div>
-    <div className="analytics-stats">
-      {[["Total",analytics.totalSearches||0],["Similar",sm.similar||0],["Trope",sm.tropes||0],["Describe",sm.freetext||0]].map(([l,v])=>(
-        <div key={l} className="stat-box"><div className="stat-num">{v}</div><div className="stat-label">{l}</div></div>
-      ))}
-    </div>
-    <div className="analytics-cols">
-      <div className="analytics-col">
-        <div className="analytics-col-title">Top tropes</div>
-        {topTropes.length?topTropes.map(([id,n])=>{const label=TROPES.find(t=>t.id===id)?.label||id;return <div key={id} className="analytics-row"><span>{label}</span><span>{n}</span></div>;}): <span className="analytics-empty">No cases yet</span>}
-      </div>
-      <div className="analytics-col">
-        <div className="analytics-col-title">Most filed</div>
-        {topBooks.length?topBooks.map(([title,n])=><div key={title} className="analytics-row"><span style={{flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:8}}>{title}</span><span>{n}</span></div>):<span className="analytics-empty">No cases yet</span>}
-      </div>
+  return <div className="panel" style={{marginBottom:16}}>
+    <div className="panel-title">Usage Statistics</div>
+    <div className="stats-row">{[["Total",analytics.totalSearches||0],["Find Similar",sm.similar||0],["By Trope",sm.tropes||0],["Describe It",sm.freetext||0]].map(([l,v])=>(<div key={l} className="stat-box"><div className="stat-n">{v}</div><div className="stat-l">{l}</div></div>))}</div>
+    <div className="stat-cols">
+      <div className="stat-col"><div className="stat-col-h">Top tropes</div>{topTropes.length?topTropes.map(([id,n])=>{const label=TROPES.find(t=>t.id===id)?.label||id;return <div key={id} className="stat-row"><span>{label}</span><span>{n}</span></div>;}): <span className="stat-empty">No searches yet</span>}</div>
+      <div className="stat-col"><div className="stat-col-h">Most recommended</div>{topBooks.length?topBooks.map(([title,n])=><div key={title} className="stat-row"><span style={{flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:8}}>{title}</span><span>{n}</span></div>):<span className="stat-empty">No data yet</span>}</div>
     </div>
   </div>;
 }
 
-function TypewriterLoading({text}){
-  return <div className="typewriter-loading">
-    <video
-      className="loading-tiger-video"
-      src="A_–_second_seamless_loop_for.mp4"
-      autoPlay
-      muted
-      loop
-      playsInline
-    />
-    <div className="tw-paper">
-      <div className="tw-lines"><div className="tw-line"/><div className="tw-line"/><div className="tw-line"/><div className="tw-line"/></div>
-      <div className="tw-text">{text}</div>
+function AboutPanel(){
+  return <div className="panel about-card" style={{marginBottom:16}}>
+    <div className="panel-title">About This Tool</div>
+    <p>The Fletcher Library Assistant uses AI-powered semantic search to match students with books from the Fletcher Middle School fiction catalog. Vector embeddings, enriched MARC data, and Claude AI work together to surface the most relevant titles — understanding meaning, not just keywords.</p>
+    <p><strong>Find Similar</strong> — Enter a book a student loved. <strong>By Trope</strong> — Browse narrative themes. <strong>Describe It</strong> — Write a freeform request. Student profiles with advisory notes, taste signals, and liked books all actively shape results.</p>
+    <div className="ftags">{["3,500+ Fiction Titles","Voyage AI Embeddings","Claude Sonnet","Enriched MARC Data","Student Profiles","Advisory Notes","Structured Judgment","Feedback System"].map(t=><span key={t} className="ftag">{t}</span>)}</div>
+  </div>;
+}
+
+function LoadingView({stageMsg}){
+  return <div className="loading-wrap">
+    <div className="loading-emblem"><div className="loading-emblem-txt">F</div></div>
+    <div className="loading-card">
+      <div className="lbars"><div className="lbar"/><div className="lbar"/><div className="lbar"/><div className="lbar"/></div>
+      <div className="ltext">{stageMsg}</div>
     </div>
   </div>;
 }
 
+// ── APP ──────────────────────────────────────────────────────────────────
 function App(){
   const[books,setBooks]=React.useState([]);
   const[bookCount,setBookCount]=React.useState(0);
+  const[bookEmbeddings,setBookEmbeddings]=React.useState(null);
   const[loadError,setLoadError]=React.useState(false);
   const[profiles,setProfiles]=React.useState(()=>lsLoad("profiles",[]));
   const[activeProfileId,setActiveProfileId]=React.useState(null);
   const[editing,setEditing]=React.useState(null);
-  const[showAnalytics,setShowAnalytics]=React.useState(false);
+  const[showStats,setShowStats]=React.useState(false);
+  const[showAbout,setShowAbout]=React.useState(false);
   const[showSummary,setShowSummary]=React.useState(false);
   const[analytics,setAnalytics]=React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
   const[mode,setMode]=React.useState("similar");
@@ -638,278 +1050,248 @@ function App(){
   const[results,setResults]=React.useState(null);
   const[loading,setLoading]=React.useState(false);
   const[loadingMore,setLoadingMore]=React.useState(false);
+  const[stageMsg,setStageMsg]=React.useState(STAGE_MSGS[0]);
   const[error,setError]=React.useState("");
   const[suggestions,setSuggestions]=React.useState([]);
   const[refBook,setRefBook]=React.useState(null);
   const[shownTitles,setShownTitles]=React.useState(new Set());
-  const[showStamp,setShowStamp]=React.useState(false);
+  const[toasts,setToasts]=React.useState([]);
+  const[searchHistory,setSearchHistory]=React.useState([]);
+  const[structuredRequest,setStructuredRequest]=React.useState(null);
+  const[feedback,setFeedback]=React.useState(()=>lsLoad("feedback",{}));
+  const[savedLists,setSavedLists]=React.useState(()=>lsLoad("savedLists",[]));
+  const[showSavedLists,setShowSavedLists]=React.useState(false);
   const lastSearch=React.useRef(null);
+  const structuredRef=React.useRef(null);
+  const stageRef=React.useRef(null);
+  const resultsRef=React.useRef(null);
 
   React.useEffect(()=>{
     fetch(CSV_FILE).then(r=>{if(!r.ok)throw new Error();return r.text();})
-      .then(text=>{Papa.parse(text,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);}});})
-      .catch(()=>setLoadError(true));
+      .then(t=>Papa.parse(t,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);updateStatus('catalog','ready',`${r.data.length.toLocaleString()} titles loaded`);}}))
+      .catch(()=>{setLoadError(true);updateStatus('catalog','','Could not load catalog');});
   },[]);
 
-  // Hide the corner coffee tiger while the loading video is showing.
-  React.useEffect(()=>{setCoffeeTigerVisible(!(loading||loadingMore));},[loading,loadingMore]);
+  React.useEffect(()=>{
+    fetch('book_embeddings.json').then(r=>{if(!r.ok)throw new Error();return r.json();})
+      .then(d=>{setBookEmbeddings(d);updateStatus('embed','ready','Semantic search ready');})
+      .catch(()=>{setBookEmbeddings({});updateStatus('embed','','Keyword search active');});
+  },[]);
 
+  React.useEffect(()=>{
+    if(loading||loadingMore){let i=0;stageRef.current=setInterval(()=>{i=(i+1)%STAGE_MSGS.length;setStageMsg(STAGE_MSGS[i]);},2000);}
+    else{if(stageRef.current)clearInterval(stageRef.current);setStageMsg(STAGE_MSGS[0]);}
+    return()=>{if(stageRef.current)clearInterval(stageRef.current);};
+  },[loading,loadingMore]);
+
+  React.useEffect(()=>{
+    if(results?.length&&resultsRef.current) setTimeout(()=>resultsRef.current.scrollIntoView({behavior:'smooth',block:'start'}),150);
+  },[results]);
+
+  React.useEffect(()=>{
+    const el=document.getElementById('hero-btns');
+    if(!el||!ReactDOM.createRoot) return;
+    const root=ReactDOM.createRoot(el);
+    root.render(<>
+      <button className={`hero-btn${showAbout?" on":""}`} onClick={()=>{setShowAbout(p=>!p);setShowStats(false);}}>About</button>
+      <button className={`hero-btn${showStats?" on":""}`} onClick={()=>{setShowStats(p=>!p);setShowAbout(false);}}>Stats</button>
+    </>);
+  },[showAbout,showStats]);
+
+  const addToast=(msg,type='success')=>{const id=Date.now()+Math.random();setToasts(p=>[...p,{id,msg,type}]);setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),2800);};
   const saveProfiles=p=>{setProfiles(p);lsSave("profiles",p);};
   const saveAnalytics=a=>{setAnalytics(a);lsSave("analytics",a);};
   const activeProfile=profiles.find(p=>p.id===activeProfileId)||null;
 
-  const selectProfile=id=>{
-    setActiveProfileId(id);setEditing(null);setResults(null);setShownTitles(new Set());lastSearch.current=null;setShowSummary(false);
-    setAlreadyRead(id?new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]):new Set());
+  const selectProfile=id=>{setActiveProfileId(id);setEditing(null);setResults(null);setShownTitles(new Set());lastSearch.current=null;setShowSummary(false);setStructuredRequest(null);setAlreadyRead(id?new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]):new Set());};
+  const toggleHeart=title=>{if(!activeProfile)return;const liked=activeProfile.likedBooks||[];const nowLiked=!liked.includes(title);const updated=nowLiked?[...liked,title]:liked.filter(t=>t!==title);saveProfiles(profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p));addToast(nowLiked?'❤ Added to liked books':'Removed from liked books');};
+  const markFeedback=(title,key)=>{const next={...feedback,[title]:{...(feedback[title]||{}),[key]:!(feedback[title]?.[key])}};setFeedback(next);lsSave("feedback",next);addToast("Feedback saved ✓");};
+
+  const saveCurrentList=()=>{
+    if(!results?.length){addToast("Generate recommendations first","info");return;}
+    const name=prompt("Name this list:",activeProfile?`${activeProfile.initials} — recommendations`:"Fletcher recommendations");
+    if(!name) return;
+    const list={id:uid(),name,createdAt:new Date().toISOString(),profileName:activeProfile?.initials||"",request:structuredRequest?.originalQuery||query||"",books:results};
+    const next=[list,...savedLists];setSavedLists(next);lsSave("savedLists",next);setShowSavedLists(true);addToast("List saved ✓");
   };
 
-  const toggleHeart=title=>{
-    if(!activeProfile) return;
-    const liked=activeProfile.likedBooks||[];
-    const updated=liked.includes(title)?liked.filter(t=>t!==title):[...liked,title];
-    saveProfiles(profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p));
-  };
+  const openSavedList=list=>{setResults(list.books||[]);setStructuredRequest(null);addToast("Saved list loaded");setTimeout(()=>resultsRef.current?.scrollIntoView({behavior:'smooth',block:'start'}),150);};
+  const deleteSavedList=id=>{const next=savedLists.filter(l=>l.id!==id);setSavedLists(next);lsSave("savedLists",next);addToast("List deleted");};
+  const printSavedList=list=>{const html=`<html><head><title>${list.name}</title><style>body{font-family:Georgia,serif;padding:32px;line-height:1.5}h1{font-size:26px;margin-bottom:4px}.meta{color:#666;font-size:13px;margin-bottom:24px}h2{font-size:18px;margin-top:20px}.book{break-inside:avoid;margin:18px 0;padding-bottom:14px;border-bottom:1px solid #ddd}</style></head><body><h1>Fletcher Library — Recommended Reads</h1><p class="meta">${list.name} · ${new Date(list.createdAt).toLocaleString()}</p>${(list.books||[]).map((b,i)=>`<div class="book"><h2>${i+1}. ${b.title}</h2><p><em>${b.author||""}</em></p><p>${b.reason||""}</p></div>`).join("")}</body></html>`;const w=window.open("","_blank");w.document.write(html);w.document.close();w.focus();w.print();};
+  const copySavedList=list=>{const text=(list.books||[]).map((b,i)=>`${i+1}. ${b.title} by ${b.author||""}\n   ${b.reason||""}`).join("\n\n");navigator.clipboard.writeText(text).then(()=>addToast('📋 List copied')).catch(()=>addToast('Could not copy','error'));};
 
-  const trackSearch=(m,tropes=[])=>{
-    const a={...analytics,totalSearches:(analytics.totalSearches||0)+1,searchModes:{...analytics.searchModes,[m]:(analytics.searchModes[m]||0)+1},tropeSearches:{...analytics.tropeSearches}};
-    tropes.forEach(t=>{a.tropeSearches[t]=(a.tropeSearches[t]||0)+1;});
-    saveAnalytics(a);
-  };
+  const trackSearch=(m,tropes=[])=>{const a={...analytics,totalSearches:(analytics.totalSearches||0)+1,searchModes:{...analytics.searchModes,[m]:(analytics.searchModes[m]||0)+1},tropeSearches:{...analytics.tropeSearches}};tropes.forEach(t=>{a.tropeSearches[t]=(a.tropeSearches[t]||0)+1;});saveAnalytics(a);};
+  const trackRecs=recs=>{const a={...analytics,recommendedBooks:{...analytics.recommendedBooks}};recs.forEach(b=>{a.recommendedBooks[b.title]=(a.recommendedBooks[b.title]||0)+1;});saveAnalytics(a);};
+  const addToHistory=(label,m)=>setSearchHistory(p=>[{label,mode:m,id:Date.now()},...p.filter(e=>e.label!==label)].slice(0,5));
 
-  const trackRecs=recs=>{
-    const a={...analytics,recommendedBooks:{...analytics.recommendedBooks}};
-    recs.forEach(b=>{a.recommendedBooks[b.title]=(a.recommendedBooks[b.title]||0)+1;});
-    saveAnalytics(a);
-  };
-
-  const getLikedKws=()=>{
-    if(!activeProfile?.likedBooks?.length) return[];
-    const likedObjs=books.filter(b=>activeProfile.likedBooks.includes(b.title));
-    const subjectText=likedObjs.map(b=>b.subjects||"").join(" ");
-    const summaryText=likedObjs.map(b=>b.summary||"").join(" ");
-    return[...tokenize(subjectText),...tokenize(subjectText),...tokenize(subjectText),...tokenize(summaryText)];
-  };
-
-  const getLikedThemes=()=>{
-    if(!activeProfile?.likedBooks?.length) return"";
-    const likedObjs=books.filter(b=>activeProfile.likedBooks.includes(b.title));
-    const allSubjects=likedObjs.flatMap(b=>(b.subjects||"").split("|").map(s=>s.trim())).filter(Boolean);
-    const unique=[...new Set(allSubjects)].slice(0,12);
-    return unique.length?`\n\nThemes from books this student enjoyed: ${unique.join("; ")}. Prioritize books sharing these themes.`:"";
-  };
-
-  const onQueryChange=val=>{
-    setQuery(val);setRefBook(null);
-    if(mode==="similar"&&val.length>1) setSuggestions(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())).slice(0,6));
-    else setSuggestions([]);
-  };
-
-  const toggleTrope=id=>{
-    setSelTropes(prev=>{
-      const n=new Set(prev);
-      if(!n.has(id)){n.add(id);}
-      else if(priorityTrope!==id){setPriorityTrope(id);}
-      else{n.delete(id);setPriorityTrope(null);}
-      return n;
-    });
-  };
-
-  const switchMode=m=>{setMode(m);setResults(null);setError("");setQuery("");setRefBook(null);setSuggestions([]);setSelTropes(new Set());setPriorityTrope(null);setShownTitles(new Set());lastSearch.current=null;};
+  const getLikedKws=()=>{if(!activeProfile?.likedBooks?.length)return[];const objs=books.filter(b=>activeProfile.likedBooks.includes(b.title));const st=objs.map(b=>b.enriched_subjects||b.subjects||"").join(" ");const sm=objs.map(b=>b.enriched_summary||b.summary||"").join(" ");return[...tokenize(st),...tokenize(st),...tokenize(st),...tokenize(sm)];};
+  const getLikedThemes=()=>{if(!activeProfile?.likedBooks?.length)return"";const objs=books.filter(b=>activeProfile.likedBooks.includes(b.title));const all=objs.flatMap(b=>(b.enriched_subjects||b.subjects||"").split("|").map(s=>s.trim())).filter(Boolean);const unique=[...new Set(all)].slice(0,12);return unique.length?`\n\nThemes from books this student enjoyed: ${unique.join("; ")}. Prioritize books sharing these themes.`:"";};
+  const onQueryChange=val=>{setQuery(val);setRefBook(null);if(mode==="similar"&&val.length>1)setSuggestions(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())).slice(0,6));else setSuggestions([]);};
+  const toggleTrope=id=>{setSelTropes(prev=>{const n=new Set(prev);if(!n.has(id)){n.add(id);}else if(priorityTrope!==id){setPriorityTrope(id);}else{n.delete(id);setPriorityTrope(null);}return n;});};
+  const switchMode=m=>{setMode(m);setResults(null);setError("");setQuery("");setRefBook(null);setStructuredRequest(null);setSuggestions([]);setSelTropes(new Set());setPriorityTrope(null);setShownTitles(new Set());lastSearch.current=null;};
 
   const buildParams=()=>{
-    let kws=[],priorityKws=[],ctx="",excl=null,priorityLabel=null;
-    if(mode==="similar"){
-      const ref=refBook||books.find(b=>(b.title||"").toLowerCase()===query.toLowerCase());
-      if(!ref) return null;
-      kws=tokenize(`${ref.subjects} ${ref.summary}`);excl=ref.title;
-      ctx=`A student loved "${ref.title}" by ${ref.author}.\n\nSummary: ${ref.summary}\n\nFind books with similar themes, characters, tone, and plot elements.`;
-    } else if(mode==="tropes"){
-      if(!selTropes.size) return null;
-      const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
-      kws=[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])];}))];
-      if(priorityTrope){priorityKws=[...tokenize(TROPES.find(t=>t.id===priorityTrope)?.label||""),...(TROPE_KEYWORDS[priorityTrope]||[])];priorityLabel=TROPES.find(t=>t.id===priorityTrope)?.label;}
-      ctx=`A student wants books with: ${labels.join(", ")}. Find the best matches.`;
-    } else {
-      if(!query.trim()) return null;
-      kws=tokenize(query);
-      ctx=`A student wants: "${query}". Find the best matches.`;
-    }
-    return{kws,priorityKws,ctx,excl,priorityLabel};
+    let ctx="",excl=null,priorityLabel=null;
+    if(mode==="similar"){const ref=refBook||books.find(b=>(b.title||"").toLowerCase()===query.toLowerCase());if(!ref)return null;excl=ref.title;ctx=`A student loved "${ref.title}" by ${ref.author}.\n\nSummary: ${ref.enriched_summary||ref.summary||""}\n\nFind books with similar themes, characters, tone, and plot elements.`;}
+    else if(mode==="tropes"){if(!selTropes.size)return null;const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);if(priorityTrope)priorityLabel=TROPES.find(t=>t.id===priorityTrope)?.label;ctx=`A student wants books with: ${labels.join(", ")}. Find the best matches.`;}
+    else{if(!query.trim())return null;ctx=`A student wants: "${query}". Find the best matches.`;}
+    return{ctx,excl,priorityLabel};
   };
 
-  const runSearch=async(params,shown,doShuffle=false,isMore=false)=>{
-    const{kws,priorityKws,ctx,excl,priorityLabel}=params;
-    const cands=getCandidates(books,kws,priorityKws,getLikedKws(),70,excl,alreadyRead,shown,doShuffle);
+  const buildQueryText=()=>{
+    if(mode==="similar"&&refBook) return `${refBook.title} ${refBook.author} ${refBook.enriched_subjects||refBook.subjects||""} ${refBook.enriched_summary||refBook.summary||""}`;
+    if(mode==="tropes"){const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);return[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])]}))].join(' ');}
+    return query;
+  };
+
+  const runSearch=async(params,shown,isMore=false)=>{
+    const{ctx,excl,priorityLabel}=params;
+    const queryText=buildQueryText();
+    const refAuthor=(mode==='similar'&&refBook)?refBook.author:null;
+    const advisoryNote=advisoryTextForProfile(activeProfile);
+    const cands=await getCandidates(books,queryText,bookEmbeddings,getLikedKws(),70,excl,alreadyRead,shown,refAuthor);
     const prefNote=activeProfile?.notes?`\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.`:"";
     const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — ONLY recommend fast-paced books with short chapters and high action.`:"";
     const didntLikeNote=didntLike.trim()?`\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.`:"";
-    const recs=await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote);
+    const recs=await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote,advisoryNote,structuredRef.current);
     const enriched=recs.map(r=>({...(books.find(b=>b.title===r.title&&b.author===r.author)||books.find(b=>b.title===r.title)||r),...r}));
     setShownTitles(new Set([...shown,...enriched.map(b=>b.title)]));
-    if(isMore) setResults(prev=>[...(prev||[]),...enriched]);
-    else{setResults(enriched);setShowStamp(true);setTimeout(()=>setShowStamp(false),1800);}
+    if(isMore) setResults(p=>[...(p||[]),...enriched]);
+    else setResults(enriched);
     trackRecs(enriched);
   };
 
   const search=async()=>{
-    setError("");setResults(null);setLoading(true);setShownTitles(new Set());lastSearch.current=null;setShowStamp(false);
+    setError("");setResults(null);setLoading(true);setShownTitles(new Set());lastSearch.current=null;setStructuredRequest(null);
     try{
       const params=buildParams();
-      if(!params){setError(mode==="similar"?"Select a title from the suggestions.":mode==="tropes"?"Select at least one trope.":"Describe what you're looking for.");setLoading(false);return;}
+      if(!params){setError(mode==="similar"?"Please select a title from the suggestions.":mode==="tropes"?"Please select at least one trope.":"Please describe what the student is looking for.");setLoading(false);return;}
+      const structured=parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike});
+      setStructuredRequest(structured);
+      structuredRef.current=structured;
       lastSearch.current=params;
+      const histLabel=mode==="similar"?query:mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(', '):query;
+      addToHistory(histLabel,mode);
       await runSearch(params,new Set());
       trackSearch(mode,mode==="tropes"?[...selTropes]:[]);
-    }catch{setError("Case stalled — please try again.");}
+    }catch(e){console.error(e);setError("Search failed. Please check your connection and try again.");}
     setLoading(false);
   };
 
-  const searchMore=async()=>{
-    if(!lastSearch.current) return;
-    setLoadingMore(true);
-    try{await runSearch(lastSearch.current,shownTitles,true,true);}
-    catch{setError("Case stalled — please try again.");}
-    setLoadingMore(false);
-  };
-
-  const saveProfile=p=>{
-    const updated=profiles.find(x=>x.id===p.id)?profiles.map(x=>x.id===p.id?p:x):[...profiles,p];
-    saveProfiles(updated);setActiveProfileId(p.id);setAlreadyRead(new Set(p.alreadyRead||[]));setEditing(null);
-  };
-
-  const deleteProfile=id=>{
-    saveProfiles(profiles.filter(p=>p.id!==id));
-    if(activeProfileId===id){setActiveProfileId(null);setAlreadyRead(new Set());}
-    setEditing(null);
-  };
+  const searchMore=async()=>{if(!lastSearch.current)return;setLoadingMore(true);try{await runSearch(lastSearch.current,shownTitles,true);}catch{setError("Search failed.");}setLoadingMore(false);};
+  const copyResults=()=>{if(!results?.length)return;const text=results.map((b,i)=>`${ROMAN[i]||i+1}. ${b.title} by ${b.author}\n   ${b.reason||""}`).join('\n\n');navigator.clipboard.writeText(text).then(()=>addToast('📋 Copied')).catch(()=>addToast('Could not copy','error'));};
+  const saveProfile=p=>{const updated=profiles.find(x=>x.id===p.id)?profiles.map(x=>x.id===p.id?p:x):[...profiles,p];saveProfiles(updated);setActiveProfileId(p.id);setAlreadyRead(new Set(p.alreadyRead||[]));setEditing(null);addToast('Profile saved ✓');};
+  const deleteProfile=id=>{saveProfiles(profiles.filter(p=>p.id!==id));if(activeProfileId===id){setActiveProfileId(null);setAlreadyRead(new Set());}setEditing(null);addToast('Profile deleted');};
 
   const loaded=bookCount>0;
-  const modes=[{id:"similar",label:"Find Similar"},{id:"tropes",label:"By Trope"},{id:"freetext",label:"Describe It"}];
+  const modeLbls={similar:"Similar",tropes:"Trope",freetext:"Describe"};
 
-  return <div>
-    <div className="header">
-      <div className="header-inner">
-        <div className="logo-badge"><img src={LOGO_FILE} alt="Fletcher Library"/></div>
-        <div className="header-text">
-          <div className="case-label">Fletcher Middle School Library</div>
-          <h1 className="title">The Fletcher Library Archives</h1>
-          <p className="subtitle">Cross-reference the stacks. Find your next book.</p>
-        </div>
-      </div>
-      <div className="header-meta">
-        <span className="stamp">{loaded?`${bookCount.toLocaleString()} volumes on record`:"Loading the archive…"}</span>
-        <button className={`ledger-btn${showAnalytics?" active":""}`} onClick={()=>{setShowAnalytics(p=>!p);setEditing(null);}}>
-          {showAnalytics?"Close Ledger":"The Ledger"}
-        </button>
-      </div>
-    </div>
+  return <div className="page">
+    <Toasts toasts={toasts}/>
 
-    {showAnalytics&&<AnalyticsPanel analytics={analytics}/>}
-
-    {!loaded&&!loadError&&<p style={{color:"var(--text3)",fontStyle:"italic",fontSize:14,marginTop:"3rem",textAlign:"center",fontFamily:"'Crimson Text',serif"}}>Pulling the archive…</p>}
-    {loadError&&<div style={{background:"#1a0a0a",border:"1px solid #8b404044",padding:"1rem",color:"#e07070",fontSize:14,marginTop:"2rem"}}>
-      <strong>Could not load books_fiction.csv.</strong> Make sure the file is in your GitHub repo.
-    </div>}
+    {showAbout&&<AboutPanel/>}
+    {showStats&&<AnalyticsPanel analytics={analytics}/>}
+    {loadError&&<div className="error-msg">⚠ Could not load {CSV_FILE}. Make sure it's in your repository.</div>}
 
     {loaded&&<>
-      <div className="profile-bar">
-        <div className="section-label">Case File</div>
-        <div className="profile-pills">
-          <button className={`pill${!activeProfileId?" active":""}`} onClick={()=>selectProfile(null)}>No File</button>
+      {/* PROFILES */}
+      <div className="gold-divider"><span>Student Profile</span></div>
+      <div className="section">
+        <div className="pills">
+          <button className={`pill${!activeProfileId?" on":""}`} onClick={()=>selectProfile(null)}>No Profile</button>
           {profiles.map(p=><div key={p.id} style={{display:"flex",alignItems:"center"}}>
-            <button className={`pill${activeProfileId===p.id?" active-left":""}`} onClick={()=>selectProfile(p.id)}>
-              {p.initials} <span style={{fontSize:10,opacity:.7}}>{p.grade}</span>
-            </button>
+            <button className={`pill${activeProfileId===p.id?" on-l":""}`} onClick={()=>selectProfile(p.id)}>{p.initials} <span style={{fontSize:11,opacity:.6,marginLeft:2}}>{p.grade}</span></button>
             {activeProfileId===p.id&&<button className="pill-edit" onClick={()=>setEditing(editing?.id===p.id?null:p)}>✎</button>}
           </div>)}
-          {profiles.length<10&&<button className="pill-add" onClick={()=>setEditing({initials:"",grade:"6th",notes:"",reluctant:false,likedBooks:[],alreadyRead:[]})}>+</button>}
+          {profiles.length<10&&<button className="pill-add" onClick={()=>setEditing({initials:"",grade:"6th",notes:"",reluctant:false,advisoryNotes:"",tasteSignals:[],avoidSignals:[],likedBooks:[],alreadyRead:[]})}>+ New Profile</button>}
         </div>
-        {activeProfile?.notes&&<p className="profile-note">On file: {activeProfile.notes}</p>}
-        {activeProfile&&<div style={{marginTop:6,display:"flex",alignItems:"center",gap:10}}>
-          <button className="summary-view-btn" onClick={()=>setShowSummary(p=>!p)}>{showSummary?"Hide summary":"View case summary"}</button>
-          {activeProfile.reluctant&&<span style={{fontFamily:"'Special Elite',serif",fontSize:11,color:"var(--amber)",letterSpacing:".05em"}}>⚡ Reluctant reader</span>}
+        {activeProfile&&<div className="profile-meta">
+          {activeProfile.notes&&<span className="profile-note">"{activeProfile.notes}"</span>}
+          <button className="profile-btn" onClick={()=>setShowSummary(p=>!p)}>{showSummary?"Hide":"View profile"}</button>
+          {activeProfile.reluctant&&<span className="reluctant-tag">⚡ Reluctant</span>}
+          {(activeProfile.advisoryNotes||splitSignals(activeProfile.tasteSignals).length>0)&&<span className="advisory-badge">✦ Advisory notes active</span>}
         </div>}
       </div>
 
-      {showSummary&&activeProfile&&<StudentSummary profile={activeProfile} onClose={()=>setShowSummary(false)}/>}
+      {showSummary&&activeProfile&&<ProfileSummary profile={activeProfile} onClose={()=>setShowSummary(false)}/>}
       {editing&&<ProfileEditor profile={editing} books={books} onSave={saveProfile} onDelete={deleteProfile} onCancel={()=>setEditing(null)}/>}
 
       {!editing&&<>
-        <div className="ornament">— ✦ —</div>
-        <div className="tabs">
-          {modes.map(m=><button key={m.id} className={`tab${mode===m.id?" active":""}`} onClick={()=>switchMode(m.id)}>{m.label}</button>)}
+        {/* SEARCH HISTORY */}
+        {searchHistory.length>0&&<div className="history">
+          <div className="sec-label" style={{marginBottom:8}}>Recent searches</div>
+          <div className="hchips">{searchHistory.map(h=><div key={h.id} className="hchip" onClick={()=>{switchMode(h.mode);if(h.mode!=="tropes")setQuery(h.label);}}><span className="hmode">{modeLbls[h.mode]}</span><span>{h.label.length>42?h.label.slice(0,42)+'…':h.label}</span></div>)}</div>
+        </div>}
+
+        {/* SEARCH MODE TABS */}
+        <div className="gold-divider"><span>Find Books</span></div>
+        <div className="mode-tabs">
+          <button className={`mode-tab${mode==="similar"?" on":""}`} onClick={()=>switchMode("similar")}>
+            <span className="mode-tab-icon">🔍</span>
+            <span className="mode-tab-label">Find Similar</span>
+            <span className="mode-tab-desc">A student loved a book — find more like it</span>
+          </button>
+          <button className={`mode-tab${mode==="tropes"?" on":""}`} onClick={()=>switchMode("tropes")}>
+            <span className="mode-tab-icon">✦</span>
+            <span className="mode-tab-label">By Trope</span>
+            <span className="mode-tab-desc">Select themes and narrative elements</span>
+          </button>
+          <button className={`mode-tab${mode==="freetext"?" on":""}`} onClick={()=>switchMode("freetext")}>
+            <span className="mode-tab-icon">✍</span>
+            <span className="mode-tab-label">Describe It</span>
+            <span className="mode-tab-desc">Describe what the student wants in plain language</span>
+          </button>
         </div>
 
-        {mode==="similar"&&<div className="input-wrap">
-          <div className="section-label">Book title</div>
-          <MainInput value={query} onChange={onQueryChange} onEnter={search} suggestions={suggestions}
-            onSelectSuggestion={b=>{setRefBook(b);setQuery(b.title);setSuggestions([]);}}
-            clearSuggestions={()=>setSuggestions([])}/>
-        </div>}
+        {mode==="similar"&&<div className="inp-sec"><div className="sec-label">Book title</div><MainInput value={query} onChange={onQueryChange} onEnter={search} suggestions={suggestions} onSelect={b=>{setRefBook(b);setQuery(b.title);setSuggestions([]);}} clearSugg={()=>setSuggestions([])}/><div className="inp-hint">Select a title from the suggestions, then click Find Books</div></div>}
+        {mode==="freetext"&&<div className="inp-sec"><div className="sec-label">Describe what the student is looking for</div><textarea className="main-textarea" value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();search();}}} rows={3} placeholder='e.g. "A fantasy with a strong female lead who discovers she has hidden powers"'/><div className="inp-hint">Press Enter to search · Shift+Enter for a new line</div></div>}
+        {mode==="tropes"&&<div className="inp-sec"><p className="trope-hint">Select one or more tropes · Click again to mark as must-have (★)</p>{CATS.map(cat=><div key={cat} className="trope-sec"><div className="trope-cat">{cat}</div><div className="trope-chips">{TROPES.filter(t=>t.cat===cat).map(t=>{const on=selTropes.has(t.id),isPrio=priorityTrope===t.id;return <button key={t.id} onClick={()=>toggleTrope(t.id)} className={`tchip${isPrio?" prio":on?" sel":""}`}>{isPrio?"★ ":""}{t.label}</button>;})}</div></div>)}</div>}
 
-        {mode==="freetext"&&<div className="input-wrap">
-          <div className="section-label">Describe the case</div>
-          <textarea className="main-textarea" value={query} onChange={e=>setQuery(e.target.value)}
-            onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();search();}}}
-            rows={3} placeholder='e.g. "A fantasy where the character has powers and solves a murder mystery"'/>
-        </div>}
+        <div className="inp-sec"><div className="sec-label">Exclude already read</div><BookSearch books={books} exclude={alreadyRead} onSelect={b=>setAlreadyRead(prev=>new Set([...prev,b.title]))} placeholder="Add a title to exclude…"/><ChipList items={[...alreadyRead]} onRemove={t=>setAlreadyRead(prev=>{const n=new Set(prev);n.delete(t);return n;})}/></div>
 
-        {mode==="tropes"&&<div className="input-wrap">
-          <p className="trope-hint">Click once to select · click again to mark as must-have (★)</p>
-          {CATS.map(cat=><div key={cat} className="trope-section">
-            <div className="trope-cat">{cat}</div>
-            <div className="trope-chips">
-              {TROPES.filter(t=>t.cat===cat).map(t=>{
-                const on=selTropes.has(t.id),isPrio=priorityTrope===t.id;
-                return <button key={t.id} onClick={()=>toggleTrope(t.id)} className={`trope-chip${isPrio?" priority":on?" selected":""}`}>
-                  {isPrio?"★ ":""}{t.label}
-                </button>;
-              })}
-            </div>
-          </div>)}
-        </div>}
+        {activeProfile?.likedBooks?.length>0&&<div className="liked-banner"><span style={{fontSize:16,marginTop:2}}>❤</span><div className="liked-body"><strong>Influencing recommendations</strong>{activeProfile.likedBooks.join(", ")}</div></div>}
 
-        <div className="input-wrap">
-          <div className="section-label">Already read</div>
-          <BookSearch books={books} exclude={alreadyRead} onSelect={b=>setAlreadyRead(prev=>new Set([...prev,b.title]))} placeholder="Add a book to exclude…"/>
-          <ChipList items={[...alreadyRead]} onRemove={t=>setAlreadyRead(prev=>{const n=new Set(prev);n.delete(t);return n;})}/>
-        </div>
+        <div className="inp-sec"><div className="sec-label">What didn't the student enjoy? <span style={{color:"var(--text3)",fontWeight:400,textTransform:"none",letterSpacing:0,fontSize:12}}>(optional)</span></div><input className="main-input" value={didntLike} onChange={e=>setDidntLike(e.target.value)} placeholder='e.g. "too slow, too much romance"'/></div>
 
-        {activeProfile?.likedBooks?.length>0&&<div className="liked-banner">
-          <strong>❤ Preferred reading — influencing results: </strong>
-          <span>{activeProfile.likedBooks.join(", ")}</span>
-        </div>}
+        {error&&<div className="error-msg"><span>⚠</span>{error}</div>}
+        <button className="search-btn" onClick={search} disabled={loading||loadingMore}>Find Books</button>
 
-        <div className="input-wrap">
-          <div className="section-label">What didn't they like? <span style={{color:"var(--text3)",fontFamily:"'Crimson Text',serif",textTransform:"none",letterSpacing:0,fontSize:12,fontStyle:"italic"}}>(optional)</span></div>
-          <input className="main-input" value={didntLike} onChange={e=>setDidntLike(e.target.value)} placeholder='e.g. "too slow, too much romance, confusing ending"'/>
-        </div>
+        {structuredRequest&&!loading&&<ConstraintPanel structured={structuredRequest}/>}
 
-        {error&&<p className="error-msg">{error}</p>}
-        {loading&&<TypewriterLoading text="Rounding up the list of suspects…"/>}
-        {loadingMore&&<TypewriterLoading text="Pulling more files…"/>}
-
-        {!loading&&<button className="ask-btn" onClick={search} disabled={loadingMore}>Find Suspects</button>}
-
-        {results&&results.length>0&&!loading&&<div>
-          <div className="results-header">
-            <span className="results-title">Evidence</span>
+        {/* RESULTS GRID */}
+        {results&&results.length>0&&!loading&&<div ref={resultsRef}>
+          <div className="results-hdr">
+            <span className="results-title">Recommendations</span>
             <div className="results-line"/>
-            <span className="results-count">{results.length} volumes filed</span>
-            {showStamp&&<span className="filed-stamp">Filed</span>}
+            <span className="results-count">{results.length} titles</span>
           </div>
-          {results.map((b,i)=><ResultCard key={`${b.title}-${i}`} book={b} index={i} activeProfile={activeProfile} onHeart={toggleHeart}/>)}
-          {!loadingMore&&<button className="more-btn" onClick={searchMore}>Pull More Files</button>}
+          <div className="results-grid">
+            {results.map((b,i)=><ResultCard key={`${b.title}-${i}`} book={b} index={i} activeProfile={activeProfile} onHeart={toggleHeart} onNoteSave={()=>addToast('Note saved ✓')} onFeedback={markFeedback} feedbackState={feedback}/>)}
+          </div>
+          <div className="ractions">
+            <button className="act-btn" onClick={()=>window.print()}>🖨 Print</button>
+            <button className="act-btn" onClick={copyResults}>📋 Copy</button>
+            <button className="act-btn primary" onClick={saveCurrentList}>♡ Save List</button>
+            {!loadingMore&&<button className="act-btn primary" onClick={searchMore}>Load more →</button>}
+          </div>
+          <div style={{textAlign:"center",marginTop:12}}>
+            <button className="profile-btn" onClick={()=>setShowSavedLists(p=>!p)}>{showSavedLists?"Hide saved lists":"View saved lists"}{savedLists.length>0?` (${savedLists.length})`:""}</button>
+          </div>
         </div>}
 
-        {results&&results.length===0&&!loading&&<p className="empty-msg">No evidence found — reopen the case.</p>}
+        {(!results||results.length===0)&&savedLists.length>0&&!loading&&<div style={{textAlign:"center",margin:"20px 0"}}><button className="profile-btn" onClick={()=>setShowSavedLists(p=>!p)}>{showSavedLists?"Hide":"View saved lists"} ({savedLists.length})</button></div>}
+
+        {showSavedLists&&<SavedListsPanel savedLists={savedLists} onOpen={openSavedList} onDelete={deleteSavedList} onPrint={printSavedList} onCopy={copySavedList}/>}
+
+        {results&&results.length===0&&!loading&&<div className="empty"><p className="empty-title">No matching titles found.</p><p className="empty-sub">Try broadening your search or switching modes.</p><div className="empty-actions"><div className="echip" onClick={()=>switchMode("freetext")}>Try describing it</div><div className="echip" onClick={()=>switchMode("tropes")}>Browse by trope</div><div className="echip" onClick={()=>setResults(null)}>Start over</div></div></div>}
       </>}
     </>}
   </div>;
 }
 
 const rootEl=document.getElementById("root");
-if(ReactDOM.createRoot){ ReactDOM.createRoot(rootEl).render(<App/>); }
-else{ ReactDOM.render(<App/>, rootEl); }
+if(ReactDOM.createRoot){ReactDOM.createRoot(rootEl).render(<App/>);}
+else{ReactDOM.render(<App/>,rootEl);}
 </script>
 </body>
 </html>

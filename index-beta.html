@@ -816,21 +816,46 @@ function tblExit(){_tblBkEls.forEach((el,i)=>{setTimeout(()=>el.classList.add('e
 function tblSetActive(idx){_tblBkEls.forEach((el,j)=>{if(!el.classList.contains('have-it')){el.classList.toggle('tbl-active',j===idx);el.style.zIndex=j===idx?20:j+2;}});}
 function tblSyncHave(haveSet){_tblBkEls.forEach((el,i)=>{const b=_tblBooks[i];if(!b)return;const h=haveSet.has(b.title);el.classList.toggle('have-it',h);if(h)el.classList.remove('tbl-active');let badge=el.querySelector('.tbl-have-badge');if(h&&!badge){badge=document.createElement('div');badge.className='tbl-have-badge';badge.innerHTML='<span>Checked Out</span>';el.appendChild(badge);}else if(!h&&badge)badge.remove();});}
 // ── CANDIDATES ───────────────────────────────────────────────────────────
-async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null){
+async function getCandidates(books,queryText,bookEmbeddings,likedKws=[],n=70,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null,searchMode='similar'){
   const pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
   const authorLast=refAuthor?refAuthor.split(',')[0].trim().toLowerCase():null;
   const sameAuthor=new Set(authorLast?pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title):[]);
-  if(bookEmbeddings&&Object.keys(bookEmbeddings).length>0){
+
+  // Series boost for Find Similar — guarantees same-series books are in the candidate pool
+  const refBook_=excl?books.find(b=>b.title===excl):null;
+  const sameSeries=new Set(refBook_?.series?pool.filter(b=>b.series&&b.series===refBook_.series).map(b=>b.title):[]);
+
+  // ── Describe It: try embedding first, fall back to keyword ──────────
+  if(searchMode==='freetext'&&bookEmbeddings&&Object.keys(bookEmbeddings).length>0){
     try{
       const res=await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
       if(!res.ok) throw new Error(`embed ${res.status}`);
       const{embedding:qEmb}=await res.json();
       const lSet=new Set(likedKws);
-      return pool.map(b=>{ const bEmb=bookEmbeddings[b.title],sim=bEmb?cosine(qEmb,bEmb):0,toks=tokenize(`${b.enriched_subjects||b.subjects||''} ${b.enriched_summary||b.summary||''}`),lb=toks.filter(t=>lSet.has(t)).length*0.01,ab=sameAuthor.has(b.title)?0.15:0; return{...b,_s:sim+lb+ab}; }).sort((a,b)=>b._s-a._s).slice(0,n);
-    }catch(err){console.warn('Embedding failed:',err);}
+      return pool.map(b=>{
+        const bEmb=bookEmbeddings[b.title],sim=bEmb?cosine(qEmb,bEmb):0;
+        const toks=tokenize(`${b.enriched_subjects||b.subjects||''} ${b.enriched_summary||b.summary||''}`);
+        const lb=toks.filter(t=>lSet.has(t)).length*0.01;
+        const ab=sameAuthor.has(b.title)?0.15:0;
+        return{...b,_s:sim+lb+ab};
+      }).sort((a,b)=>b._s-a._s).slice(0,n);
+    }catch(err){console.warn('Embedding failed, using keyword fallback:',err);}
   }
+
+  // ── Find Similar + By Trope: pure keyword scoring ───────────────────
   const kws=tokenize(queryText),kSet=new Set(kws),lSet=new Set(likedKws);
-  let scored=pool.map(b=>{ const st=new Set(tokenize(b.enriched_subjects||b.subjects||'')),sm=new Set(tokenize(b.enriched_summary||b.summary||'')),ti=new Set(tokenize(b.title||'')); const base=[...kSet].filter(k=>st.has(k)).length*3+[...kSet].filter(k=>sm.has(k)).length+[...kSet].filter(k=>ti.has(k)).length,liked=[...lSet].filter(k=>st.has(k)).length*4+[...lSet].filter(k=>sm.has(k)).length*2; return{...b,_s:base+liked+(sameAuthor.has(b.title)?10:0)}; }).filter(b=>b._s>0);
+  let scored=pool.map(b=>{
+    const st=new Set(tokenize(b.enriched_subjects||b.subjects||''));
+    const sm=new Set(tokenize(b.enriched_summary||b.summary||''));
+    const ti=new Set(tokenize(b.title||''));
+    const base=[...kSet].filter(k=>st.has(k)).length*3+[...kSet].filter(k=>sm.has(k)).length+[...kSet].filter(k=>ti.has(k)).length;
+    const liked=[...lSet].filter(k=>st.has(k)).length*4+[...lSet].filter(k=>sm.has(k)).length*2;
+    const auth=sameAuthor.has(b.title)?10:0;
+    const series=sameSeries.has(b.title)?15:0;
+    return{...b,_s:base+liked+auth+series};
+  });
+  // For series matches, include even if keyword score is 0
+  scored=scored.filter(b=>b._s>0||sameSeries.has(b.title));
   if(!scored.length) scored=pool;
   return scored.sort((a,b)=>b._s-a._s).slice(0,n);
 }
@@ -1159,7 +1184,7 @@ function SessionHistoryPanel({books,onSelect,haveItSet,activeBook}){
             return <div key={b.title+i} onClick={()=>onSelect(b,TBL_CLR[ci])}
               style={{cursor:'pointer',background:'var(--card)',border:`1px solid ${isActive?'var(--gold)':'var(--border)'}`,borderRadius:10,padding:'10px 12px',opacity:isChecked?.4:1,transition:'border-color .15s,opacity .15s,box-shadow .15s',boxShadow:isActive?'0 0 0 1px var(--gold-bd)':'none',position:'relative'}}
               onMouseEnter={e=>{if(!isActive)e.currentTarget.style.borderColor='var(--gold-bd)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';}}
-              onMouseLeave={e=>{if(!isActive)e.currentTarget.style.borderColor='var(--border)';if(!isActive)e.currentTarget.style.boxShadow='none';}}>
+              onMouseLeave={e=>{if(!isActive)e.currentTarget.style.borderColor=isActive?'var(--gold)':'var(--border)';if(!isActive)e.currentTarget.style.boxShadow='none';}}>
               {isChecked&&<span style={{position:'absolute',top:8,right:8,fontSize:8,fontWeight:700,color:'var(--gold)',letterSpacing:'.08em',textTransform:'uppercase',background:'var(--gold-dim)',border:'1px solid var(--gold-bd)',borderRadius:3,padding:'1px 5px'}}>Checked Out</span>}
               <div style={{display:'flex',gap:10,marginBottom:b.reason?8:0}}>
                 <HistoryCover isbn={b.isbn} patIdx={books.indexOf(b)}/>
@@ -1325,7 +1350,7 @@ function App(){
     const queryText=buildQueryText();
     const refAuthor=(mode==='similar'&&refBook)?refBook.author:null;
     const advisoryNote=advisoryTextForProfile(activeProfile);
-    const cands=await getCandidates(books,queryText,bookEmbeddings,getLikedKws(),70,excl,alreadyRead,shown,refAuthor);
+    const cands=await getCandidates(books,queryText,bookEmbeddings,getLikedKws(),70,excl,alreadyRead,shown,refAuthor,mode);
     const prefNote=activeProfile?.notes?`\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.`:"";
     const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — ONLY recommend fast-paced books with short chapters and high action.`:"";
     const didntLikeNote=didntLike.trim()?`\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.`:"";

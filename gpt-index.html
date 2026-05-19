@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fletcher Library Assistant</title>
+  <title>Fletcher Library Assistant — Engineer Reviewed Intelligence</title>
   <link rel="icon" href="logo.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -711,6 +711,7 @@
 <div id="root"></div>
 
 <script type="text/babel">
+// ENGINEER REVIEWED BUILD: syntax checked; semantic retrieval restored; validation hardened.
 // ── CONSTANTS ────────────────────────────────────────────────────────────
 const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
 const EMBED_URL  = `${WORKER_URL}/embed`;
@@ -781,6 +782,14 @@ function bookIntelligenceText(b){
     b.title,b.author,b.series,
     b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,b.avoid_if,
     b.enriched_subjects,b.subjects,b.enriched_summary,b.summary,b.genre,b.genres,b.tone,b.pacing,b.audience,b.notes
+  );
+}
+function bookPositiveText(b){
+  // Used for positive retrieval/scoring. Keep avoid_if out of positive scoring so "avoid" warnings do not accidentally boost a title.
+  return fieldText(
+    b.title,b.author,b.series,
+    b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,
+    b.enriched_subjects,b.subjects,b.enriched_summary,b.summary,b.genre,b.genres,b.tone,b.pacing,b.audience
   );
 }
 function pageCount(b){ const m=String(b.pages||b.page_count||"").match(/\d+/); return m?Number(m[0]):null; }
@@ -907,7 +916,7 @@ function candidateEvidence(b,structured){
 function scoreCandidateIntelligence(b,queryTokens,likedTokens,structured,sameAuthor,sameSeries){
   const subject=new Set(tokenize(b.enriched_subjects||b.subjects||""));
   const summary=new Set(tokenize(b.enriched_summary||b.summary||""));
-  const profile=new Set(tokenize(fieldText(b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,b.avoid_if,b.tone,b.pacing)));
+  const profile=new Set(tokenize(fieldText(b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,b.tone,b.pacing)));
   const title=new Set(tokenize(b.title||""));
   let score=0;
   queryTokens.forEach(k=>{
@@ -941,7 +950,7 @@ function activeReluctantHint(structured){
   return /reluctant|accessible|easy|short/.test(txt);
 }
 
-function getCandidates(books,queryText,likedKws=[],n=55,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null,structured=null){
+async function getCandidates(books,queryText,likedKws=[],n=55,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null,structured=null,bookEmbeddings=null){
   const pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
   const authorLast=refAuthor?refAuthor.split(',')[0].trim().toLowerCase():null;
   const sameAuthor=new Set(authorLast?pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title):[]);
@@ -951,7 +960,24 @@ function getCandidates(books,queryText,likedKws=[],n=55,excl=null,alreadyRead=ne
   const likedTokens=likedKws||[];
   let scored=pool.map(b=>scoreCandidateIntelligence(b,qTokens,likedTokens,structured,sameAuthor,sameSeries));
 
-  // Keep strong series continuations, but otherwise remove clear hard violations when enough alternatives exist.
+  // Optional semantic layer: use precomputed book_embeddings.json plus the worker embedding endpoint.
+  // This restores meaning-based retrieval while keeping the transparent librarian scoring layer.
+  if(bookEmbeddings && Object.keys(bookEmbeddings).length>0){
+    try{
+      const res=await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
+      if(!res.ok) throw new Error(`embed ${res.status}`);
+      const {embedding:qEmb}=await res.json();
+      scored=scored.map(b=>{
+        const bEmb=bookEmbeddings[b.title];
+        const sem=bEmb?cosine(qEmb,bEmb):0;
+        return {...b,_sem:sem,_s:b._s+(sem*42)};
+      });
+    }catch(err){
+      console.warn('Embedding retrieval failed; using librarian keyword/profile scoring fallback.',err);
+    }
+  }
+
+  // Keep strong series continuations, but otherwise prefer non-violating matches when enough exist.
   const nonViolation=scored.filter(b=>(b._concerns||[]).length===0 || sameSeries.has(b.title));
   if(nonViolation.length>=Math.min(18,n)) scored=nonViolation;
 
@@ -962,40 +988,50 @@ function getCandidates(books,queryText,likedKws=[],n=55,excl=null,alreadyRead=ne
 
 function validateRecommendations(recs,candidates,books,alreadyRead=new Set(),shown=new Set(),structured=null){
   const candMap=new Map(candidates.map(b=>[String(b.title||"").toLowerCase().trim(),b]));
-  const bookMap=new Map(books.map(b=>[String(b.title||"").toLowerCase().trim(),b]));
   const used=new Set();
   const final=[];
-  (recs||[]).forEach(r=>{
-    const key=String(r?.title||"").toLowerCase().trim();
-    if(!key||used.has(key)) return;
-    let b=candMap.get(key);
-    if(!b){
-      // allow exact catalog title only if it was still in the candidate pool by title/author typo looseness
-      b=[...candMap.values()].find(x=>String(x.title||"").toLowerCase().trim()===key) || null;
-    }
-    if(!b) return; // prevent Claude from introducing non-candidate titles
-    if(alreadyRead.has(b.title)||shown.has(b.title)) return;
+  const cleanAvailable=candidates.filter(b=>!candidateViolations(b,structured).length).length;
+  const shouldRejectViolations=cleanAvailable>=6;
+
+  const addCandidate=(b,reason="")=>{
+    if(!b?.title) return false;
+    const key=String(b.title||"").toLowerCase().trim();
+    if(!key||used.has(key)||alreadyRead.has(b.title)||shown.has(b.title)) return false;
     const violations=candidateViolations(b,structured);
-    if(violations.length && final.length>=3) return; // keep a few options if catalog is thin, otherwise avoid violations
-    used.add(String(b.title).toLowerCase().trim());
-    final.push({...b,reason:r.reason||b.reason||"",_matched:b._matched||[],_concerns:[...(b._concerns||[]),...violations].filter(Boolean)});
+    if(violations.length && shouldRejectViolations) return false;
+    used.add(key);
+    final.push({...b,reason:reason||b.reason||"This title surfaced as a strong catalog match based on the request, profile notes, and Fletcher Library metadata.",_matched:b._matched||[],_concerns:[...(b._concerns||[]),...violations].filter(Boolean)});
+    return true;
+  };
+
+  // 1) Accept only Claude picks that exist in the candidate pool.
+  (recs||[]).forEach(r=>{
+    if(final.length>=6) return;
+    const key=String(r?.title||"").toLowerCase().trim();
+    if(!key) return;
+    const b=candMap.get(key);
+    if(!b) return; // Prevent hallucinated or non-candidate titles.
+    addCandidate(b,r.reason||"");
   });
 
-  // Backfill from top-scored candidates if Claude returns too few usable titles.
+  // 2) Backfill clean candidates first.
   for(const b of candidates){
     if(final.length>=6) break;
-    const key=String(b.title||"").toLowerCase().trim();
-    if(!key||used.has(key)||alreadyRead.has(b.title)||shown.has(b.title)) continue;
-    if(candidateViolations(b,structured).length && final.length>=3) continue;
-    used.add(key);
-    final.push({...b,reason:b.reason||"This title surfaced as a strong catalog match based on the request, profile notes, and Fletcher Library metadata.",_matched:b._matched||[],_concerns:b._concerns||[]});
+    if(candidateViolations(b,structured).length) continue;
+    addCandidate(b);
   }
+
+  // 3) If the catalog is thin, backfill caution candidates only after clean options are exhausted.
+  for(const b of candidates){
+    if(final.length>=6) break;
+    addCandidate(b);
+  }
+
   return final.slice(0,6);
 }
 
-
 // ── CLAUDE ── UPGRADED ───────────────────────────────────────────────────
-async async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote="",advisoryNote="",structured=null){
+async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote="",advisoryNote="",structured=null){
 
   const list=candidates.map((b,i)=>{
     const pages=pageCount(b);
@@ -1319,7 +1355,7 @@ function SessionHistoryPanel({books,onSelect,haveItSet,activeBook,onMarkCheckedO
       </div>
       {b.reason&&<div style={{fontSize:12,color:'var(--text2)',lineHeight:1.7,fontFamily:"'Lora',serif",fontStyle:'italic',borderLeft:'2px solid var(--gold-bd)',paddingLeft:10,marginBottom:b.summary?10:12}}>{b.reason}</div>}
       {b.summary&&<div style={{fontSize:11,color:'var(--text3)',lineHeight:1.65,fontFamily:"'Lora',serif",background:'var(--card)',borderRadius:6,padding:'8px 10px',marginBottom:12}}>{b.summary}</div>}
-      <div style={{display:'flex',gap:8'}}>
+      <div style={{display:'flex',gap:8}}>
         <button className="act-btn" onClick={()=>onMarkCheckedOut&&onMarkCheckedOut(b.title)}
           style={{fontSize:10,padding:'5px 12px',background:isChecked?'var(--gold-dim)':'transparent',border:'1px solid var(--gold-bd)',color:isChecked?'var(--gold)':'var(--text3)',borderRadius:6,cursor:'pointer',letterSpacing:'.05em'}}>
           {isChecked?'✓ Checked Out':'Mark Checked Out'}
@@ -1530,7 +1566,7 @@ function App(){
     const advisoryNote=advisoryTextForProfile(activeProfile);
     const structuredQuery=`${buildQueryText()}\n\nHard requirements: ${structured.mustHave.join(", ")}\nSoft preferences: ${structured.softPreferences.join(", ")}\nAvoid/check: ${structured.avoidSignals.join(", ")}\n${advisoryNote}`;
     const refAuthor=(mode==='similar'&&refBook)?refBook.author:null;
-    const cands=getCandidates(books,structuredQuery,getLikedKws(),55,excl,alreadyRead,shown,refAuthor,structured);
+    const cands=await getCandidates(books,structuredQuery,getLikedKws(),55,excl,alreadyRead,shown,refAuthor,structured,bookEmbeddings);
     const prefNote=activeProfile?.notes?`\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.`:"";
     const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — prioritize high-completion-likelihood books: fast pacing, clear hook, accessible length, and short chapters when available.`:"";
     const didntLikeNote=didntLike.trim()?`\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.`:"";

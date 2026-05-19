@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fletcher Library Assistant — Engineer Reviewed Intelligence</title>
+  <title>Fletcher Library Assistant — Intelligence QA v3</title>
   <link rel="icon" href="logo.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -795,9 +795,39 @@ function bookPositiveText(b){
 function pageCount(b){ const m=String(b.pages||b.page_count||"").match(/\d+/); return m?Number(m[0]):null; }
 function labelTokens(label){ return tokenize(String(label||"").replace(/[/_-]/g," ")).filter(w=>w.length>3); }
 function textMatchesLabel(text,label){
+  const l=String(label||"").toLowerCase();
+
+  // Curated matches for reader-advisory concepts. This avoids weak matches like
+  // "animal protagonists" satisfying "human girl protagonist" merely because
+  // both contain the word "protagonist".
+  if(/human girl|female protagonist|girl protagonist/.test(l)){
+    return /\b(girl|female|heroine|woman|daughter|sister)\b/.test(text) &&
+           !/\b(dragon|animal protagonist|animal protagonists|cat|dog|wolf|horse|rabbit|fox)\b/.test(text);
+  }
+  if(/animal|dragon/.test(l)){
+    return /\b(dragon|animal|cat|dog|wolf|horse|rabbit|fox|warrior cats|wings of fire)\b/.test(text);
+  }
+  if(/romance/.test(l)){
+    return /\b(romance|romantic|crush|dating|boyfriend|girlfriend|love interest|falling in love|enemies to lovers|slow burn)\b/.test(text);
+  }
+  if(/fast/.test(l)){
+    return /\b(fast[-\s]?paced|quick|action|exciting|page[-\s]?turner|adventure|short chapters)\b/.test(text);
+  }
+  if(/accessible|reluctant|easy|short/.test(l)){
+    return /\b(accessible|reluctant|quick read|short chapters|easy|easier)\b/.test(text);
+  }
+  if(/mystery|investigation/.test(l)){
+    return /\b(mystery|murder|detective|clue|crime|investigation|secret|missing)\b/.test(text);
+  }
+  if(/fantasy|magic/.test(l)){
+    return /\b(fantasy|magic|magical|spell|wizard|witch|powers?|supernatural|secret world|hidden world)\b/.test(text);
+  }
+
   const toks=labelTokens(label);
   if(!toks.length) return false;
-  return toks.some(t=>text.includes(t));
+  // For multiword labels, require at least two meaningful token hits when possible.
+  const hits=toks.filter(t=>new RegExp(`\\b${t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`).test(text)).length;
+  return toks.length>=2 ? hits>=2 : hits>=1;
 }
 function parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike}){
   const q=(query||"").toLowerCase();
@@ -823,10 +853,10 @@ function parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,acti
     ["Human girl / female protagonist",/human girl|girl main|girl protagonist|female protagonist|heroine|strong girl|girl with powers/,"must"],
     ["Girl / female protagonist",/girl|female|heroine/,"prefer"],
     ["Special powers / abilities",/powers?|abilities|gift|supernatural|magic|special/,"prefer"],
-    ["Sports element",/sports?|basketball|football|soccer|baseball|athlete|team|game/,"prefer"],
-    ["Romance element",/romance|love|crush|dating|enemies to lovers|slow burn/,"prefer"],
-    ["Fast-paced",/fast|quick|action|exciting|page.?turner|adventure|short chapters/,"prefer"],
-    ["Accessible / reluctant-reader friendly",/easy|easier|not too hard|reluctant|short|accessible|simple|quick read/,"prefer"],
+    ["Sports element",/\b(sports?|basketball|football|soccer|baseball|athlete|team|game)\b/,"prefer"],
+    ["Romance element",/\b(romance|romantic|crush|dating|enemies to lovers|slow burn|love interest|falling in love)\b/,"prefer"],
+    ["Fast-paced",/\b(fast[-\s]?paced|quick|action|exciting|page.?turner|adventure|short chapters)\b/,"prefer"],
+    ["Accessible / reluctant-reader friendly",/\b(easy|easier|not too hard|reluctant|short|accessible|simple|quick read)\b/,"prefer"],
     ["Realistic fiction",/realistic|contemporary|real life|school story|family story/,"prefer"],
     ["Deep or emotional topics",/grief|loss|trauma|serious|deep|emotional|depression|abuse|poverty/,"prefer"],
     ["Friendship / found family",/friendship|friends|found family|belonging/,"prefer"],
@@ -843,6 +873,15 @@ function parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,acti
       else addUnique(prefer,label);
     }
   });
+
+  // If the query says "no/not/avoid romance", keep the avoid signal and remove
+  // the positive romance boost. Same idea for "not scary" style requests.
+  if(/\b(no romance|not romance|avoid romance|romance[-\s]?light|too much romance)\b/.test(combined)){
+    for(let i=prefer.length-1;i>=0;i--) if(/romance/i.test(prefer[i])) prefer.splice(i,1);
+  }
+  if(/\b(not scary|avoid horror|too scary|not too scary)\b/.test(combined)){
+    for(let i=prefer.length-1;i>=0;i--) if(/horror|scary/i.test(prefer[i])) prefer.splice(i,1);
+  }
 
   splitSignals(activeProfile?.tasteSignals).forEach(s=>addUnique(prefer,s));
   splitSignals(activeProfile?.avoidSignals).forEach(s=>addUnique(avoid,s));
@@ -899,7 +938,7 @@ function candidateViolations(b,structured){
 }
 
 function candidateEvidence(b,structured){
-  const text=bookIntelligenceText(b).toLowerCase();
+  const text=bookPositiveText(b).toLowerCase();
   const matched=[],concerns=[];
   (structured?.mustHave||[]).forEach(x=>{ if(textMatchesLabel(text,x)) addUnique(matched,x); });
   (structured?.softPreferences||[]).forEach(x=>{ if(textMatchesLabel(text,x)) addUnique(matched,x); });
@@ -990,41 +1029,44 @@ function validateRecommendations(recs,candidates,books,alreadyRead=new Set(),sho
   const candMap=new Map(candidates.map(b=>[String(b.title||"").toLowerCase().trim(),b]));
   const used=new Set();
   const final=[];
-  const cleanAvailable=candidates.filter(b=>!candidateViolations(b,structured).length).length;
-  const shouldRejectViolations=cleanAvailable>=6;
+  const deferred=[];
 
-  const addCandidate=(b,reason="")=>{
+  const addCandidate=(b,reason="",allowViolation=false)=>{
     if(!b?.title) return false;
     const key=String(b.title||"").toLowerCase().trim();
     if(!key||used.has(key)||alreadyRead.has(b.title)||shown.has(b.title)) return false;
     const violations=candidateViolations(b,structured);
-    if(violations.length && shouldRejectViolations) return false;
+    if(violations.length && !allowViolation) return false;
     used.add(key);
     final.push({...b,reason:reason||b.reason||"This title surfaced as a strong catalog match based on the request, profile notes, and Fletcher Library metadata.",_matched:b._matched||[],_concerns:[...(b._concerns||[]),...violations].filter(Boolean)});
     return true;
   };
 
-  // 1) Accept only Claude picks that exist in the candidate pool.
+  // 1) Claude picks are trusted only if they are in the candidate pool.
+  // Clean picks are accepted immediately; caution picks are deferred so they
+  // cannot outrank a clean candidate just because Claude listed them first.
   (recs||[]).forEach(r=>{
-    if(final.length>=6) return;
     const key=String(r?.title||"").toLowerCase().trim();
     if(!key) return;
     const b=candMap.get(key);
     if(!b) return; // Prevent hallucinated or non-candidate titles.
-    addCandidate(b,r.reason||"");
+    if(!addCandidate(b,r.reason||"",false)) deferred.push({b,reason:r.reason||""});
   });
 
-  // 2) Backfill clean candidates first.
+  // 2) Backfill clean candidates in score order.
   for(const b of candidates){
     if(final.length>=6) break;
-    if(candidateViolations(b,structured).length) continue;
-    addCandidate(b);
+    addCandidate(b,"",false);
   }
 
-  // 3) If the catalog is thin, backfill caution candidates only after clean options are exhausted.
+  // 3) Only if necessary, use deferred / caution candidates.
+  for(const item of deferred){
+    if(final.length>=6) break;
+    addCandidate(item.b,item.reason,true);
+  }
   for(const b of candidates){
     if(final.length>=6) break;
-    addCandidate(b);
+    addCandidate(b,"",true);
   }
 
   return final.slice(0,6);

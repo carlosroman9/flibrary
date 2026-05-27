@@ -1453,97 +1453,48 @@ function readableList(items,max=3){
 }
 
 function isGenericReason(reason){
-  const r=String(reason||"").toLowerCase().trim();
-  if(!r) return true;
-  return /strong catalog match|fletcher library metadata|based on the request|matched from catalog|general semantic|good fit for this request/.test(r) && r.length < 180;
+  // DEPRECATED: Under the pre-RA contract this filtered short template phrases
+  // so the system could fall through to buildLibrarianFallbackReason. The new
+  // RA-trained prompt produces specific, appeal-factor-grounded reasons that
+  // we trust directly. Retained as a no-op for backward compatibility.
+  return false;
 }
 
 function buildLibrarianFallbackReason(book,structured=null){
-  const matched=(book._matched||[]).filter(Boolean);
-  const concerns=(book._concerns||[]).filter(Boolean);
-  const appeal=fieldText(
-    book.reader_appeal_profile,
-    book.recommendation_profile,
-    book.appeal_profile,
-    book.appeal_factors,
-    book.best_for,
-    book.tone,
-    book.pacing
-  );
-  const summary=fieldText(book.enriched_summary,book.summary);
-  const subjects=String(book.enriched_subjects||book.subjects||"").split("|").map(x=>x.trim()).filter(Boolean).slice(0,5);
-  const evidenceText=sentenceEvidenceFromText(fieldText(appeal,summary),matched.length?matched:(structured?.softPreferences||[]));
-
-  const parts=[];
-  if(matched.length){
-    parts.push(`This recommendation is being backfilled because the catalog evidence matches ${readableList(matched,3)}.`);
-  }else if(subjects.length){
-    parts.push(`This recommendation is being backfilled because its catalog subjects point toward ${readableList(subjects,3)}.`);
-  }else{
-    parts.push(`This recommendation is being backfilled from the strongest remaining scored catalog candidates.`);
-  }
-
-  if(evidenceText){
-    parts.push(`Catalog evidence: ${evidenceText}`);
-  }
-
-  if(concerns.length){
-    parts.push(`Librarian check: ${readableList(concerns,2)}.`);
-  }else if(structured?.avoidSignals?.length){
-    parts.push(`No obvious avoid-signal violation was detected, but review tone and difficulty before recommending.`);
-  }else{
-    parts.push(`Review the summary for tone, maturity, and difficulty before handing it to the reader.`);
-  }
-
-  return parts.join(" ");
+  // DEPRECATED: This generated the "backfilled" template reasons under the
+  // pre-RA contract that always padded results to 6. The new validateRecommendations
+  // trusts Claude's count and never invokes a fallback. Retained as a no-op for
+  // backward compatibility; remove once confirmed unused.
+  return "";
 }
 
 
 function validateRecommendations(recs,candidates,books,alreadyRead=new Set(),shown=new Set(),structured=null){
+  // Trust Claude's RA-trained restraint: include only the picks Claude returned,
+  // after verifying each is a real catalog candidate and not already shown/read.
+  // No padding to a target count, no generic fallback reasons, no deferred rescue.
+  // If Claude returns 2 strong picks, we surface 2 strong picks.
   const candMap=new Map(candidates.map(b=>[String(b.title||"").toLowerCase().trim(),b]));
   const used=new Set();
   const final=[];
-  const deferred=[];
 
-  const addCandidate=(b,reason="",allowViolation=false)=>{
-    if(!b?.title) return false;
-    const key=String(b.title||"").toLowerCase().trim();
-    if(!key||used.has(key)||alreadyRead.has(b.title)||shown.has(b.title)) return false;
-    const violations=candidateViolations(b,structured);
-    if(violations.length && !allowViolation) return false;
-    used.add(key);
-    final.push({...b,reason:(!isGenericReason(reason)?reason:(!isGenericReason(b.reason)?b.reason:buildLibrarianFallbackReason(b,structured))),_matched:b._matched||[],_concerns:[...(b._concerns||[]),...violations].filter(Boolean)});
-    return true;
-  };
-
-  // 1) Claude picks are trusted only if they are in the candidate pool.
-  // Clean picks are accepted immediately; caution picks are deferred so they
-  // cannot outrank a clean candidate just because Claude listed them first.
   (recs||[]).forEach(r=>{
     const key=String(r?.title||"").toLowerCase().trim();
-    if(!key) return;
+    if(!key||used.has(key)) return;
     const b=candMap.get(key);
     if(!b) return; // Prevent hallucinated or non-candidate titles.
-    if(!addCandidate(b,r.reason||"",false)) deferred.push({b,reason:r.reason||""});
+    if(alreadyRead.has(b.title)||shown.has(b.title)) return;
+    used.add(key);
+    const violations=candidateViolations(b,structured);
+    final.push({
+      ...b,
+      reason:r.reason||"",
+      _matched:b._matched||[],
+      _concerns:[...(b._concerns||[]),...violations].filter(Boolean)
+    });
   });
 
-  // 2) Backfill clean candidates in score order.
-  for(const b of candidates){
-    if(final.length>=6) break;
-    addCandidate(b,"",false);
-  }
-
-  // 3) Only if necessary, use deferred / caution candidates.
-  for(const item of deferred){
-    if(final.length>=6) break;
-    addCandidate(item.b,item.reason,true);
-  }
-  for(const b of candidates){
-    if(final.length>=6) break;
-    addCandidate(b,"",true);
-  }
-
-  return final.slice(0,6);
+  return final;
 }
 
 // ── CLAUDE ── UPGRADED ───────────────────────────────────────────────────
@@ -2437,6 +2388,22 @@ function App(){
               </div>
             </div>}
           </div>
+          {results&&results.length>0&&results.length<6&&!loading&&!loadingMore&&<div style={{
+            margin:'14px 0 0',
+            padding:'10px 14px',
+            background:'rgba(232,184,75,0.07)',
+            border:'1px solid var(--gold-bd)',
+            borderRadius:4,
+            fontFamily:"'Lora',serif",
+            fontSize:13,
+            fontStyle:'italic',
+            color:'var(--text2)',
+            lineHeight:1.55,
+            textAlign:'center'
+          }}>
+            <strong style={{fontStyle:'normal',color:'var(--gold)'}}>{results.length}</strong> strong {results.length===1?'match':'matches'} in the catalog for this request.{' '}
+            Use <strong style={{fontStyle:'normal'}}>Load more</strong> to expand the search, or refine the query for a different angle.
+          </div>}
           {results&&results.length>0&&!loading&&<div className="tbl-bottom">
             {!loadingMore&&<button className="act-btn primary" onClick={searchMore}>Load more →</button>}
             <button className="act-btn" onClick={tblPrintList}>Print list</button>

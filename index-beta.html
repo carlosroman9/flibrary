@@ -1581,11 +1581,16 @@ Task:
 3. Select up to 6 matches — return fewer if the catalog supports fewer genuine fits. Do not pad.
 4. Write each reason per the system prompt rules: name the appeal factor, cite specific evidence from the candidate, connect to the student's context.
 
-Return ONLY this JSON shape, no markdown:
-[{"title":"...","author":"...","reason":"..."}]
-
 Catalog candidates:
-${list}`;
+${list}
+
+=== OUTPUT FORMAT — STRICT ===
+Respond with ONLY a JSON array. No preamble. No explanation. No markdown code fences. No commentary before or after.
+Your response must START with the character [ and END with the character ].
+If you cannot find any genuine matches in the catalog, return the empty array: []
+Do all your reasoning internally; output only the final JSON.
+
+Shape: [{"title":"...","author":"...","reason":"..."}]`;
 
   const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
     model:"claude-sonnet-4-6",
@@ -1598,10 +1603,27 @@ ${list}`;
   if(!res.ok) throw new Error(`Worker ${res.status}`);
   let data;try{data=JSON.parse(raw);}catch(e){throw e;}
   const text=data.content?.[0]?.text||"[]";
-  const clean=text.replace(/```json|```/g,"").trim();
-  const jsonMatch=clean.match(/\[\s*\{[\s\S]*\}\s*\]/);
-  const jsonText=jsonMatch?jsonMatch[0]:clean;
-  return JSON.parse(jsonText);
+
+  // Strip markdown code fences if Claude wrapped output in ```json ... ```
+  const clean=text.replace(/```json\s*|```/g,"").trim();
+
+  // Defensive extraction: locate the outermost JSON array even if Claude prepended
+  // commentary ("I'll work through this...") or appended an explanation. With the
+  // new RA prompt's multi-step reasoning, occasional preamble leakage is expected;
+  // we want graceful degradation, not a thrown error that bubbles up as "Search failed."
+  const firstBracket=clean.indexOf('[');
+  const lastBracket=clean.lastIndexOf(']');
+  if(firstBracket===-1||lastBracket<=firstBracket){
+    console.warn('[callClaude] No JSON array found in response. Raw text (first 500 chars):',clean.slice(0,500));
+    return [];
+  }
+  const jsonText=clean.slice(firstBracket,lastBracket+1);
+  try{
+    return JSON.parse(jsonText);
+  }catch(parseErr){
+    console.warn('[callClaude] JSON.parse failed after bracket extraction. Returning empty array. Extracted (first 500 chars):',jsonText.slice(0,500));
+    return [];
+  }
 }
 
 
@@ -2187,7 +2209,15 @@ function App(){
     if(isMore) setResults(p=>[...(p||[]),...enriched]);
     else setResults(enriched);
     trackRecs(enriched);
-    tblMkBooks(enriched);
+
+    // Empty load-more: preserve the existing deck visual rather than wiping it.
+    // Without this guard, tblMkBooks([]) clears the noir table and the user sees nothing.
+    if(isMore && enriched.length===0){
+      addToast("No additional matches in the catalog — try a different angle or refine your search.","info");
+    }else{
+      tblMkBooks(enriched);
+    }
+
     setTblBatchLabel(isMore?'Batch 2':'Batch 1');
     setSessionHistory(prev=>{
       const maxSet=prev.reduce((m,b)=>Math.max(m,b._setNum||0),0);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fletcher Library Assistant</title>
+  <title>Fletcher Library Assistant — Intelligence QA v3</title>
   <link rel="icon" href="logo.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -684,7 +684,269 @@
     .tbl-bottom{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;}
     .tbl-batch{font-size:10px;color:var(--text3);background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;}
     @keyframes dustFly{0%{opacity:.7;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
-  </style>
+  
+/* ── EVALUATION LAB ─────────────────────────────────────────────────── */
+.eval-panel {
+  background: var(--card);
+  border: 1px solid var(--gold-bd);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 24px 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,.25);
+}
+
+.eval-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.eval-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--cream);
+  font-style: italic;
+  letter-spacing: -.01em;
+}
+
+.eval-sub {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-top: 4px;
+}
+
+.eval-toggle {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--gold-bd);
+  color: var(--gold2);
+  background: var(--gold-dim);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.eval-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(260px, .95fr);
+  gap: 14px;
+}
+
+.eval-card {
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.eval-card h4 {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.eval-select,
+.eval-input,
+.eval-textarea {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+}
+
+.eval-textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: 'Lora', serif;
+  line-height: 1.65;
+}
+
+.eval-select:focus,
+.eval-input:focus,
+.eval-textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+
+.eval-mini {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+.eval-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.eval-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  background: transparent;
+}
+
+.eval-pill.must { border-color: var(--gold-bd); color: var(--gold2); background: var(--gold-dim); }
+.eval-pill.avoid { border-color: rgba(248,113,113,.3); color: var(--red); background: rgba(248,113,113,.07); }
+
+.eval-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.eval-btn {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.eval-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.eval-btn.primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+}
+
+.eval-btn.primary:hover {
+  background: var(--gold2);
+  color: #000;
+}
+
+.eval-results {
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.eval-result-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.eval-result-row:last-child {
+  border-bottom: none;
+}
+
+.eval-book-title {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.eval-book-meta {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.eval-score {
+  display: flex;
+  gap: 4px;
+}
+
+.eval-score button {
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.eval-score button.on {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+}
+
+.eval-score button.bad.on {
+  background: var(--red);
+  border-color: var(--red);
+  color: #000;
+}
+
+.eval-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.eval-metric {
+  flex: 1;
+  min-width: 120px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.eval-metric-n {
+  font-family: 'Fraunces', serif;
+  color: var(--gold);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.eval-metric-l {
+  color: var(--text3);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+@media(max-width:740px) {
+  .eval-grid {
+    grid-template-columns: 1fr;
+  }
+  .eval-head {
+    flex-direction: column;
+  }
+}
+
+</style>
 </head>
 <body>
 
@@ -711,6 +973,7 @@
 <div id="root"></div>
 
 <script type="text/babel">
+// ENGINEER REVIEWED BUILD: syntax checked; semantic retrieval restored; validation hardened.
 // ── CONSTANTS ────────────────────────────────────────────────────────────
 const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
 const EMBED_URL  = `${WORKER_URL}/embed`;
@@ -764,6 +1027,106 @@ const STOP   = new Set(["the","and","for","that","with","this","she","her","his"
 const GRADES = ["6th","7th","8th"];
 const DEFAULT_ANALYTICS = {totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
 
+const EVAL_TESTS = [
+  {
+    id:"pj_gods",
+    label:"Percy Jackson readalike: fights gods",
+    prompt:"I want another fantasy book similar to Percy Jackson where the protagonist fights gods.",
+    must:["fantasy adventure","mythological/divine conflict","protagonist confronts gods/deities/godlike beings"],
+    prefer:["fast pace","monsters","special powers","accessible middle grade / YA feel"],
+    avoid:["main Percy Jackson & the Olympians books","general folklore fantasy without divine conflict"]
+  },
+  {
+    id:"pj_easier",
+    label:"Percy Jackson but easier",
+    prompt:"I want something like Percy Jackson but easier, not the main Percy Jackson series.",
+    must:["accessible fantasy adventure","not main Percy Jackson series"],
+    prefer:["mythology or monsters","fast pacing","shorter / easier than Percy Jackson"],
+    avoid:["harder or longer books","same main series"]
+  },
+  {
+    id:"girl_powers_no_animals",
+    label:"Girl with powers, not animals",
+    prompt:"Fantasy with a human girl main character who has powers, not animal protagonists.",
+    must:["human girl / female protagonist","fantasy or magic","special powers"],
+    prefer:["fast pace","mystery or danger"],
+    avoid:["animal protagonists","dragon protagonists"]
+  },
+  {
+    id:"murder_mystery_fantasy",
+    label:"Fantasy murder mystery",
+    prompt:"A murder mystery fantasy with deception and secrets.",
+    must:["mystery / investigation","fantasy or magic"],
+    prefer:["deception","secrets","suspense"],
+    avoid:["realistic mystery only"]
+  },
+  {
+    id:"sports_reluctant",
+    label:"Sports for reluctant reader",
+    prompt:"Sports book for a reluctant reader who likes fast-paced stories.",
+    must:["sports element","accessible / reluctant-reader friendly"],
+    prefer:["fast pacing","team conflict","shorter length"],
+    avoid:["slow literary sports-adjacent books"]
+  },
+  {
+    id:"friendship_belonging",
+    label:"Friendship and belonging",
+    prompt:"Realistic fiction about friendship and belonging, not too sad.",
+    must:["realistic fiction","friendship / belonging"],
+    prefer:["hopeful tone","school or family context"],
+    avoid:["very sad/heavy tone"]
+  },
+  {
+    id:"school_safe_romance",
+    label:"School-appropriate enemies to lovers",
+    prompt:"Enemies-to-lovers fantasy but school appropriate.",
+    must:["fantasy or magic","enemies/rivals to lovers"],
+    prefer:["slow burn","banter","adventure"],
+    avoid:["explicit romance","too mature"]
+  },
+  {
+    id:"amari_hidden_world",
+    label:"Amari-style hidden world",
+    prompt:"A book like Amari because of the hidden magical world and underdog girl hero.",
+    must:["hidden magical world","underdog girl / female protagonist"],
+    prefer:["powers","mystery","training or secret society"],
+    avoid:["animal protagonist fantasy"]
+  },
+  {
+    id:"scary_not_horror",
+    label:"Scary mystery, not horror",
+    prompt:"A scary mystery but not horror and not too violent.",
+    must:["mystery / suspense"],
+    prefer:["eerie atmosphere","high interest"],
+    avoid:["horror","graphic violence"]
+  },
+  {
+    id:"short_exciting",
+    label:"Short exciting reluctant reader",
+    prompt:"A short, exciting book for a student who does not usually finish books.",
+    must:["accessible / reluctant-reader friendly","high-interest"],
+    prefer:["shorter length","fast pacing","clear conflict"],
+    avoid:["long slow books"]
+  }
+];
+
+function exportEvaluationCsv(rows){
+  const headers=["timestamp","test_id","test_label","prompt","rank","title","author","score","reason","must","prefer","avoid"];
+  const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const body=rows.map(r=>headers.map(h=>esc(r[h])).join(",")).join("\n");
+  const csv=headers.join(",")+"\n"+body;
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`fletcher-readermatch-evaluation-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+
 // ── UTILITIES ────────────────────────────────────────────────────────────
 const uid      = () => Math.random().toString(36).slice(2,9);
 const tokenize = t => (t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
@@ -774,24 +1137,171 @@ function splitSignals(v){ if(Array.isArray(v)) return v.map(x=>String(x).trim())
 function advisoryTextForProfile(p){ if(!p) return ""; const t=splitSignals(p.tasteSignals),a=splitSignals(p.avoidSignals),parts=[]; if(p.advisoryNotes) parts.push(`Librarian advisory notes: ${p.advisoryNotes}`); if(t.length) parts.push(`Reader taste signals: ${t.join(", ")}`); if(a.length) parts.push(`Avoid or be cautious with: ${a.join(", ")}`); return parts.join("\n"); }
 function updateStatus(id,cls,txt){ const d=document.getElementById(`${id}-dot`),l=document.getElementById(`${id}-txt`); if(d) d.className=`dot ${cls}`; if(l) l.textContent=txt; }
 
+function addUnique(arr,v){ if(v&&!arr.some(x=>String(x).toLowerCase()===String(v).toLowerCase())) arr.push(v); }
+function fieldText(...parts){ return parts.filter(Boolean).join(" ").replace(/\s+/g," ").trim(); }
+function bookIntelligenceText(b){
+  return fieldText(
+    b.title,b.author,b.series,
+    b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,b.avoid_if,
+    b.enriched_subjects,b.subjects,b.enriched_summary,b.summary,b.genre,b.genres,b.tone,b.pacing,b.audience,b.notes
+  );
+}
+function bookPositiveText(b){
+  // Used for positive retrieval/scoring. Keep avoid_if out of positive scoring so "avoid" warnings do not accidentally boost a title.
+  return fieldText(
+    b.title,b.author,b.series,
+    b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,
+    b.enriched_subjects,b.subjects,b.enriched_summary,b.summary,b.genre,b.genres,b.tone,b.pacing,b.audience
+  );
+}
+function pageCount(b){ const m=String(b.pages||b.page_count||"").match(/\d+/); return m?Number(m[0]):null; }
+function labelTokens(label){ return tokenize(String(label||"").replace(/[/_-]/g," ")).filter(w=>w.length>3); }
+function textMatchesLabel(text,label){
+  const l=String(label||"").toLowerCase();
+
+  // Curated matches for reader-advisory concepts. This avoids weak matches like
+  // "animal protagonists" satisfying "human girl protagonist" merely because
+  // both contain the word "protagonist".
+  if(/human girl|female protagonist|girl protagonist/.test(l)){
+    return /\b(girl|female|heroine|woman|daughter|sister)\b/.test(text) &&
+           !/\b(dragon|animal protagonist|animal protagonists|cat|dog|wolf|horse|rabbit|fox)\b/.test(text);
+  }
+  if(/animal|dragon/.test(l)){
+    return /\b(dragon|animal|cat|dog|wolf|horse|rabbit|fox|warrior cats|wings of fire)\b/.test(text);
+  }
+  if(/romance/.test(l)){
+    return /\b(romance|romantic|crush|dating|boyfriend|girlfriend|love interest|falling in love|enemies to lovers|slow burn)\b/.test(text);
+  }
+  if(/fast/.test(l)){
+    return /\b(fast[-\s]?paced|quick|action|exciting|page[-\s]?turner|adventure|short chapters)\b/.test(text);
+  }
+  if(/accessible|reluctant|easy|short/.test(l)){
+    return /\b(accessible|reluctant|quick read|short chapters|easy|easier)\b/.test(text);
+  }
+  if(/mystery|investigation/.test(l)){
+    return /\b(mystery|murder|detective|clue|crime|investigation|secret|missing)\b/.test(text);
+  }
+  if(/fantasy|magic/.test(l)){
+    return /\b(fantasy|magic|magical|spell|wizard|witch|powers?|supernatural|secret world|hidden world)\b/.test(text);
+  }
+
+  const toks=labelTokens(label);
+  if(!toks.length) return false;
+  // For multiword labels, require at least two meaningful token hits when possible.
+  const hits=toks.filter(t=>new RegExp(`\\b${t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`).test(text)).length;
+  return toks.length>=2 ? hits>=2 : hits>=1;
+}
+
+function comparisonExclusionsFromQuery(query){
+  const q=String(query||"").toLowerCase();
+  const wantsComparison=/\b(like|similar to|reminds? me of|another|something like|readalike|read-alike)\b/.test(q);
+  const explicitlyWantsMore=/\b(more percy jackson|percy jackson series|rick riordan books|more rick riordan|next percy jackson|another percy jackson)\b/.test(q);
+  const exclusions=[];
+  if(wantsComparison && !explicitlyWantsMore){
+    if(/\bpercy jackson\b|\bolympians\b|\bcamp half[-\s]?blood\b/.test(q)){
+      exclusions.push({
+        label:"Percy Jackson main series comparison title",
+        test:b=>{
+          const title=String(b.title||"").toLowerCase();
+          const series=String(b.series||"").toLowerCase();
+          const text=`${title} ${series}`;
+          // Exclude the main Percy Jackson & the Olympians sequence when it is
+          // being used as a readalike/comparison source. Do NOT exclude all Rick
+          // Riordan books; other Riordan mythology series may still be valid
+          // recommendations if they satisfy the actual request.
+          const mainSeries=/percy jackson( and| &)? the olympians|percy jackson & the olympians|percy jackson series/.test(series);
+          const mainTitles=/\b(the )?lightning thief\b|\b(the )?sea of monsters\b|\b(the )?titan'?s curse\b|\b(the )?battle of the labyrinth\b|\b(the )?last olympian\b|\b(the )?chalice of the gods\b|\b(the )?wrath of the triple goddess\b/.test(title);
+          return mainSeries || mainTitles || /\bpercy jackson( and| &)? the olympians\b/.test(text);
+        }
+      });
+    }
+  }
+  return exclusions;
+}
+
+function isComparisonExcludedBook(book,structured){
+  return (structured?.comparisonExclusions||[]).some(rule=>rule.test(book));
+}
+
 function parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike}){
-  const q=(query||"").toLowerCase(), adv=advisoryTextForProfile(activeProfile).toLowerCase(), combined=`${q} ${adv} ${(didntLike||"").toLowerCase()}`;
-  const must=[],prefer=[],avoid=[];
-  const add=(arr,v)=>{ if(v&&!arr.some(x=>x.toLowerCase()===v.toLowerCase())) arr.push(v); };
-  if(mode==="similar"&&refBook){ add(must,`Similar appeal to "${refBook.title}"`); add(prefer,"Matching tone, pacing, and themes"); }
-  if(mode==="tropes") TROPES.filter(t=>selTropes.has(t.id)).forEach(t=>{ if(t.id===priorityTrope) add(must,t.label); else add(prefer,t.label); });
-  const rules=[["Fantasy or magical elements",/fantasy|magic|magical|spell|witch|powers?/,"prefer"],["Mystery / investigation",/mystery|murder|detective|clue|crime/,"prefer"],["Girl / female protagonist",/girl|female|heroine/,"prefer"],["Sports element",/sports?|basketball|football|soccer|athlete/,"prefer"],["Romance element",/romance|love|crush|enemies to lovers/,"prefer"],["Fast-paced",/fast|action|exciting|adventure|short chapters/,"prefer"],["Accessible / reluctant-reader",/easy|reluctant|short|accessible/,"prefer"],["Realistic fiction",/realistic|contemporary|real life/,"prefer"],["No animal protagonists",/not animals?|no animals?|not dragons?/,"avoid"],["Avoid heavy romance",/no romance|avoid romance|romance.?light/,"avoid"],["Avoid slow pacing",/not slow|avoid slow|too slow/,"avoid"]];
-  rules.forEach(([label,re,type])=>{ if(re.test(combined)) add(type==="avoid"?avoid:prefer,label); });
-  splitSignals(activeProfile?.tasteSignals).forEach(s=>add(prefer,s));
-  splitSignals(activeProfile?.avoidSignals).forEach(s=>add(avoid,s));
-  if(activeProfile?.reluctant) add(prefer,"Reluctant-reader friendly pacing");
-  if(activeProfile?.likedBooks?.length) add(prefer,`Appeal from liked books: ${activeProfile.likedBooks.slice(0,3).join(", ")}`);
-  if(alreadyRead?.size) add(avoid,`${alreadyRead.size} already-read title${alreadyRead.size===1?"":"s"} excluded`);
-  if(didntLike?.trim()) add(avoid,`Qualities similar to: "${didntLike.trim()}"`);
-  if(!must.length) add(must,"Relevant titles from the Fletcher catalog");
-  if(!prefer.length) add(prefer,"Strong reader appeal match");
-  if(!avoid.length) add(avoid,"No extra exclusions");
-  return{mustHave:must.slice(0,6),softPreferences:prefer.slice(0,8),avoidSignals:avoid.slice(0,6),originalQuery:mode==="similar"?(refBook?.title||query):mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(", "):query};
+  const q=(query||"").toLowerCase();
+  const adv=advisoryTextForProfile(activeProfile).toLowerCase();
+  const dislike=(didntLike||"").toLowerCase();
+  const combined=`${q} ${adv} ${dislike}`;
+  const comparisonExclusions=comparisonExclusionsFromQuery(query);
+  const must=[],prefer=[],avoid=[],evidence=[];
+  if(/\b(fight|fights|fighting|battle|battles|battling|against|confront|confronts|defeat|defeats)\b.*\b(god|gods|deity|deities|divine|immortal|titans?)\b|\b(god|gods|deity|deities|divine|immortal|titans?)\b.*\b(fight|fights|fighting|battle|battles|battling|against|confront|confronts|defeat|defeats)\b/.test(q)){
+    addUnique(must,"Protagonist fights gods / divine beings");
+    addUnique(prefer,"mythic action adventure");
+    addUnique(avoid,"general folklore fantasy without divine conflict");
+  }
+
+  if(mode==="similar"&&refBook){
+    addUnique(must,`Similar appeal to "${refBook.title}"`);
+    addUnique(prefer,"matching tone, pacing, themes, and reader appeal");
+    if(refBook.enriched_subjects||refBook.subjects) addUnique(evidence,`reference subjects: ${String(refBook.enriched_subjects||refBook.subjects).split("|").slice(0,4).join(", ")}`);
+  }
+  if(mode==="tropes"){
+    TROPES.filter(t=>selTropes.has(t.id)).forEach(t=>{
+      if(t.id===priorityTrope) addUnique(must,t.label);
+      else addUnique(prefer,t.label);
+    });
+  }
+
+  const rules=[
+    ["Fantasy or magical elements",/fantasy|magic|magical|spell|witch|wizard|powers?|supernatural|portal|hidden world|secret world/,"prefer"],
+    ["Mystery / investigation",/mystery|murder|detective|clue|crime|investigation|missing|secret|suspect/,"prefer"],
+    ["Human girl / female protagonist",/human girl|girl main|girl protagonist|female protagonist|heroine|strong girl|girl with powers/,"must"],
+    ["Girl / female protagonist",/girl|female|heroine/,"prefer"],
+    ["Special powers / abilities",/powers?|abilities|gift|supernatural|magic|special/,"prefer"],
+    ["Sports element",/\b(sports?|basketball|football|soccer|baseball|athlete|team|game)\b/,"prefer"],
+    ["Romance element",/\b(romance|romantic|crush|dating|enemies to lovers|slow burn|love interest|falling in love)\b/,"prefer"],
+    ["Fast-paced",/\b(fast[-\s]?paced|quick|action|exciting|page.?turner|adventure|short chapters)\b/,"prefer"],
+    ["Accessible / reluctant-reader friendly",/\b(easy|easier|not too hard|reluctant|short|accessible|simple|quick read)\b/,"prefer"],
+    ["Realistic fiction",/realistic|contemporary|real life|school story|family story/,"prefer"],
+    ["Deep or emotional topics",/grief|loss|trauma|serious|deep|emotional|depression|abuse|poverty/,"prefer"],
+    ["Friendship / found family",/friendship|friends|found family|belonging/,"prefer"],
+    ["Avoid animal protagonists",/not animals?|no animals?|avoid animals?|not dragons?|no dragons?|human protagonist|human girl/,"avoid"],
+    ["Avoid heavy romance",/no romance|not romance|avoid romance|romance.?light|too much romance/,"avoid"],
+    ["Avoid slow pacing",/not slow|avoid slow|too slow|slow pacing|slow books/,"avoid"],
+    ["Avoid scary content",/not scary|avoid horror|too scary|not too scary/,"avoid"],
+    ["Avoid childish tone",/not childish|too young|babyish|feels young/,"avoid"]
+  ];
+  rules.forEach(([label,re,type])=>{
+    if(re.test(combined)){
+      if(type==="must") addUnique(must,label);
+      else if(type==="avoid") addUnique(avoid,label);
+      else addUnique(prefer,label);
+    }
+  });
+
+  // If the query says "no/not/avoid romance", keep the avoid signal and remove
+  // the positive romance boost. Same idea for "not scary" style requests.
+  if(/\b(no romance|not romance|avoid romance|romance[-\s]?light|too much romance)\b/.test(combined)){
+    for(let i=prefer.length-1;i>=0;i--) if(/romance/i.test(prefer[i])) prefer.splice(i,1);
+  }
+  if(/\b(not scary|avoid horror|too scary|not too scary)\b/.test(combined)){
+    for(let i=prefer.length-1;i>=0;i--) if(/horror|scary/i.test(prefer[i])) prefer.splice(i,1);
+  }
+
+  splitSignals(activeProfile?.tasteSignals).forEach(s=>addUnique(prefer,s));
+  splitSignals(activeProfile?.avoidSignals).forEach(s=>addUnique(avoid,s));
+  if(activeProfile?.advisoryNotes) addUnique(prefer,"librarian advisory notes");
+  if(activeProfile?.reluctant) addUnique(prefer,"reluctant-reader friendly pacing");
+  if(activeProfile?.likedBooks?.length) addUnique(prefer,`appeal from liked books: ${activeProfile.likedBooks.slice(0,3).join(", ")}`);
+  if(alreadyRead?.size) addUnique(avoid,`${alreadyRead.size} already-read title${alreadyRead.size===1?"":"s"} excluded`);
+  if(didntLike?.trim()) addUnique(avoid,`qualities similar to: "${didntLike.trim()}"`);
+  if(!must.length) addUnique(must,"relevant titles from the Fletcher catalog");
+  if(!prefer.length) addUnique(prefer,"strong reader appeal match");
+  if(!avoid.length) addUnique(avoid,"no extra exclusions");
+
+  return {comparisonExclusions,
+    mustHave:must.slice(0,8),
+    softPreferences:prefer.slice(0,12),
+    avoidSignals:avoid.slice(0,10),
+    evidence:evidence.slice(0,5),
+    originalQuery:mode==="similar"?(refBook?.title||query):mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(", "):query
+  };
 }
 
 
@@ -816,81 +1326,319 @@ function tblExit(){_tblBkEls.forEach((el,i)=>{setTimeout(()=>el.classList.add('e
 function tblSetActive(idx){_tblBkEls.forEach((el,j)=>{if(!el.classList.contains('have-it')){el.classList.toggle('tbl-active',j===idx);el.style.zIndex=j===idx?20:j+2;}});}
 function tblSyncHave(haveSet){_tblBkEls.forEach((el,i)=>{const b=_tblBooks[i];if(!b)return;const h=haveSet.has(b.title);el.classList.toggle('have-it',h);if(h)el.classList.remove('tbl-active');let badge=el.querySelector('.tbl-have-badge');if(h&&!badge){badge=document.createElement('div');badge.className='tbl-have-badge';badge.innerHTML='<span>Checked Out</span>';el.appendChild(badge);}else if(!h&&badge)badge.remove();});}
 // ── CANDIDATES ───────────────────────────────────────────────────────────
-function getCandidates(books,queryText,likedKws=[],n=35,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null){
-  const pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
+function candidateViolations(b,structured){
+  const text=bookIntelligenceText(b).toLowerCase();
+  const v=[];
+  if(isComparisonExcludedBook(b,structured)) addUnique(v,"comparison title itself / same source series");
+  const avoids=structured?.avoidSignals||[];
+  if(avoids.some(x=>/animal|dragon/i.test(x)) && /dragon|animal|cat|dog|wolf|horse|rabbit|fox|wings of fire|warrior cats/i.test(text)) addUnique(v,"possible animal/dragon protagonist");
+  if(avoids.some(x=>/romance/i.test(x)) && /romance|love|crush|dating|kiss|boyfriend|girlfriend/i.test(text)) addUnique(v,"romance may be too prominent");
+  if(avoids.some(x=>/slow/i.test(x)) && /slow|lyrical|atmospheric|meditative|quiet/i.test(text)) addUnique(v,"possibly slow or atmospheric");
+  if(avoids.some(x=>/scary|horror/i.test(x)) && /horror|terrifying|scary|ghost|haunted|nightmare/i.test(text)) addUnique(v,"possibly scary");
+  if(avoids.some(x=>/childish|too young/i.test(x)) && /silly|wacky|zany|younger readers|elementary/i.test(text)) addUnique(v,"may skew young");
+  return v;
+}
+
+function candidateEvidence(b,structured){
+  const text=bookPositiveText(b).toLowerCase();
+  const matched=[],concerns=[];
+  (structured?.mustHave||[]).forEach(x=>{ if(textMatchesLabel(text,x)) addUnique(matched,x); });
+  (structured?.softPreferences||[]).forEach(x=>{ if(textMatchesLabel(text,x)) addUnique(matched,x); });
+  candidateViolations(b,structured).forEach(x=>addUnique(concerns,x));
+  const p=pageCount(b);
+  if((structured?.softPreferences||[]).some(x=>/accessible|reluctant|short|easy/i.test(x))){
+    if(p&&p<275) addUnique(matched,"shorter / accessible length");
+    if(p&&p>420) addUnique(concerns,"longer book; check difficulty");
+    if(/short chapters|fast-paced|quick read|reluctant/i.test(text)) addUnique(matched,"reluctant-reader signal");
+  }
+  return {matched:matched.slice(0,8),concerns:concerns.slice(0,6)};
+}
+
+function scoreCandidateIntelligence(b,queryTokens,likedTokens,structured,sameAuthor,sameSeries){
+  const subject=new Set(tokenize(b.enriched_subjects||b.subjects||""));
+  const summary=new Set(tokenize(b.enriched_summary||b.summary||""));
+  const profile=new Set(tokenize(fieldText(b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,b.tone,b.pacing)));
+  const title=new Set(tokenize(b.title||""));
+  let score=0;
+  queryTokens.forEach(k=>{
+    if(subject.has(k)) score+=4;
+    if(profile.has(k)) score+=4;
+    if(title.has(k)) score+=2.5;
+    if(summary.has(k)) score+=1.25;
+  });
+  likedTokens.forEach(k=>{
+    if(subject.has(k)) score+=4.5;
+    if(profile.has(k)) score+=4;
+    if(summary.has(k)) score+=2;
+  });
+  if(sameAuthor.has(b.title)) score+=7;
+  if(sameSeries.has(b.title)) score+=14;
+
+  const evidence=candidateEvidence(b,structured);
+  score+=evidence.matched.length*5;
+  score-=evidence.concerns.length*14;
+
+  const p=pageCount(b);
+  if(activeReluctantHint(structured)){
+    if(p&&p<275) score+=6;
+    if(p&&p>420) score-=8;
+  }
+  return {...b,_s:score,_matched:evidence.matched,_concerns:evidence.concerns};
+}
+
+function activeReluctantHint(structured){
+  const txt=[...(structured?.softPreferences||[]),...(structured?.mustHave||[])].join(" ").toLowerCase();
+  return /reluctant|accessible|easy|short/.test(txt);
+}
+
+async function getCandidates(books,queryText,likedKws=[],n=55,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null,structured=null,bookEmbeddings=null){
+  let pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
+  const comparisonFiltered=pool.filter(b=>!isComparisonExcludedBook(b,structured));
+  if(comparisonFiltered.length>=12) pool=comparisonFiltered;
   const authorLast=refAuthor?refAuthor.split(',')[0].trim().toLowerCase():null;
   const sameAuthor=new Set(authorLast?pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title):[]);
   const refBook_=excl?books.find(b=>b.title===excl):null;
   const sameSeries=new Set(refBook_?.series?pool.filter(b=>b.series&&b.series===refBook_.series).map(b=>b.title):[]);
-  const kws=tokenize(queryText),kSet=new Set(kws),lSet=new Set(likedKws);
-  let scored=pool.map(b=>{
-    const st=new Set(tokenize(b.enriched_subjects||b.subjects||''));
-    const sm=new Set(tokenize(b.enriched_summary||b.summary||''));
-    const ti=new Set(tokenize(b.title||''));
-    const base=[...kSet].filter(k=>st.has(k)).length*3+[...kSet].filter(k=>sm.has(k)).length+[...kSet].filter(k=>ti.has(k)).length;
-    const liked=[...lSet].filter(k=>st.has(k)).length*4+[...lSet].filter(k=>sm.has(k)).length*2;
-    const auth=sameAuthor.has(b.title)?10:0;
-    const series=sameSeries.has(b.title)?15:0;
-    return{...b,_s:base+liked+auth+series};
-  });
+  const qTokens=tokenize(queryText);
+  const likedTokens=likedKws||[];
+  let scored=pool.map(b=>scoreCandidateIntelligence(b,qTokens,likedTokens,structured,sameAuthor,sameSeries));
+
+  // Optional semantic layer: use precomputed book_embeddings.json plus the worker embedding endpoint.
+  // This restores meaning-based retrieval while keeping the transparent librarian scoring layer.
+  if(bookEmbeddings && Object.keys(bookEmbeddings).length>0){
+    try{
+      const res=await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
+      if(!res.ok) throw new Error(`embed ${res.status}`);
+      const {embedding:qEmb}=await res.json();
+      scored=scored.map(b=>{
+        const bEmb=bookEmbeddings[b.title];
+        const sem=bEmb?cosine(qEmb,bEmb):0;
+        return {...b,_sem:sem,_s:b._s+(sem*42)};
+      });
+    }catch(err){
+      console.warn('Embedding retrieval failed; using librarian keyword/profile scoring fallback.',err);
+    }
+  }
+
+  // Keep strong series continuations, but otherwise prefer non-violating matches when enough exist.
+  const nonViolation=scored.filter(b=>(b._concerns||[]).length===0 || sameSeries.has(b.title));
+  if(nonViolation.length>=Math.min(18,n)) scored=nonViolation;
+
   scored=scored.filter(b=>b._s>0||sameSeries.has(b.title));
-  if(!scored.length) scored=pool;
+  if(!scored.length) scored=pool.map(b=>scoreCandidateIntelligence(b,qTokens,likedTokens,structured,sameAuthor,sameSeries));
   return scored.sort((a,b)=>b._s-a._s).slice(0,n);
+}
+
+
+function sentenceEvidenceFromText(text,signals=[]){
+  const clean=String(text||"").replace(/\s+/g," ").trim();
+  if(!clean) return "";
+  const sentences=clean.split(/(?<=[.!?])\s+/).filter(s=>s.length>35);
+  const sigWords=signals.join(" ").toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>4);
+  const scored=sentences.map(s=>{
+    const low=s.toLowerCase();
+    const score=sigWords.reduce((n,w)=>n+(low.includes(w)?1:0),0);
+    return {s,score};
+  }).sort((a,b)=>b.score-a.score);
+  const best=(scored[0]?.score>0?scored[0].s:sentences[0]||clean).trim();
+  return best.length>260 ? best.slice(0,257).replace(/\s+\S*$/,"")+"..." : best;
+}
+
+function readableList(items,max=3){
+  const arr=(items||[]).filter(Boolean).slice(0,max);
+  if(arr.length===0) return "";
+  if(arr.length===1) return arr[0];
+  if(arr.length===2) return `${arr[0]} and ${arr[1]}`;
+  return `${arr.slice(0,-1).join(", ")}, and ${arr[arr.length-1]}`;
+}
+
+function isGenericReason(reason){
+  const r=String(reason||"").toLowerCase().trim();
+  if(!r) return true;
+  return /strong catalog match|fletcher library metadata|based on the request|matched from catalog|general semantic|good fit for this request/.test(r) && r.length < 180;
+}
+
+function buildLibrarianFallbackReason(book,structured=null){
+  const matched=(book._matched||[]).filter(Boolean);
+  const concerns=(book._concerns||[]).filter(Boolean);
+  const appeal=fieldText(
+    book.reader_appeal_profile,
+    book.recommendation_profile,
+    book.appeal_profile,
+    book.appeal_factors,
+    book.best_for,
+    book.tone,
+    book.pacing
+  );
+  const summary=fieldText(book.enriched_summary,book.summary);
+  const subjects=String(book.enriched_subjects||book.subjects||"").split("|").map(x=>x.trim()).filter(Boolean).slice(0,5);
+  const evidenceText=sentenceEvidenceFromText(fieldText(appeal,summary),matched.length?matched:(structured?.softPreferences||[]));
+
+  const parts=[];
+  if(matched.length){
+    parts.push(`This recommendation is being backfilled because the catalog evidence matches ${readableList(matched,3)}.`);
+  }else if(subjects.length){
+    parts.push(`This recommendation is being backfilled because its catalog subjects point toward ${readableList(subjects,3)}.`);
+  }else{
+    parts.push(`This recommendation is being backfilled from the strongest remaining scored catalog candidates.`);
+  }
+
+  if(evidenceText){
+    parts.push(`Catalog evidence: ${evidenceText}`);
+  }
+
+  if(concerns.length){
+    parts.push(`Librarian check: ${readableList(concerns,2)}.`);
+  }else if(structured?.avoidSignals?.length){
+    parts.push(`No obvious avoid-signal violation was detected, but review tone and difficulty before recommending.`);
+  }else{
+    parts.push(`Review the summary for tone, maturity, and difficulty before handing it to the reader.`);
+  }
+
+  return parts.join(" ");
+}
+
+
+function validateRecommendations(recs,candidates,books,alreadyRead=new Set(),shown=new Set(),structured=null){
+  const candMap=new Map(candidates.map(b=>[String(b.title||"").toLowerCase().trim(),b]));
+  const used=new Set();
+  const final=[];
+  const deferred=[];
+
+  const addCandidate=(b,reason="",allowViolation=false)=>{
+    if(!b?.title) return false;
+    const key=String(b.title||"").toLowerCase().trim();
+    if(!key||used.has(key)||alreadyRead.has(b.title)||shown.has(b.title)) return false;
+    const violations=candidateViolations(b,structured);
+    if(violations.length && !allowViolation) return false;
+    used.add(key);
+    final.push({...b,reason:(!isGenericReason(reason)?reason:(!isGenericReason(b.reason)?b.reason:buildLibrarianFallbackReason(b,structured))),_matched:b._matched||[],_concerns:[...(b._concerns||[]),...violations].filter(Boolean)});
+    return true;
+  };
+
+  // 1) Claude picks are trusted only if they are in the candidate pool.
+  // Clean picks are accepted immediately; caution picks are deferred so they
+  // cannot outrank a clean candidate just because Claude listed them first.
+  (recs||[]).forEach(r=>{
+    const key=String(r?.title||"").toLowerCase().trim();
+    if(!key) return;
+    const b=candMap.get(key);
+    if(!b) return; // Prevent hallucinated or non-candidate titles.
+    if(!addCandidate(b,r.reason||"",false)) deferred.push({b,reason:r.reason||""});
+  });
+
+  // 2) Backfill clean candidates in score order.
+  for(const b of candidates){
+    if(final.length>=6) break;
+    addCandidate(b,"",false);
+  }
+
+  // 3) Only if necessary, use deferred / caution candidates.
+  for(const item of deferred){
+    if(final.length>=6) break;
+    addCandidate(item.b,item.reason,true);
+  }
+  for(const b of candidates){
+    if(final.length>=6) break;
+    addCandidate(b,"",true);
+  }
+
+  return final.slice(0,6);
 }
 
 // ── CLAUDE ── UPGRADED ───────────────────────────────────────────────────
 async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote="",advisoryNote="",structured=null){
 
-  // UPGRADE 1: Richer candidate metadata — pages, reading level, series, subjects
   const list=candidates.map((b,i)=>{
-    const pages=b.pages?`${b.pages}pp`:'';
-    const rl=b.pages?(b.pages<250?'Quick Read':b.pages<=350?'Standard':'Long Haul'):'';
+    const pages=pageCount(b);
+    const rl=pages?(pages<250?'Quick Read':pages<=350?'Standard':'Longer Read'):'Unknown length';
     const series=b.series?`Series: ${b.series}`:'';
-    const meta=[pages,rl,series].filter(Boolean).join(' · ');
-    const subjects=(b.enriched_subjects||b.subjects||'').split('|').slice(0,5).filter(Boolean).join(', ');
-    const summary=(b.enriched_summary||b.summary||'').slice(0,260);
-    return `${i+1}. "${b.title}" by ${b.author}${meta?` [${meta}]`:''}
+    const subjects=(b.enriched_subjects||b.subjects||'').split('|').slice(0,6).filter(Boolean).join(', ');
+    const profile=(b.reader_appeal_profile||b.recommendation_profile||b.appeal_profile||b.appeal_factors||'').slice(0,380);
+    const summary=(b.enriched_summary||b.summary||'').slice(0,360);
+    const evidence=(b._matched||[]).slice(0,6).join('; ')||'general semantic/catalog match';
+    const concerns=(b._concerns||[]).slice(0,4).join('; ')||'none detected';
+    return `${i+1}. "${b.title}" by ${b.author}
+   Metadata: ${[pages?`${pages}pp`:null,rl,series].filter(Boolean).join(' · ')}
    Subjects: ${subjects||'—'}
-   ${summary}`;
+   Reader appeal profile: ${profile||'—'}
+   Summary: ${summary||'—'}
+   Evidence signals: ${evidence}
+   Cautions: ${concerns}`;
   }).join("\n\n");
 
   const exclNote=excluded.length?`\n\nDo NOT recommend: ${excluded.join(", ")}`:"";
-  const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick MUST feature this.`:"";
-  const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Weight toward similar feel.`:"";
-  const advNote=advisoryNote?`\n\nLibrarian advisory notes:\n${advisoryNote}`:"";
-  const structNote=structured?`\n\nStructured reader model:\nMust have: ${structured.mustHave.join(", ")}\nPrefer: ${structured.softPreferences.join(", ")}\nAvoid/check: ${structured.avoidSignals.join(", ")}`:"";
+  const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick should strongly feature this unless no catalog candidate does.`:"";
+  const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Infer the appeal factors behind those likes; do not simply recommend the same genre.`:"";
+  const advNote=advisoryNote?`\n\nLibrarian advisory notes:\n${advisoryNote}\nUse these notes as high-value human context about WHY the student likes or avoids books.`:"";
+  const structNote=structured?`\n\nStructured reader model:
+Hard requirements: ${structured.mustHave.join(", ")}
+Soft preferences: ${structured.softPreferences.join(", ")}
+Avoid/check signals: ${structured.avoidSignals.join(", ")}
+Use hard requirements and avoid/check signals as constraints. Soft preferences are boosts, not absolute rules.`:"";
 
-  // UPGRADE 2: Improved system prompt with specific librarian reasoning guidance
-  const systemPrompt=`You are an expert school librarian at Fletcher Middle School recommending middle school and YA fiction.
+  const systemPrompt=`You are Fletcher Library's Readers' Advisory (RA) specialist for middle school readers (grades 6–8). Your practice is grounded in the Saricks/Pearl RA tradition: you match readers to books based on how the reading *feels*, not on topic alone. You are a controlled reranker — you may only recommend books from the candidate list. You never invent titles.
 
-Your goal is to match students with books they will genuinely love and actually finish — not just books that are thematically adjacent.
+== APPEAL FACTORS ==
+Evaluate each candidate against all six:
+1. PACING — fast/measured/leisurely; short chapters, cliffhangers, episodic vs. dense, incident density
+2. CHARACTERIZATION — character-driven vs. plot-driven; depth, voice, protagonist age/stage relative to the student
+3. STORY LINE — what the plot is doing: action, mystery, romance, coming-of-age arc, episodic vs. arc-driven, twists vs. comfort
+4. FRAME / SETTING — contemporary, historical, secondary-world fantasy, sci-fi, school story; atmospheric vs. sparse
+5. TONE — emotional register: hopeful, dark, humorous, melancholy, suspenseful, gentle, edgy, safe
+6. LANGUAGE / STYLE — spare vs. lyrical, dialogue-heavy, vocabulary load, sentence complexity, verse vs. prose
 
-When selecting picks:
-- Prioritize books the student is likely to finish, not just start
-- For reluctant readers, fast pacing, short chapters, and a strong hook on page one matter more than literary merit
-- Series starters are valuable — they create reading momentum
-- Match emotional register: a student going through something hard may need levity; a bored reader may need intensity
-- Aim for variety in tone, length, and genre across your 6 picks
-- Never recommend books the student has already read or disliked
+== DOORWAYS ==
+Before selecting, infer the student's primary doorway — the entry point that matters most to them — from the request, liked titles, advisory notes, structured preferences, and reluctant-reader signal. The four doorways:
+- STORY — reader wants to be carried by plot; weight pacing and story line. Common for reluctant readers and action/adventure fans.
+- CHARACTER — reader wants someone to care about; weight characterization. Common for realistic fiction and friendship/identity narratives.
+- SETTING — reader wants to inhabit a world; weight frame/setting. Common for fantasy, sci-fi, historical readers.
+- LANGUAGE — reader is drawn by voice and style; weight language/style. Less common at this age but real, especially for verse-novel and lyrical-prose readers.
 
-For each pick write a 2-3 sentence reason that explains specifically why THIS student would connect with this book — not a generic summary.
+A character-doorway reader abandons a fast-paced plot with thin characters. A story-doorway reader abandons a beautifully written character study with no momentum. Get the doorway right or the pick fails.
 
-Return only valid JSON arrays, no markdown, no text outside the JSON.`;
+== DECISION RULES ==
+1. Recommend only books from the candidate list. Never invent a title.
+2. "Like X" / "similar to X" / "another like X" — treat the named title or its main series as a comparison source, not a recommendation target, unless the student explicitly asks for more of that same series. Related works by the same author may be valid.
+3. Hard requirements (mustHave) and avoid signals are constraints — do not violate unless no candidate satisfies. Soft preferences are boosts, not rules.
+4. For reluctant readers, completion likelihood (pacing, length, voice accessibility) outweighs literary prestige. A finished accessible book beats an abandoned masterpiece.
+5. Tone safety matters: middle school RA respects emotional bandwidth. Flags like "not too sad," "not too scary," "not too violent" are treated as hard signals even when not in mustHave.
+6. If a candidate is thematically similar but violates an avoid signal, prefer a cleaner fit unless the catalog has none.
+7. Honesty over padding. Return up to 6 picks, but only as many as you genuinely match. If you have 3 strong fits and 2 stretches, return 5. If you have 2 strong fits and nothing else, return 2. Never pad to hit a number.
 
-  // UPGRADE 3: Lite chain-of-thought — brief reasoning before JSON output
+== REASONS — WHAT MAKES A REASON VALID ==
+Each reason must:
+- Name the primary appeal factor that drove the match (pacing / characterization / story line / frame/setting / tone / language/style).
+- Cite specific evidence from the candidate's summary, appeal profile, or subjects — not generic claims.
+- Connect that evidence to the student's request, liked titles, or advisory notes.
+- Be 2–3 sentences. Voice should be librarian-to-librarian or librarian-to-student — substantive but accessible to a 12-year-old. Never marketing copy.
+
+Bad: "Great match for your interest in fantasy."
+Bad: "Strong catalog match based on Fletcher metadata."
+Good: "Pacing and story line match — short chapters and a constant chase structure like Percy Jackson, same chosen-one-from-an-ordinary-life setup. Egyptian mythology gives a fresh frame without losing the Greek-myth appeal."
+Good: "Character doorway — protagonist is a quiet, observant 7th grader navigating a new school, direct echo of the advisory note. Tone is hopeful rather than melancholy, which honors the 'not too sad' constraint."
+
+== OUTPUT ==
+Return only a valid JSON array, no markdown, no commentary.
+Shape: [{"title":"...","author":"...","reason":"..."}]`;
+
   const userPrompt=`${ctx}${prioNote}${likedNote}${advNote}${structNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}
 
-Select the 6 best matches from the catalog below. Return ONLY the JSON array — no other text.
+Task:
+1. Infer the student's primary doorway (story / character / setting / language) from the request and notes above.
+2. Evaluate each catalog candidate against the six appeal factors, weighting toward that doorway.
+3. Select up to 6 matches — return fewer if the catalog supports fewer genuine fits. Do not pad.
+4. Write each reason per the system prompt rules: name the appeal factor, cite specific evidence from the candidate, connect to the student's context.
 
-[{"title":"...","author":"...","reason":"2-3 sentence personalized explanation"}]
+Return ONLY this JSON shape, no markdown:
+[{"title":"...","author":"...","reason":"..."}]
 
-Catalog:
+Catalog candidates:
 ${list}`;
 
-  // UPGRADE 4: max_tokens bumped from 1000 to 2000
   const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
     model:"claude-sonnet-4-6",
-    max_tokens:1000,
+    max_tokens:1800,
     system:systemPrompt,
     messages:[{role:"user",content:userPrompt}]
   })});
@@ -900,12 +1648,11 @@ ${list}`;
   let data;try{data=JSON.parse(raw);}catch(e){throw e;}
   const text=data.content?.[0]?.text||"[]";
   const clean=text.replace(/```json|```/g,"").trim();
-  // UPGRADE 5: More robust extraction — finds JSON array of objects specifically,
-  // handles any CoT reasoning text that may appear before the JSON
   const jsonMatch=clean.match(/\[\s*\{[\s\S]*\}\s*\]/);
   const jsonText=jsonMatch?jsonMatch[0]:clean;
   return JSON.parse(jsonText);
 }
+
 
 // ── COMPONENTS ───────────────────────────────────────────────────────────
 function Toasts({toasts}){ return <div className="toasts">{toasts.map(t=><div key={t.id} className={`toast ${t.type}`}>{t.msg}</div>)}</div>; }
@@ -1160,7 +1907,7 @@ function SessionHistoryPanel({books,onSelect,haveItSet,activeBook,onMarkCheckedO
       </div>
       {b.reason&&<div style={{fontSize:12,color:'var(--text2)',lineHeight:1.7,fontFamily:"'Lora',serif",fontStyle:'italic',borderLeft:'2px solid var(--gold-bd)',paddingLeft:10,marginBottom:b.summary?10:12}}>{b.reason}</div>}
       {b.summary&&<div style={{fontSize:11,color:'var(--text3)',lineHeight:1.65,fontFamily:"'Lora',serif",background:'var(--card)',borderRadius:6,padding:'8px 10px',marginBottom:12}}>{b.summary}</div>}
-      <div style={{display:'flex',gap:8'}}>
+      <div style={{display:'flex',gap:8}}>
         <button className="act-btn" onClick={()=>onMarkCheckedOut&&onMarkCheckedOut(b.title)}
           style={{fontSize:10,padding:'5px 12px',background:isChecked?'var(--gold-dim)':'transparent',border:'1px solid var(--gold-bd)',color:isChecked?'var(--gold)':'var(--text3)',borderRadius:6,cursor:'pointer',letterSpacing:'.05em'}}>
           {isChecked?'✓ Checked Out':'Mark Checked Out'}
@@ -1232,6 +1979,114 @@ function TblReadingLevel({pages}){
 }
 
 // ── APP ──────────────────────────────────────────────────────────────────
+
+function EvaluationLab({results,query,onLoadPrompt,onToast}){
+  const[open,setOpen]=React.useState(()=>lsLoad("evalOpen",false));
+  const[selectedId,setSelectedId]=React.useState("pj_gods");
+  const[scores,setScores]=React.useState(()=>lsLoad("evalScores",{}));
+  const test=EVAL_TESTS.find(t=>t.id===selectedId)||EVAL_TESTS[0];
+  const currentRows=(results||[]).map((b,i)=>{
+    const key=`${selectedId}:${b.title}`;
+    return {book:b,rank:i+1,score:scores[key]};
+  });
+  const scored=currentRows.filter(r=>typeof r.score==="number");
+  const avg=scored.length?scored.reduce((s,r)=>s+r.score,0)/scored.length:null;
+  const strong=scored.filter(r=>r.score>=2).length;
+  const wrong=scored.filter(r=>r.score===0).length;
+
+  React.useEffect(()=>lsSave("evalOpen",open),[open]);
+
+  const setScore=(book,score)=>{
+    const key=`${selectedId}:${book.title}`;
+    const next={...scores,[key]:score};
+    setScores(next);lsSave("evalScores",next);
+  };
+
+  const exportRows=()=>{
+    if(!results?.length){onToast&&onToast("Run a search before exporting evaluation data","info");return;}
+    const rows=(results||[]).map((b,i)=>{
+      const key=`${selectedId}:${b.title}`;
+      return {
+        timestamp:new Date().toISOString(),
+        test_id:test.id,
+        test_label:test.label,
+        prompt:test.prompt,
+        rank:i+1,
+        title:b.title,
+        author:b.author||"",
+        score:typeof scores[key]==="number"?scores[key]:"",
+        reason:b.reason||"",
+        must:(test.must||[]).join(" | "),
+        prefer:(test.prefer||[]).join(" | "),
+        avoid:(test.avoid||[]).join(" | "),
+      };
+    });
+    exportEvaluationCsv(rows);
+    onToast&&onToast("Evaluation CSV exported ✓");
+  };
+
+  const resetScores=()=>{
+    const prefix=`${selectedId}:`;
+    const next={...scores};
+    Object.keys(next).forEach(k=>{if(k.startsWith(prefix)) delete next[k];});
+    setScores(next);lsSave("evalScores",next);
+  };
+
+  return <div className="eval-panel">
+    <div className="eval-head">
+      <div>
+        <div className="eval-title">Librarian Evaluation Lab</div>
+        <div className="eval-sub">Use this to test whether ReaderMatch is making strong, nuanced recommendations. Rate each result: 3 excellent, 2 acceptable, 1 weak, 0 wrong.</div>
+      </div>
+      <button className="eval-toggle" onClick={()=>setOpen(!open)}>{open?"Hide Test Lab":"Show Test Lab"}</button>
+    </div>
+
+    {open&&<div className="eval-grid">
+      <div className="eval-card">
+        <h4>Test Prompt</h4>
+        <select className="eval-select" value={selectedId} onChange={e=>setSelectedId(e.target.value)}>
+          {EVAL_TESTS.map(t=><option key={t.id} value={t.id}>{t.label}</option>)}
+        </select>
+        <textarea className="eval-textarea" value={test.prompt} readOnly style={{marginTop:10}}/>
+        <div className="eval-pill-row">
+          {(test.must||[]).map(x=><span key={x} className="eval-pill must">Must: {x}</span>)}
+          {(test.prefer||[]).map(x=><span key={x} className="eval-pill">Prefer: {x}</span>)}
+          {(test.avoid||[]).map(x=><span key={x} className="eval-pill avoid">Avoid: {x}</span>)}
+        </div>
+        <div className="eval-actions">
+          <button className="eval-btn primary" onClick={()=>onLoadPrompt(test.prompt)}>Load This Prompt</button>
+          <button className="eval-btn" onClick={exportRows}>Export Results</button>
+          <button className="eval-btn" onClick={resetScores}>Clear Scores</button>
+        </div>
+        <div className="eval-mini">Testing goal: results should satisfy the must-have conditions, honor avoid signals, and explain the match with concrete book evidence.</div>
+      </div>
+
+      <div className="eval-card">
+        <h4>Current Result Scores</h4>
+        {!results?.length&&<div className="eval-mini">Run one of the test prompts to score the recommendation set.</div>}
+        {results?.length>0&&<>
+          <div className="eval-results">
+            {currentRows.slice(0,6).map(({book,rank,score})=><div className="eval-result-row" key={`${rank}-${book.title}`}>
+              <div>
+                <div className="eval-book-title">{rank}. {book.title}</div>
+                <div className="eval-book-meta">{book.author||"Unknown author"}</div>
+              </div>
+              <div className="eval-score" title="0 wrong, 1 weak, 2 acceptable, 3 excellent">
+                {[0,1,2,3].map(n=><button key={n} className={`${score===n?"on":""} ${n===0?"bad":""}`} onClick={()=>setScore(book,n)}>{n}</button>)}
+              </div>
+            </div>)}
+          </div>
+          <div className="eval-summary">
+            <div className="eval-metric"><div className="eval-metric-n">{avg===null?"—":avg.toFixed(1)}</div><div className="eval-metric-l">Avg Score</div></div>
+            <div className="eval-metric"><div className="eval-metric-n">{strong}</div><div className="eval-metric-l">2+ Results</div></div>
+            <div className="eval-metric"><div className="eval-metric-n">{wrong}</div><div className="eval-metric-l">Wrong</div></div>
+          </div>
+        </>}
+      </div>
+    </div>}
+  </div>;
+}
+
 function App(){
   const[books,setBooks]=React.useState([]);
   const[bookCount,setBookCount]=React.useState(0);
@@ -1342,7 +2197,7 @@ function App(){
   const trackRecs=recs=>{const a={...analytics,recommendedBooks:{...analytics.recommendedBooks}};recs.forEach(b=>{a.recommendedBooks[b.title]=(a.recommendedBooks[b.title]||0)+1;});saveAnalytics(a);};
   const addToHistory=(label,m)=>setSearchHistory(p=>[{label,mode:m,id:Date.now()},...p.filter(e=>e.label!==label)].slice(0,5));
 
-  const getLikedKws=()=>{if(!activeProfile?.likedBooks?.length)return[];const objs=books.filter(b=>activeProfile.likedBooks.includes(b.title));const st=objs.map(b=>b.enriched_subjects||b.subjects||"").join(" ");const sm=objs.map(b=>b.enriched_summary||b.summary||"").join(" ");return[...tokenize(st),...tokenize(st),...tokenize(st),...tokenize(sm)];};
+  const getLikedKws=()=>{if(!activeProfile)return[];const objs=books.filter(b=>(activeProfile.likedBooks||[]).includes(b.title));const st=objs.map(b=>b.enriched_subjects||b.subjects||"").join(" ");const sm=objs.map(b=>b.enriched_summary||b.summary||"").join(" ");const rp=objs.map(b=>bookIntelligenceText(b)).join(" ");const adv=advisoryTextForProfile(activeProfile);return[...tokenize(st),...tokenize(st),...tokenize(st),...tokenize(sm),...tokenize(rp),...tokenize(adv),...tokenize(adv)];};
   const getLikedThemes=()=>{if(!activeProfile?.likedBooks?.length)return"";const objs=books.filter(b=>activeProfile.likedBooks.includes(b.title));const all=objs.flatMap(b=>(b.enriched_subjects||b.subjects||"").split("|").map(s=>s.trim())).filter(Boolean);const unique=[...new Set(all)].slice(0,12);return unique.length?`\n\nThemes from books this student enjoyed: ${unique.join("; ")}. Prioritize books sharing these themes.`:"";};
   const onQueryChange=val=>{setQuery(val);setRefBook(null);if(mode==="similar"&&val.length>1)setSuggestions(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())).slice(0,6));else setSuggestions([]);};
   const toggleTrope=id=>{setSelTropes(prev=>{const n=new Set(prev);if(!n.has(id)){n.add(id);}else if(priorityTrope!==id){setPriorityTrope(id);}else{n.delete(id);setPriorityTrope(null);}return n;});};
@@ -1357,22 +2212,26 @@ function App(){
   };
 
   const buildQueryText=()=>{
-    if(mode==="similar"&&refBook) return `${refBook.title} ${refBook.author} ${refBook.enriched_subjects||refBook.subjects||""} ${refBook.enriched_summary||refBook.summary||""}`;
-    if(mode==="tropes"){const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);return[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])]}))].join(' ');}
+    if(mode==="similar"&&refBook) return `${refBook.title} ${refBook.author} ${refBook.reader_appeal_profile||refBook.recommendation_profile||refBook.appeal_profile||""} ${refBook.enriched_subjects||refBook.subjects||""} ${refBook.enriched_summary||refBook.summary||""}`;
+    if(mode==="tropes"){
+      const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
+      return[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])]}))].join(' ');
+    }
     return query;
   };
 
   const runSearch=async(params,shown,isMore=false)=>{
     const{ctx,excl,priorityLabel}=params;
-    const queryText=buildQueryText();
-    const refAuthor=(mode==='similar'&&refBook)?refBook.author:null;
+    const structured=structuredRef.current||parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike});
     const advisoryNote=advisoryTextForProfile(activeProfile);
-    const cands=getCandidates(books,queryText,getLikedKws(),35,excl,alreadyRead,shown,refAuthor);
+    const structuredQuery=`${buildQueryText()}\n\nHard requirements: ${structured.mustHave.join(", ")}\nSoft preferences: ${structured.softPreferences.join(", ")}\nAvoid/check: ${structured.avoidSignals.join(", ")}\n${advisoryNote}`;
+    const refAuthor=(mode==='similar'&&refBook)?refBook.author:null;
+    const cands=await getCandidates(books,structuredQuery,getLikedKws(),55,excl,alreadyRead,shown,refAuthor,structured,bookEmbeddings);
     const prefNote=activeProfile?.notes?`\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.`:"";
-    const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — ONLY recommend fast-paced books with short chapters and high action.`:"";
+    const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — prioritize high-completion-likelihood books: fast pacing, clear hook, accessible length, and short chapters when available.`:"";
     const didntLikeNote=didntLike.trim()?`\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.`:"";
-    const recs=await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote,advisoryNote,structuredRef.current);
-    const enriched=recs.map(r=>({...(books.find(b=>b.title===r.title&&b.author===r.author)||books.find(b=>b.title===r.title)||r),...r}));
+    const recs=await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote,advisoryNote,structured);
+    const enriched=validateRecommendations(recs,cands,books,alreadyRead,shown,structured);
     setShownTitles(new Set([...shown,...enriched.map(b=>b.title)]));
     if(isMore) setResults(p=>[...(p||[]),...enriched]);
     else setResults(enriched);
@@ -1445,10 +2304,22 @@ function App(){
   const loaded=bookCount>0;
   const modeLbls={similar:"Similar",tropes:"Trope",freetext:"Describe"};
 
+  
+  const loadEvaluationPrompt=(prompt)=>{
+    switchMode("freetext");
+    setQuery(prompt);
+    setResults(null);
+    setError("");
+    setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}),50);
+    addToast("Evaluation prompt loaded");
+  };
+
   return <div className="page">
     <Toasts toasts={toasts}/>
 
     {showAbout&&<AboutPanel/>}
+
+    <EvaluationLab results={results} query={query} onLoadPrompt={loadEvaluationPrompt} onToast={addToast}/>
     {showStats&&<AnalyticsPanel analytics={analytics}/>}
     {loadError&&<div className="error-msg">⚠ Could not load {CSV_FILE}. Make sure it's in your repository.</div>}
 

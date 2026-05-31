@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fletcher Library Assistant — Intelligence QA v3</title>
+  <link rel="icon" href="logo.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "SNF Little Star";
+      src: url("snflittlestar (1).ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:    #06050A;
+      --ink:      #0E0C14;
+      --card:     #12101A;
+      --card2:    #1A1825;
+      --card3:    #221F30;
+      --gold:     #E8B84B;
+      --gold2:    #F5CF7A;
+      --gold-dk:  #A07C28;
+      --gold-dim: rgba(232,184,75,.08);
+      --gold-bd:  rgba(232,184,75,.25);
+      --cream:    #F2E8D5;
+      --cream2:   #E8D8BB;
+      --text:     #EDE4D3;
+      --text2:    #BFB49A;
+      --text3:    #7A7060;
+      --border:   #1E1C2A;
+      --border2:  #2A2838;
+      --green:    #4ADE80;
+      --red:      #F87171;
+      --red-dim:  rgba(248,113,113,.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      /* Subtle paper grain via CSS */
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23grain)' opacity='0.035'/%3E%3C/svg%3E");
+    }
+
+    /* ── HERO ─────────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--gold-bd);
+    }
+
+    /* radial glow */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse at 50% 20%,
+        rgba(232,184,75,.16) 0%,
+        rgba(232,184,75,.06) 35%,
+        transparent 70%);
+      pointer-events: none;
+    }
+
+    /* paper grain overlay on hero */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,184,75,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,184,75,.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse at 50% 0%, black 20%, transparent 72%);
+    }
+
+    .hero-inner { position: relative; z-index: 1; }
+
+    /* Logo ring */
+    .logo-ring {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      margin: 0 auto 32px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      background: radial-gradient(circle, rgba(232,184,75,.1) 0%, transparent 70%);
+      box-shadow:
+        0 0 0 1px var(--gold-bd),
+        0 0 0 10px rgba(232,184,75,.05),
+        0 0 80px rgba(232,184,75,.14);
+    }
+
+    /* slow spinning dashed ring */
+    .logo-ring::before {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      border: 1px dashed rgba(232,184,75,.2);
+      animation: spin 24s linear infinite;
+    }
+
+    /* diamond ornaments on ring */
+    .logo-ring::after {
+      content: '◆';
+      position: absolute;
+      top: -22px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--gold);
+      opacity: .7;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hero-logo {
+      width: 108px; height: 108px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 28px rgba(232,184,75,.35));
+      animation: breathe 5s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%,100% { filter: drop-shadow(0 6px 28px rgba(232,184,75,.35)); }
+      50%      { filter: drop-shadow(0 8px 40px rgba(232,184,75,.55)); }
+    }
+
+    .hero-eyebrow {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-family: "SNF Little Star", 'Fraunces', serif;
+      font-size: clamp(36px, 7vw, 64px);
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 10px;
+      letter-spacing: .04em;
+    }
+
+    .hero-subtitle {
+      font-family: 'Lora', serif;
+      font-size: 16px;
+      font-style: italic;
+      color: var(--text2);
+      margin-bottom: 32px;
+    }
+
+    /* Gold ornamental divider */
+    .ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: .2em;
+      opacity: .6;
+    }
+    .ornament::before, .ornament::after {
+      content: '';
+      width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .ornament::after { transform: scaleX(-1); }
+
+    .hero-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .hero-btn {
+      padding: 8px 20px;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: .06em;
+      border: 1px solid var(--gold-bd);
+      background: transparent;
+      color: var(--text2);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .hero-btn:hover, .hero-btn.on {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    /* ── STATUS BAR ───────────────────────────────────────────────────── */
+    .status-bar {
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+      padding: 10px 24px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+    .status-item { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: var(--text3); }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+    .dot.ready { background: var(--green); box-shadow: 0 0 8px rgba(74,222,128,.5); }
+    .dot.spin  { background: var(--gold); animation: pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ── PAGE BODY ────────────────────────────────────────────────────── */
+    #root { max-width: 900px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+    .page { padding-top: 32px; }
+
+    /* ── TOASTS ───────────────────────────────────────────────────────── */
+    .toasts { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+    .toast { font-size:13px; font-weight:600; padding:10px 22px; border-radius:100px; box-shadow:0 8px 32px rgba(0,0,0,.7); animation:tIn .2s ease both; white-space:nowrap; border:1px solid; }
+    .toast.success { background:#071A0C; color:var(--green); border-color:rgba(74,222,128,.3); }
+    .toast.error   { background:#1A0707; color:var(--red);   border-color:rgba(248,113,113,.3); }
+    .toast.info    { background:var(--card2); color:var(--text); border-color:var(--border2); }
+    @keyframes tIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── GOLD SECTION DIVIDER ─────────────────────────────────────────── */
+    .gold-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 28px 0 20px;
+      color: var(--gold);
+      font-size: 10px;
+    }
+    .gold-divider span { font-family:'Fraunces',serif; font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap; }
+    .gold-divider::before, .gold-divider::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--gold-bd)); }
+    .gold-divider::after { transform:scaleX(-1); }
+
+    /* ── SECTION LABEL ────────────────────────────────────────────────── */
+    .sec-label { font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--text3); margin-bottom:10px; }
+
+    /* ── PANELS ───────────────────────────────────────────────────────── */
+    .panel { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; margin-bottom:16px; }
+    .panel-title { font-family:'Fraunces',serif; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+    .panel-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+
+    .about-card p { font-family:'Lora',serif; font-size:15px; color:var(--text2); line-height:1.8; margin-bottom:10px; }
+    .about-card strong { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; color:var(--text); }
+    .ftags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .ftag { padding:4px 12px; background:var(--gold-dim); border:1px solid var(--gold-bd); border-radius:100px; font-size:11px; font-weight:600; color:var(--gold2); }
+
+    /* ── ANALYTICS ────────────────────────────────────────────────────── */
+    .stats-row { display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+    .stat-box { flex:1; min-width:80px; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:16px 12px; text-align:center; }
+    .stat-n { font-family:'Fraunces',serif; font-size:30px; font-weight:900; color:var(--gold); line-height:1; }
+    .stat-l { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); margin-top:6px; }
+    .stat-cols { display:flex; gap:20px; flex-wrap:wrap; }
+    .stat-col { flex:1; min-width:150px; }
+    .stat-col-h { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text3); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    .stat-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:5px 0; border-bottom:1px solid var(--border); color:var(--text2); }
+    .stat-row:last-child { border-bottom:none; }
+    .stat-row span:last-child { font-weight:700; color:var(--gold); }
+    .stat-empty { font-family:'Lora',serif; font-size:14px; color:var(--text3); font-style:italic; }
+
+    /* ── PROFILE PILLS ────────────────────────────────────────────────── */
+    .section { margin-bottom:24px; }
+    .pills { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .pill { padding:7px 18px; font-size:13px; font-weight:500; border:1px solid var(--border2); background:transparent; color:var(--text2); cursor:pointer; transition:all .15s; border-radius:100px; }
+    .pill:hover { border-color:var(--gold); color:var(--gold); }
+    .pill.on { background:var(--gold); border-color:var(--gold); color:#000; font-weight:700; box-shadow:0 4px 18px rgba(232,184,75,.3); }
+    .pill.on-l { border-radius:100px 0 0 100px; background:var(--gold); border-color:var(--gold); color:#000; font-weight:700; border-right:none; }
+    .pill-edit { padding:7px 11px; border-radius:0 100px 100px 0; background:var(--card2); border:1px solid var(--gold); border-left:none; color:var(--gold); cursor:pointer; font-size:13px; transition:all .15s; }
+    .pill-edit:hover { background:var(--gold-dim); }
+    .pill-add { padding:7px 18px; font-size:13px; font-weight:500; border:1.5px dashed var(--border2); background:transparent; color:var(--text3); cursor:pointer; border-radius:100px; transition:all .15s; }
+    .pill-add:hover { border-color:var(--gold); color:var(--gold); }
+    .profile-meta { margin-top:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .profile-note { font-family:'Lora',serif; font-size:14px; color:var(--text2); font-style:italic; }
+    .profile-btn { font-size:12px; font-weight:600; padding:4px 14px; border:1px solid var(--border2); background:transparent; color:var(--text3); border-radius:7px; cursor:pointer; transition:all .15s; }
+    .profile-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .reluctant-tag { font-size:11px; font-weight:700; color:#000; background:var(--gold); border-radius:100px; padding:3px 10px; }
+    .advisory-badge { font-size:11px; font-weight:600; color:var(--gold2); letter-spacing:.04em; }
+
+    /* ── EDITOR ───────────────────────────────────────────────────────── */
+    .editor { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; margin-bottom:16px; }
+    .editor-title { font-family:'Fraunces',serif; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+    .editor-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+    .ed-row { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+    .field { display:flex; flex-direction:column; gap:5px; }
+    .field label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text3); }
+    .finput { padding:10px 13px; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; background:var(--card2); border:1px solid var(--border2); color:var(--text); border-radius:9px; outline:none; transition:border-color .15s,box-shadow .15s; }
+    .finput:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
+    .finput::placeholder { color:var(--text3); }
+    .toggle { display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--card2); border:1px solid var(--border2); border-radius:10px; cursor:pointer; transition:all .15s; margin-bottom:12px; }
+    .toggle:hover, .toggle.on { border-color:var(--gold); background:var(--gold-dim); }
+    .toggle-sw { width:38px; height:22px; background:var(--border2); border-radius:11px; position:relative; transition:background .15s; flex-shrink:0; }
+    .toggle-sw.on { background:var(--gold); }
+    .toggle-knob { position:absolute; top:3px; left:3px; width:16px; height:16px; background:#fff; border-radius:50%; transition:left .15s; box-shadow:0 1px 4px rgba(0,0,0,.5); }
+    .toggle-sw.on .toggle-knob { left:19px; }
+    .toggle-lbl { font-size:13px; font-weight:600; color:var(--text); }
+    .toggle-sub { font-size:12px; color:var(--text3); }
+
+    /* ── ADVISORY BOX ─────────────────────────────────────────────────── */
+    .advisory-box { margin:12px 0; border:1px solid var(--gold-bd); border-radius:12px; background:linear-gradient(135deg,var(--gold-dim),transparent); padding:16px; }
+    .advisory-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+    .advisory-copy { font-family:'Lora',serif; font-size:14px; color:var(--text2); line-height:1.6; margin-bottom:12px; font-style:italic; }
+    .advisory-field { width:100%; padding:10px 13px; font-size:14px; font-family:'Lora',serif; background:var(--card2); border:1px solid var(--border2); color:var(--text); border-radius:9px; outline:none; resize:vertical; line-height:1.6; min-height:80px; transition:border-color .15s; }
+    .advisory-field:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
+    .advisory-field::placeholder { color:var(--text3); }
+    .signal-row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+    .signal-col { flex:1; min-width:160px; display:flex; flex-direction:column; gap:5px; }
+    .signal-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); }
+    .signal-input { padding:8px 12px; font-size:13px; font-family:'Plus Jakarta Sans',sans-serif; background:var(--card2); border:1px solid var(--border2); color:var(--text); border-radius:9px; outline:none; transition:border-color .15s; }
+    .signal-input:focus { border-color:var(--gold); }
+    .signal-input::placeholder { color:var(--text3); }
+
+    /* ── SUMMARY ──────────────────────────────────────────────────────── */
+    .sum-hd { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text3); margin-bottom:6px; padding-bottom:5px; border-bottom:1px solid var(--border); }
+    .sum-sec { margin-bottom:12px; }
+    .sum-item { font-family:'Lora',serif; font-size:14px; color:var(--text2); padding:2px 0; }
+    .signal-pills { display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
+    .signal-pill { font-size:11px; font-weight:600; padding:3px 10px; border-radius:100px; border:1px solid var(--gold-bd); color:var(--gold2); background:var(--gold-dim); }
+    .signal-pill.avoid { border-color:rgba(248,113,113,.3); color:var(--red); background:rgba(248,113,113,.07); }
+
+    /* ── SEARCH MODE TABS ─────────────────────────────────────────────── */
+    .mode-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px; }
+    .mode-tab {
+      padding:16px 12px;
+      background:var(--card);
+      border:1px solid var(--border2);
+      border-radius:12px;
+      cursor:pointer;
+      transition:all .18s;
+      text-align:center;
+      font-family:'Plus Jakarta Sans',sans-serif;
+    }
+    .mode-tab:hover { border-color:var(--gold-bd); background:var(--card2); }
+    .mode-tab.on { border-color:var(--gold); background:var(--gold-dim); box-shadow:0 4px 20px rgba(232,184,75,.1); }
+    .mode-tab-icon { font-size:22px; margin-bottom:6px; display:block; }
+    .mode-tab-label { font-size:13px; font-weight:700; color:var(--text); display:block; margin-bottom:2px; }
+    .mode-tab.on .mode-tab-label { color:var(--gold); }
+    .mode-tab-desc { font-size:11px; color:var(--text3); font-family:'Lora',serif; font-style:italic; }
+
+    /* ── INPUTS ───────────────────────────────────────────────────────── */
+    .inp-sec { margin-bottom:20px; }
+    .main-input { width:100%; padding:13px 16px; font-size:15px; font-family:'Plus Jakarta Sans',sans-serif; background:var(--card); border:1px solid var(--border2); color:var(--text); border-radius:10px; outline:none; transition:border-color .15s,box-shadow .15s; }
+    .main-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
+    .main-input::placeholder { color:var(--text3); }
+    .main-textarea { width:100%; padding:13px 16px; font-size:15px; font-family:'Lora',serif; background:var(--card); border:1px solid var(--border2); color:var(--text); border-radius:10px; outline:none; resize:vertical; line-height:1.75; transition:border-color .15s,box-shadow .15s; }
+    .main-textarea:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
+    .main-textarea::placeholder { color:var(--text3); font-style:italic; }
+    .inp-hint { font-size:12px; color:var(--text3); margin-top:6px; }
+
+    /* ── DROPDOWN ─────────────────────────────────────────────────────── */
+    .dd-wrap { position:relative; }
+    .dd { position:absolute; top:calc(100% + 5px); left:0; right:0; z-index:50; background:var(--card2); border:1px solid var(--border2); border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,.8); overflow:hidden; }
+    .dd-item { padding:11px 16px; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; gap:8px; border-bottom:1px solid var(--border); transition:background .1s; }
+    .dd-item:last-child { border-bottom:none; }
+    .dd-item:hover, .dd-item.hi { background:var(--card3); }
+    .dd-title { color:var(--text); font-weight:500; }
+    .dd-author { color:var(--text3); font-size:12px; flex-shrink:0; font-style:italic; font-family:'Lora',serif; }
+
+    /* ── TROPES ───────────────────────────────────────────────────────── */
+    .trope-sec { margin-bottom:16px; }
+    .trope-cat { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.14em; color:var(--gold2); margin-bottom:8px; font-family:'Plus Jakarta Sans',sans-serif; }
+    .trope-chips { display:flex; flex-wrap:wrap; gap:7px; }
+    .tchip { padding:6px 14px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border2); background:transparent; color:var(--text2); transition:all .15s; border-radius:100px; }
+    .tchip:hover { border-color:var(--gold-bd); color:var(--gold2); }
+    .tchip.sel { background:var(--gold-dim); border-color:var(--gold-bd); color:var(--gold2); font-weight:600; }
+    .tchip.prio { background:var(--gold); border-color:var(--gold); color:#000; font-weight:700; box-shadow:0 4px 14px rgba(232,184,75,.3); }
+    .trope-hint { font-family:'Lora',serif; font-size:14px; color:var(--text3); font-style:italic; margin-bottom:16px; }
+
+    /* ── CHIPS ────────────────────────────────────────────────────────── */
+    .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .chip { display:flex; align-items:center; gap:5px; padding:4px 12px; background:var(--card2); border:1px solid var(--border2); font-size:13px; color:var(--text2); border-radius:100px; font-family:'Lora',serif; }
+    .chip.gold { border-color:var(--gold-bd); color:var(--gold2); background:var(--gold-dim); }
+    .chip-x { background:none; border:none; cursor:pointer; color:var(--text3); padding:0; font-size:16px; line-height:1; transition:color .1s; }
+    .chip-x:hover { color:var(--red); }
+
+    /* ── LIKED BANNER ─────────────────────────────────────────────────── */
+    .liked-banner { display:flex; align-items:flex-start; gap:10px; padding:13px 16px; background:rgba(232,184,75,.06); border:1px solid var(--gold-bd); border-radius:10px; margin-bottom:20px; }
+    .liked-body { font-family:'Lora',serif; font-size:14px; color:var(--text2); line-height:1.5; }
+    .liked-body strong { font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--gold); display:block; margin-bottom:3px; }
+
+    /* ── HISTORY ──────────────────────────────────────────────────────── */
+    .history { margin-bottom:20px; }
+    .hchips { display:flex; flex-wrap:wrap; gap:6px; }
+    .hchip { display:flex; align-items:center; gap:7px; padding:6px 14px; background:var(--card); border:1px solid var(--border2); border-radius:100px; font-size:12px; font-weight:500; color:var(--text2); cursor:pointer; transition:all .15s; }
+    .hchip:hover { border-color:var(--gold); color:var(--gold); }
+    .hmode { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); }
+
+    /* ── SEARCH BUTTON ────────────────────────────────────────────────── */
+    .search-btn {
+      width:100%; padding:16px;
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:15px; font-weight:700; letter-spacing:.06em;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+      color:#000; border:none; border-radius:12px;
+      cursor:pointer; transition:all .2s; margin-bottom:28px;
+      position:relative; overflow:hidden;
+      box-shadow:0 4px 24px rgba(232,184,75,.3);
+    }
+    .search-btn::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent); transition:left .5s; }
+    .search-btn:hover { box-shadow:0 6px 32px rgba(232,184,75,.45); transform:translateY(-1px); }
+    .search-btn:hover::after { left:100%; }
+    .search-btn:active { transform:translateY(0); }
+    .search-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    /* ── CONSTRAINT PANEL ─────────────────────────────────────────────── */
+    .constraint-panel { background:var(--card); border:1px solid var(--gold-bd); border-radius:12px; padding:18px; margin-bottom:24px; }
+    .constraint-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+    .constraint-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+    .constraint-query { font-family:'Lora',serif; font-size:14px; color:var(--text2); font-style:italic; margin-bottom:12px; }
+    .constraint-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .constraint-card { background:var(--card2); border:1px solid var(--border2); border-radius:10px; padding:12px; }
+    .constraint-card h4 { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+    .constraint-card.must h4   { color:var(--gold); }
+    .constraint-card.prefer h4 { color:var(--text3); }
+    .constraint-card.avoid h4  { color:var(--red); }
+    .constraint-pills { display:flex; flex-wrap:wrap; gap:5px; }
+    .cpill { font-size:11px; font-weight:600; padding:3px 9px; border-radius:100px; border:1px solid; }
+    .cpill.must   { border-color:var(--gold-bd); color:var(--gold2); background:var(--gold-dim); }
+    .cpill.prefer { border-color:var(--border2); color:var(--text3); background:transparent; }
+    .cpill.avoid  { border-color:rgba(248,113,113,.3); color:var(--red); background:rgba(248,113,113,.07); }
+
+    /* ── RESULTS HEADER ───────────────────────────────────────────────── */
+    .results-hdr { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+    .results-title { font-family:'Fraunces',serif; font-size:26px; font-weight:700; color:var(--cream); letter-spacing:-.02em; font-style:italic; }
+    .results-line { flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+    .results-count { font-size:12px; font-weight:600; color:var(--text3); white-space:nowrap; }
+
+    /* ── RESULT CARD GRID ─────────────────────────────────────────────── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .rcard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      animation: fadeUp .4s ease both;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* gold accent bar along top */
+    .rcard::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .rcard:hover::before { opacity: 1; }
+    .rcard:hover { border-color:var(--gold-bd); box-shadow:0 10px 40px rgba(0,0,0,.5); transform:translateY(-3px); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    /* card number badge */
+    .rnum {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-bd);
+      font-family: 'Fraunces', serif;
+      font-size: 11px; font-weight: 700;
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, color .2s;
+    }
+    .rcard:hover .rnum { background: var(--gold); color: #000; }
+
+    /* cover + body */
+    .rinner { display:flex; gap:14px; margin-bottom:12px; }
+    .cover {
+      width: 68px; height: 98px;
+      flex-shrink: 0;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      object-fit: cover;
+      transition: transform .2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,.4);
+    }
+    .cover:hover { transform: scale(1.04) rotate(-1deg); }
+    .rbody { flex:1; min-width:0; }
+    .rtitle { font-family:'Fraunces',serif; font-weight:700; font-size:16px; color:var(--cream); line-height:1.2; letter-spacing:-.01em; margin-bottom:4px; padding-right:28px; }
+    .rmeta { font-size:12px; font-weight:500; color:var(--text3); margin-bottom:10px; }
+    .rseries { color:var(--gold2); margin-left:5px; font-weight:600; }
+
+    /* reason text */
+    .rreason { font-family:'Lora',serif; font-size:13px; color:var(--text2); line-height:1.65; border-left:2px solid var(--gold-bd); padding-left:10px; margin-bottom:10px; }
+    .cursor { display:inline-block; width:2px; height:12px; background:var(--gold); margin-left:2px; animation:blink .7s step-end infinite; vertical-align:middle; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* heart button */
+    .heart-btn { position:absolute; top:14px; right:44px; background:none; border:none; cursor:pointer; font-size:18px; padding:0; line-height:1; transition:transform .15s; }
+    .heart-btn:hover { transform:scale(1.25); }
+
+    /* expand */
+    .expand-btn { background:none; border:none; cursor:pointer; font-size:12px; font-weight:600; color:var(--text3); padding:0; display:flex; align-items:center; gap:4px; transition:color .15s; margin-bottom:10px; }
+    .expand-btn:hover { color:var(--gold); }
+    .earrow { display:inline-block; transition:transform .2s; font-size:9px; }
+    .earrow.open { transform:rotate(90deg); }
+    .sum-box { margin-bottom:10px; padding:10px 12px; background:var(--card2); border-radius:8px; font-family:'Lora',serif; font-size:13px; color:var(--text2); line-height:1.7; font-style:italic; border-left:2px solid var(--gold-bd); animation:fadeUp .2s ease; }
+
+    /* note field */
+    .note-field { width:100%; padding:9px 12px; font-size:12px; font-family:'Plus Jakarta Sans',sans-serif; background:var(--card2); border:1.5px dashed var(--border2); color:var(--text); resize:none; outline:none; line-height:1.6; border-radius:8px; transition:border-color .15s; margin-top:auto; }
+    .note-field:focus { border-color:var(--gold); border-style:solid; box-shadow:0 0 0 3px var(--gold-dim); }
+    .note-field::placeholder { color:var(--text3); font-size:11px; }
+
+    /* feedback row */
+    .feedback-row { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+    .feedback-btn { padding:4px 10px; font-size:11px; font-weight:600; background:transparent; border:1px solid var(--border2); color:var(--text3); border-radius:100px; cursor:pointer; transition:all .15s; }
+    .feedback-btn:hover { border-color:var(--gold-bd); color:var(--gold2); }
+    .feedback-btn.on { background:var(--gold-dim); border-color:var(--gold-bd); color:var(--gold2); }
+    .feedback-btn.on.negative { background:rgba(248,113,113,.07); border-color:rgba(248,113,113,.3); color:var(--red); }
+
+    /* ── RESULTS ACTIONS ──────────────────────────────────────────────── */
+    .ractions { display:flex; gap:8px; justify-content:center; margin-top:4px; margin-bottom:16px; flex-wrap:wrap; }
+    .act-btn { padding:9px 22px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:600; background:var(--card); border:1px solid var(--border2); color:var(--text2); border-radius:10px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:6px; }
+    .act-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .act-btn.primary { border-color:var(--gold-bd); color:var(--gold2); }
+    .act-btn.primary:hover { background:var(--gold-dim); border-color:var(--gold); }
+
+    /* ── SAVED LISTS ──────────────────────────────────────────────────── */
+    .saved-panel { margin-top:28px; }
+    .saved-panel-title { font-family:'Fraunces',serif; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+    .saved-panel-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--gold-bd),transparent); }
+    .saved-item { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:10px; transition:border-color .2s; }
+    .saved-item:hover { border-color:var(--gold-bd); }
+    .saved-item-title { font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:var(--cream); margin-bottom:4px; font-style:italic; }
+    .saved-item-meta { font-size:12px; font-weight:500; color:var(--text3); margin-bottom:10px; }
+    .saved-books { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px; }
+    .saved-book-pill { font-size:11px; font-weight:600; padding:3px 10px; border-radius:100px; border:1px solid var(--gold-bd); color:var(--gold2); background:var(--gold-dim); }
+    .saved-item-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .saved-act { padding:6px 14px; font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; font-weight:600; background:transparent; border:1px solid var(--border2); color:var(--text2); border-radius:8px; cursor:pointer; transition:all .15s; }
+    .saved-act:hover { border-color:var(--gold); color:var(--gold); }
+    .saved-act.del:hover { border-color:rgba(248,113,113,.4); color:var(--red); }
+    .saved-empty { text-align:center; padding:20px; font-family:'Lora',serif; font-size:15px; color:var(--text3); font-style:italic; border:1px dashed var(--border2); border-radius:12px; }
+
+    /* ── LOADING ──────────────────────────────────────────────────────── */
+    .loading-wrap { text-align:center; padding:3rem 0 2rem; }
+    .loading-emblem { width:80px; height:80px; border-radius:50%; border:1px solid var(--gold-bd); display:flex; align-items:center; justify-content:center; margin:0 auto 24px; position:relative; background:var(--gold-dim); }
+    .loading-emblem::before { content:''; position:absolute; inset:-8px; border-radius:50%; border:1px dashed var(--gold-bd); animation:spin 4s linear infinite; }
+    .loading-emblem-txt { font-family:'Fraunces',serif; font-size:28px; font-weight:900; color:var(--gold); animation:pulse 1.5s ease-in-out infinite; }
+    .loading-card { display:inline-block; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px 30px; max-width:360px; width:100%; }
+    .lbars { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+    .lbar { height:3px; background:var(--card3); border-radius:2px; overflow:hidden; position:relative; }
+    .lbar::after { content:''; position:absolute; top:0; left:-100%; height:100%; background:linear-gradient(90deg,transparent,var(--gold2),transparent); border-radius:2px; animation:lslide 1.8s ease-in-out infinite; }
+    .lbar:nth-child(1)::after{width:80%}.lbar:nth-child(2)::after{width:95%;animation-delay:.15s}.lbar:nth-child(3)::after{width:70%;animation-delay:.3s}.lbar:nth-child(4)::after{width:88%;animation-delay:.45s}
+    @keyframes lslide { 0%{left:-100%} 100%{left:110%} }
+    .ltext { font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; border-top:1px solid var(--border); padding-top:14px; animation:tfade 1.5s ease-in-out infinite; }
+    @keyframes tfade { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+    /* ── EMPTY ────────────────────────────────────────────────────────── */
+    .empty { text-align:center; padding:3.5rem 0; }
+    .empty-title { font-family:'Fraunces',serif; font-size:22px; font-style:italic; color:var(--text2); margin-bottom:6px; }
+    .empty-sub { font-size:13px; color:var(--text3); margin-bottom:24px; }
+    .empty-actions { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+    .echip { padding:9px 20px; font-size:13px; font-weight:600; background:var(--card); border:1.5px solid var(--border2); border-radius:100px; cursor:pointer; color:var(--text2); transition:all .15s; }
+    .echip:hover { border-color:var(--gold); color:var(--gold); }
+
+    /* ── ERROR ────────────────────────────────────────────────────────── */
+    .error-msg { font-size:13px; font-weight:500; color:var(--red); margin-bottom:14px; display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--red-dim); border:1px solid rgba(248,113,113,.2); border-radius:10px; }
+
+    /* ── BUTTONS ──────────────────────────────────────────────────────── */
+    .btn-row { display:flex; gap:8px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .btn { padding:10px 20px; font-size:13px; font-weight:600; border-radius:9px; cursor:pointer; transition:all .15s; font-family:'Plus Jakarta Sans',sans-serif; }
+    .btn-primary { background:var(--gold); color:#000; border:none; box-shadow:0 2px 14px rgba(232,184,75,.3); }
+    .btn-primary:hover { background:var(--gold2); }
+    .btn-secondary { background:transparent; color:var(--text2); border:1px solid var(--border2); }
+    .btn-secondary:hover { border-color:var(--text2); color:var(--text); }
+    .btn-danger { background:transparent; color:var(--red); border:1px solid rgba(248,113,113,.25); }
+    .btn-danger:hover { background:var(--red-dim); }
+
+    /* ── PRINT ────────────────────────────────────────────────────────── */
+    @media print {
+      .hero,.toasts,.search-btn,.ractions,.mode-tabs,.history,.status-bar,.feedback-row,.saved-panel { display:none !important; }
+      body { background:#fff; color:#000; }
+      .results-grid { grid-template-columns:1fr; }
+      .rcard { border:1px solid #ccc; box-shadow:none; page-break-inside:avoid; background:#fff; }
+      .rtitle,.results-title { color:#000; }
+      .rreason,.rmeta { color:#444; }
+      #root { max-width:100%; padding:1rem; }
+    }
+
+    /* ── MOBILE ───────────────────────────────────────────────────────── */
+    @media(max-width:640px) {
+      .hero { padding:3rem 1.5rem 3rem; }
+      .logo-ring { width:130px; height:130px; }
+      .hero-logo { width:88px; height:88px; }
+      .hero-title { font-size:32px; }
+      .results-grid { grid-template-columns:1fr; }
+      .mode-tabs { grid-template-columns:1fr; gap:8px; }
+      .rcard { padding:14px; }
+      .rtitle { font-size:15px; }
+      .ed-row { flex-direction:column; }
+      .stat-cols { flex-direction:column; }
+      .ractions { flex-direction:column; align-items:stretch; }
+      .act-btn { justify-content:center; }
+      .constraint-grid { grid-template-columns:1fr; }
+      .signal-row { flex-direction:column; }
+      .cover { width:58px; height:84px; }
+    }
+
+    .fletcher-table{position:relative;width:100%;height:300px;border-radius:12px;overflow:visible;}
+    .table-clip{position:absolute;inset:0;border-radius:12px;overflow:hidden;pointer-events:none;}
+    .table-svg{width:100%;height:100%;display:block;}
+    .table-vignette{position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 0 50px rgba(0,0,0,.45);}
+    .table-overlay{position:absolute;inset:0;border-radius:12px;background:rgba(10,8,4,0);transition:background .4s ease;pointer-events:none;}
+    .table-overlay.dim{background:rgba(10,8,4,.2);}
+    #deckArea{position:absolute;inset:0;}
+    .tbl-lbl{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:8px;z-index:15;pointer-events:none;}
+    .tbl-lbl.show{display:flex;}
+    .tbl-dots{display:flex;gap:6px;}
+    .tbl-dot{width:5px;height:5px;border-radius:50%;background:var(--gold-dk);animation:tblDot 1.4s ease-in-out infinite;}
+    .tbl-dot:nth-child(2){animation-delay:.22s}.tbl-dot:nth-child(3){animation-delay:.44s}
+    .tbl-ltxt{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dk);white-space:nowrap;animation:tfade 1.4s ease-in-out infinite;}
+    @keyframes tblDot{0%,100%{opacity:.25;transform:scale(.75)}50%{opacity:1;transform:scale(1.15)}}
+    .tbl-book{position:absolute;width:80px;height:116px;border-radius:5px;cursor:pointer;top:50%;left:50%;transition:transform .52s cubic-bezier(.22,1.1,.5,1),opacity .28s ease,box-shadow .18s ease;opacity:0;transform:translate(-50%,-50%) scale(.3);box-shadow:2px 3px 10px rgba(0,0,0,.55);}
+    .tbl-book.dealt{opacity:1;}
+    .tbl-book.exiting{transition:transform .25s ease,opacity .2s ease !important;opacity:0 !important;transform:translate(-50%,-50%) scale(.3) !important;}
+    .tbl-book.have-it{opacity:.32;cursor:default;}
+    .tbl-book:not(.have-it):not(.exiting):hover{box-shadow:0 10px 28px rgba(0,0,0,.65) !important;z-index:20 !important;}
+    .tbl-book.tbl-active:not(.exiting):not(.have-it){box-shadow:0 0 0 2.5px var(--gold),0 10px 28px rgba(0,0,0,.65) !important;z-index:20 !important;}
+    .tbl-book-cover{width:100%;height:100%;border-radius:5px;object-fit:cover;display:block;}
+    .tbl-book-fb{width:100%;height:100%;border-radius:5px;display:flex;flex-direction:column;justify-content:space-between;padding:8px 7px 7px 11px;position:relative;overflow:hidden;}
+    .tbl-book-spine{position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:5px 0 0 5px;}
+    .tbl-book-pat{position:absolute;inset:0;opacity:.11;}
+    .tbl-book-top{display:flex;justify-content:space-between;gap:3px;position:relative;z-index:1;}
+    .tbl-book-title{font-size:9.5px;font-weight:700;line-height:1.25;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.95);flex:1;}
+    .tbl-book-num{font-size:8px;font-weight:700;color:var(--gold);flex-shrink:0;}
+    .tbl-book-stamp{font-size:5.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:center;border:1px solid rgba(255,255,255,.18);padding:2px 3px;border-radius:2px;position:relative;z-index:1;align-self:center;}
+    .tbl-have-badge{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:5px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);z-index:10;}
+    .tbl-have-badge span{font-size:7px;font-weight:700;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;padding:3px 5px;border:1px solid rgba(232,184,75,.4);border-radius:3px;background:rgba(0,0,0,.6);}
+    .tbl-sh{position:absolute;top:50%;left:50%;width:76px;height:12px;border-radius:50%;background:rgba(0,0,0,.38);pointer-events:none;opacity:0;transition:opacity .4s ease;}
+    .tbl-sh.show{opacity:1;}
+    .tbl-stack{position:absolute;top:50%;left:50%;width:80px;height:116px;transform:translate(-50%,-50%);z-index:10;}
+    .tbl-stack-card{position:absolute;width:80px;height:116px;border-radius:5px;top:0;left:0;}
+    .tbl-info-area{margin-top:16px;border-top:1px solid var(--border);padding-top:16px;min-height:110px;transition:border-color .5s ease;}
+    .tbl-info-empty{font-size:13px;color:var(--text3);text-align:center;padding:14px 0;font-family:'Lora',serif;font-style:italic;}
+    .tbl-info-card{display:flex;gap:18px;align-items:flex-start;animation:fadeUp .25s cubic-bezier(.22,1,.36,1);}
+    .tbl-cover-big{flex-shrink:0;width:88px;height:130px;object-fit:cover;border-radius:4px 7px 7px 4px;display:block;border:1px solid var(--border);}
+    .tbl-cover-fb{flex-shrink:0;width:88px;height:130px;border-radius:4px 7px 7px 4px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--card2);border:1px solid var(--border);}
+    .tbl-info-right{flex:1;display:flex;flex-direction:column;gap:8px;}
+    .tbl-badges{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+    .fletcher-rec-badge{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);background:var(--card2);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;}
+    .rl-badge{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:20px;}
+    .rl-badge.quick{background:rgba(74,222,128,.08);color:var(--green);border:1px solid rgba(74,222,128,.22);}
+    .rl-badge.standard{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-bd);}
+    .rl-badge.long{background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.22);}
+    .tbl-info-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--cream);line-height:1.3;}
+    .tbl-info-author{font-size:12px;color:var(--text3);font-family:'Lora',serif;}
+    .tbl-info-divider{height:1px;background:var(--border);transition:background .5s ease;}
+    .tbl-info-reason{font-family:'Lora',serif;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;padding-left:10px;border-left:2px solid var(--gold-bd);transition:border-color .5s ease;}
+    .tbl-info-actions{display:flex;gap:8px;flex-wrap:wrap;}
+    .tbl-have-btn{padding:5px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid var(--border2);background:transparent;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;}
+    .tbl-have-btn:hover{border-color:var(--gold);color:var(--gold);}
+    .tbl-have-btn.on{background:var(--gold-dim);border-color:var(--gold-bd);color:var(--gold);}
+    .tbl-heart-sm{padding:4px 10px;font-size:15px;border-radius:6px;cursor:pointer;border:1px solid var(--border2);background:transparent;transition:all .15s;}
+    .tbl-heart-sm:hover{border-color:var(--red);}
+    .tbl-bottom{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;}
+    .tbl-batch{font-size:10px;color:var(--text3);background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;}
+    @keyframes dustFly{0%{opacity:.7;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
+  
+/* ── EVALUATION LAB ─────────────────────────────────────────────────── */
+.eval-panel {
+  background: var(--card);
+  border: 1px solid var(--gold-bd);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 24px 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,.25);
+}
+
+.eval-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.eval-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--cream);
+  font-style: italic;
+  letter-spacing: -.01em;
+}
+
+.eval-sub {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-top: 4px;
+}
+
+.eval-toggle {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--gold-bd);
+  color: var(--gold2);
+  background: var(--gold-dim);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.eval-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(260px, .95fr);
+  gap: 14px;
+}
+
+.eval-card {
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.eval-card h4 {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.eval-select,
+.eval-input,
+.eval-textarea {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+}
+
+.eval-textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: 'Lora', serif;
+  line-height: 1.65;
+}
+
+.eval-select:focus,
+.eval-input:focus,
+.eval-textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+
+.eval-mini {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+.eval-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.eval-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  background: transparent;
+}
+
+.eval-pill.must { border-color: var(--gold-bd); color: var(--gold2); background: var(--gold-dim); }
+.eval-pill.avoid { border-color: rgba(248,113,113,.3); color: var(--red); background: rgba(248,113,113,.07); }
+
+.eval-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.eval-btn {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.eval-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.eval-btn.primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+}
+
+.eval-btn.primary:hover {
+  background: var(--gold2);
+  color: #000;
+}
+
+.eval-results {
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.eval-result-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.eval-result-row:last-child {
+  border-bottom: none;
+}
+
+.eval-book-title {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.eval-book-meta {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.eval-score {
+  display: flex;
+  gap: 4px;
+}
+
+.eval-score button {
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.eval-score button.on {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+}
+
+.eval-score button.bad.on {
+  background: var(--red);
+  border-color: var(--red);
+  color: #000;
+}
+
+.eval-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.eval-metric {
+  flex: 1;
+  min-width: 120px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.eval-metric-n {
+  font-family: 'Fraunces', serif;
+  color: var(--gold);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.eval-metric-l {
+  color: var(--text3);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+@media(max-width:740px) {
+  .eval-grid {
+    grid-template-columns: 1fr;
+  }
+  .eval-head {
+    flex-direction: column;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="logo-ring">
+      <img class="hero-logo" src="logo.png" alt="Fletcher Library"/>
+    </div>
+    <div class="hero-eyebrow">Fletcher Middle School Library</div>
+    <h1 class="hero-title">Library Assistant</h1>
+    <div class="ornament">◆ &nbsp; ◆ &nbsp; ◆</div>
+    <p class="hero-subtitle">Curated book recommendations for every reader</p>
+    <div class="hero-btns" id="hero-btns"></div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-item"><div class="dot spin" id="catalog-dot"></div><span id="catalog-txt">Loading catalog…</span></div>
+  <div class="status-item"><div class="dot spin" id="embed-dot"></div><span id="embed-txt">Initializing semantic search…</span></div>
+</div>
+
+<div id="root"></div>
+
+<script type="text/babel">
+// ENGINEER REVIEWED BUILD: syntax checked; semantic retrieval restored; validation hardened.
+// ── CONSTANTS ────────────────────────────────────────────────────────────
+const WORKER_URL = "https://anthropic-proxy.roman-carlos09.workers.dev";
+const EMBED_URL  = `${WORKER_URL}/embed`;
+const CSV_FILE   = "books_combined_enriched.csv";
+const ROMAN      = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+const STAGE_MSGS = ["Scanning the catalog…","Analyzing your request…","Finding the best matches…","Ranking by relevance…","Almost ready…"];
+
+// ── DATA ─────────────────────────────────────────────────────────────────
+const TROPES = [
+  {id:"enemies_to_lovers",label:"Enemies to Lovers",cat:"Romance"},
+  {id:"slow_burn",label:"Slow Burn",cat:"Romance"},
+  {id:"love_triangle",label:"Love Triangle",cat:"Romance"},
+  {id:"forbidden_love",label:"Forbidden Love",cat:"Romance"},
+  {id:"fake_dating",label:"Fake Dating",cat:"Romance"},
+  {id:"second_chance_romance",label:"Second Chance Romance",cat:"Romance"},
+  {id:"fast_paced",label:"Fast-Paced",cat:"Plot"},
+  {id:"action_and_fighting",label:"Action & Fighting",cat:"Plot"},
+  {id:"murder_mystery",label:"Murder Mystery",cat:"Plot"},
+  {id:"heist",label:"Heist",cat:"Plot"},
+  {id:"survival",label:"Survival",cat:"Plot"},
+  {id:"revenge",label:"Revenge",cat:"Plot"},
+  {id:"road_trip",label:"Road Trip",cat:"Plot"},
+  {id:"found_family",label:"Found Family",cat:"Characters"},
+  {id:"searching_for_belonging",label:"Searching for Belonging",cat:"Characters"},
+  {id:"coming_of_age",label:"Coming of Age",cat:"Characters"},
+  {id:"identity_and_self_discovery",label:"Identity & Self-Discovery",cat:"Characters"},
+  {id:"overcoming_adversity",label:"Overcoming Adversity",cat:"Characters"},
+  {id:"characters_with_disabilities",label:"Characters with Disabilities",cat:"Characters"},
+  {id:"deep_topics",label:"Deep Topics",cat:"Themes"},
+  {id:"realistic_fiction",label:"Realistic Fiction",cat:"Themes"},
+  {id:"friendship",label:"Friendship",cat:"Themes"},
+  {id:"sports_story",label:"Sports Story",cat:"Themes"},
+  {id:"drug_use",label:"Drug Use",cat:"Themes"},
+  {id:"abuse",label:"Abuse",cat:"Themes"},
+  {id:"poverty",label:"Poverty",cat:"Themes"},
+  {id:"racism",label:"Racism",cat:"Themes"},
+  {id:"based_on_true_events",label:"Based on True Events",cat:"Themes"},
+  {id:"special_powers_or_abilities",label:"Special Powers / Abilities",cat:"Fantasy & Sci-fi"},
+  {id:"fantasy_mystery",label:"Fantasy Mystery",cat:"Fantasy & Sci-fi"},
+  {id:"magic_school",label:"Magic School",cat:"Fantasy & Sci-fi"},
+  {id:"dystopian",label:"Dystopian",cat:"Fantasy & Sci-fi"},
+  {id:"post_apocalyptic",label:"Post-Apocalyptic",cat:"Fantasy & Sci-fi"},
+  {id:"time_travel",label:"Time Travel",cat:"Fantasy & Sci-fi"},
+  {id:"portal_fantasy",label:"Portal Fantasy",cat:"Fantasy & Sci-fi"},
+  {id:"mythology_retelling",label:"Mythology Retelling",cat:"Fantasy & Sci-fi"},
+  {id:"chosen_one",label:"Chosen One",cat:"Fantasy & Sci-fi"},
+];
+const TROPE_KEYWORDS={enemies_to_lovers:["enemy","enemies","rival","rivals","hate","hatred","despise","antagonist"],slow_burn:["tension","slowly","gradually","building","eventually"],love_triangle:["triangle","torn","choosing","between"],forbidden_love:["forbidden","secret","romeo","juliet"],fake_dating:["fake","pretend","pretending","act"],second_chance_romance:["second","chance","reunion","rekindled","reconnect"],fast_paced:["fast","thrilling","gripping","action","rapid","pulse"],action_and_fighting:["battle","fight","fighting","war","combat","sword","warrior","weapon"],murder_mystery:["murder","mystery","detective","killer","crime","investigation","suspect","clue","victim"],heist:["heist","steal","theft","con","scheme"],survival:["survival","survive","stranded","wilderness","danger"],revenge:["revenge","vengeance","payback","betray","betrayal"],road_trip:["journey","road","trip","travel","adventure","quest"],found_family:["family","bond","loyalty","found","together"],searching_for_belonging:["belong","belonging","outcast","lonely","fit","place"],coming_of_age:["grow","growing","mature","teen","teenager","adolescent"],identity_and_self_discovery:["identity","discover","herself","himself","themselves","real"],overcoming_adversity:["overcome","struggle","challenge","adversity","hardship"],characters_with_disabilities:["disability","disabled","wheelchair","blind","deaf"],deep_topics:["grief","loss","death","depression","trauma","difficult","profound"],realistic_fiction:["realistic","contemporary","modern","ordinary","everyday"],friendship:["friend","friends","friendship","best","companion"],sports_story:["sport","sports","basketball","football","soccer","team","athlete","game"],drug_use:["drug","drugs","addiction","substance","alcohol"],abuse:["abuse","abusive","violence","domestic","assault","trauma"],poverty:["poor","poverty","homeless","money","economic"],racism:["race","racism","racist","discrimination","prejudice","segregation"],based_on_true_events:["true","historical","real","actual","history"],special_powers_or_abilities:["power","powers","ability","magic","gift","special","supernatural"],fantasy_mystery:["mystery","magic","fantasy","investigate","clue","magical"],magic_school:["school","academy","magic","wizard","witch","spell"],dystopian:["dystopia","dystopian","government","control","rebellion","oppressive","regime"],post_apocalyptic:["apocalypse","apocalyptic","destroyed","collapse","ruins"],time_travel:["time","travel","past","future","century"],portal_fantasy:["portal","another","world","realm","dimension"],mythology_retelling:["myth","mythology","retelling","legend","god","goddess","greek","norse"],chosen_one:["chosen","destined","destiny","prophecy","fate","hero"]};
+const CATS   = [...new Set(TROPES.map(t=>t.cat))];
+const STOP   = new Set(["the","and","for","that","with","this","she","her","his","him","they","their","was","are","have","has","been","from","but","not","all","can","its","you","who","one","had","what","when","into","more","will","about","after","also","some","such","than","then","them","these","those","very","just","each"]);
+const GRADES = ["6th","7th","8th"];
+const DEFAULT_ANALYTICS = {totalSearches:0,searchModes:{similar:0,tropes:0,freetext:0},tropeSearches:{},recommendedBooks:{}};
+
+const EVAL_TESTS = [
+  {
+    id:"pj_gods",
+    label:"Percy Jackson readalike: fights gods",
+    prompt:"I want another fantasy book similar to Percy Jackson where the protagonist fights gods.",
+    must:["fantasy adventure","mythological/divine conflict","protagonist confronts gods/deities/godlike beings"],
+    prefer:["fast pace","monsters","special powers","accessible middle grade / YA feel"],
+    avoid:["main Percy Jackson & the Olympians books","general folklore fantasy without divine conflict"]
+  },
+  {
+    id:"pj_easier",
+    label:"Percy Jackson but easier",
+    prompt:"I want something like Percy Jackson but easier, not the main Percy Jackson series.",
+    must:["accessible fantasy adventure","not main Percy Jackson series"],
+    prefer:["mythology or monsters","fast pacing","shorter / easier than Percy Jackson"],
+    avoid:["harder or longer books","same main series"]
+  },
+  {
+    id:"girl_powers_no_animals",
+    label:"Girl with powers, not animals",
+    prompt:"Fantasy with a human girl main character who has powers, not animal protagonists.",
+    must:["human girl / female protagonist","fantasy or magic","special powers"],
+    prefer:["fast pace","mystery or danger"],
+    avoid:["animal protagonists","dragon protagonists"]
+  },
+  {
+    id:"murder_mystery_fantasy",
+    label:"Fantasy murder mystery",
+    prompt:"A murder mystery fantasy with deception and secrets.",
+    must:["mystery / investigation","fantasy or magic"],
+    prefer:["deception","secrets","suspense"],
+    avoid:["realistic mystery only"]
+  },
+  {
+    id:"sports_reluctant",
+    label:"Sports for reluctant reader",
+    prompt:"Sports book for a reluctant reader who likes fast-paced stories.",
+    must:["sports element","accessible / reluctant-reader friendly"],
+    prefer:["fast pacing","team conflict","shorter length"],
+    avoid:["slow literary sports-adjacent books"]
+  },
+  {
+    id:"friendship_belonging",
+    label:"Friendship and belonging",
+    prompt:"Realistic fiction about friendship and belonging, not too sad.",
+    must:["realistic fiction","friendship / belonging"],
+    prefer:["hopeful tone","school or family context"],
+    avoid:["very sad/heavy tone"]
+  },
+  {
+    id:"school_safe_romance",
+    label:"School-appropriate enemies to lovers",
+    prompt:"Enemies-to-lovers fantasy but school appropriate.",
+    must:["fantasy or magic","enemies/rivals to lovers"],
+    prefer:["slow burn","banter","adventure"],
+    avoid:["explicit romance","too mature"]
+  },
+  {
+    id:"amari_hidden_world",
+    label:"Amari-style hidden world",
+    prompt:"A book like Amari because of the hidden magical world and underdog girl hero.",
+    must:["hidden magical world","underdog girl / female protagonist"],
+    prefer:["powers","mystery","training or secret society"],
+    avoid:["animal protagonist fantasy"]
+  },
+  {
+    id:"scary_not_horror",
+    label:"Scary mystery, not horror",
+    prompt:"A scary mystery but not horror and not too violent.",
+    must:["mystery / suspense"],
+    prefer:["eerie atmosphere","high interest"],
+    avoid:["horror","graphic violence"]
+  },
+  {
+    id:"short_exciting",
+    label:"Short exciting reluctant reader",
+    prompt:"A short, exciting book for a student who does not usually finish books.",
+    must:["accessible / reluctant-reader friendly","high-interest"],
+    prefer:["shorter length","fast pacing","clear conflict"],
+    avoid:["long slow books"]
+  }
+];
+
+function exportEvaluationCsv(rows){
+  const headers=["timestamp","test_id","test_label","prompt","rank","title","author","score","reason","must","prefer","avoid"];
+  const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const body=rows.map(r=>headers.map(h=>esc(r[h])).join(",")).join("\n");
+  const csv=headers.join(",")+"\n"+body;
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`fletcher-readermatch-evaluation-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+
+// ── UTILITIES ────────────────────────────────────────────────────────────
+const uid      = () => Math.random().toString(36).slice(2,9);
+const tokenize = t => (t||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
+const lsLoad   = (k,fb) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;} };
+const lsSave   = (k,v)  => { try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
+function cosine(a,b){ let d=0,na=0,nb=0; for(let i=0;i<a.length;i++){d+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];} return d/(Math.sqrt(na)*Math.sqrt(nb)||1); }
+function splitSignals(v){ if(Array.isArray(v)) return v.map(x=>String(x).trim()).filter(Boolean); return String(v||"").split(/[,;\n]/).map(x=>x.trim()).filter(Boolean); }
+function advisoryTextForProfile(p){ if(!p) return ""; const t=splitSignals(p.tasteSignals),a=splitSignals(p.avoidSignals),parts=[]; if(p.advisoryNotes) parts.push(`Librarian advisory notes: ${p.advisoryNotes}`); if(t.length) parts.push(`Reader taste signals: ${t.join(", ")}`); if(a.length) parts.push(`Avoid or be cautious with: ${a.join(", ")}`); return parts.join("\n"); }
+function updateStatus(id,cls,txt){ const d=document.getElementById(`${id}-dot`),l=document.getElementById(`${id}-txt`); if(d) d.className=`dot ${cls}`; if(l) l.textContent=txt; }
+
+function addUnique(arr,v){ if(v&&!arr.some(x=>String(x).toLowerCase()===String(v).toLowerCase())) arr.push(v); }
+function fieldText(...parts){ return parts.filter(Boolean).join(" ").replace(/\s+/g," ").trim(); }
+function bookIntelligenceText(b){
+  return fieldText(
+    b.title,b.author,b.series,
+    b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,b.avoid_if,
+    b.enriched_subjects,b.subjects,b.enriched_summary,b.summary,b.genre,b.genres,b.tone,b.pacing,b.audience,b.notes
+  );
+}
+function bookPositiveText(b){
+  // Used for positive retrieval/scoring. Keep avoid_if out of positive scoring so "avoid" warnings do not accidentally boost a title.
+  return fieldText(
+    b.title,b.author,b.series,
+    b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,
+    b.enriched_subjects,b.subjects,b.enriched_summary,b.summary,b.genre,b.genres,b.tone,b.pacing,b.audience
+  );
+}
+function pageCount(b){ const m=String(b.pages||b.page_count||"").match(/\d+/); return m?Number(m[0]):null; }
+function labelTokens(label){ return tokenize(String(label||"").replace(/[/_-]/g," ")).filter(w=>w.length>3); }
+function textMatchesLabel(text,label){
+  const l=String(label||"").toLowerCase();
+
+  // Curated matches for reader-advisory concepts. This avoids weak matches like
+  // "animal protagonists" satisfying "human girl protagonist" merely because
+  // both contain the word "protagonist".
+  if(/human girl|female protagonist|girl protagonist/.test(l)){
+    return /\b(girl|female|heroine|woman|daughter|sister)\b/.test(text) &&
+           !/\b(dragon|animal protagonist|animal protagonists|cat|dog|wolf|horse|rabbit|fox)\b/.test(text);
+  }
+  if(/animal|dragon/.test(l)){
+    return /\b(dragon|animal|cat|dog|wolf|horse|rabbit|fox|warrior cats|wings of fire)\b/.test(text);
+  }
+  if(/romance/.test(l)){
+    return /\b(romance|romantic|crush|dating|boyfriend|girlfriend|love interest|falling in love|enemies to lovers|slow burn)\b/.test(text);
+  }
+  if(/fast/.test(l)){
+    return /\b(fast[-\s]?paced|quick|action|exciting|page[-\s]?turner|adventure|short chapters)\b/.test(text);
+  }
+  if(/accessible|reluctant|easy|short/.test(l)){
+    return /\b(accessible|reluctant|quick read|short chapters|easy|easier)\b/.test(text);
+  }
+  if(/mystery|investigation/.test(l)){
+    return /\b(mystery|murder|detective|clue|crime|investigation|secret|missing)\b/.test(text);
+  }
+  if(/fantasy|magic/.test(l)){
+    return /\b(fantasy|magic|magical|spell|wizard|witch|powers?|supernatural|secret world|hidden world)\b/.test(text);
+  }
+
+  const toks=labelTokens(label);
+  if(!toks.length) return false;
+  // For multiword labels, require at least two meaningful token hits when possible.
+  const hits=toks.filter(t=>new RegExp(`\\b${t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`).test(text)).length;
+  return toks.length>=2 ? hits>=2 : hits>=1;
+}
+
+function comparisonExclusionsFromQuery(query){
+  const q=String(query||"").toLowerCase();
+  const wantsComparison=/\b(like|similar to|reminds? me of|another|something like|readalike|read-alike)\b/.test(q);
+  const explicitlyWantsMore=/\b(more percy jackson|percy jackson series|rick riordan books|more rick riordan|next percy jackson|another percy jackson)\b/.test(q);
+  const exclusions=[];
+  if(wantsComparison && !explicitlyWantsMore){
+    if(/\bpercy jackson\b|\bolympians\b|\bcamp half[-\s]?blood\b/.test(q)){
+      exclusions.push({
+        label:"Percy Jackson main series comparison title",
+        test:b=>{
+          const title=String(b.title||"").toLowerCase();
+          const series=String(b.series||"").toLowerCase();
+          const text=`${title} ${series}`;
+          // Exclude the main Percy Jackson & the Olympians sequence when it is
+          // being used as a readalike/comparison source. Do NOT exclude all Rick
+          // Riordan books; other Riordan mythology series may still be valid
+          // recommendations if they satisfy the actual request.
+          const mainSeries=/percy jackson( and| &)? the olympians|percy jackson & the olympians|percy jackson series/.test(series);
+          const mainTitles=/\b(the )?lightning thief\b|\b(the )?sea of monsters\b|\b(the )?titan'?s curse\b|\b(the )?battle of the labyrinth\b|\b(the )?last olympian\b|\b(the )?chalice of the gods\b|\b(the )?wrath of the triple goddess\b/.test(title);
+          return mainSeries || mainTitles || /\bpercy jackson( and| &)? the olympians\b/.test(text);
+        }
+      });
+    }
+  }
+  return exclusions;
+}
+
+function isComparisonExcludedBook(book,structured){
+  return (structured?.comparisonExclusions||[]).some(rule=>rule.test(book));
+}
+
+function parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike}){
+  const q=(query||"").toLowerCase();
+  const adv=advisoryTextForProfile(activeProfile).toLowerCase();
+  const dislike=(didntLike||"").toLowerCase();
+  const combined=`${q} ${adv} ${dislike}`;
+  const comparisonExclusions=comparisonExclusionsFromQuery(query);
+  const must=[],prefer=[],avoid=[],evidence=[];
+  if(/\b(fight|fights|fighting|battle|battles|battling|against|confront|confronts|defeat|defeats)\b.*\b(god|gods|deity|deities|divine|immortal|titans?)\b|\b(god|gods|deity|deities|divine|immortal|titans?)\b.*\b(fight|fights|fighting|battle|battles|battling|against|confront|confronts|defeat|defeats)\b/.test(q)){
+    addUnique(must,"Protagonist fights gods / divine beings");
+    addUnique(prefer,"mythic action adventure");
+    addUnique(avoid,"general folklore fantasy without divine conflict");
+  }
+
+  if(mode==="similar"&&refBook){
+    addUnique(must,`Similar appeal to "${refBook.title}"`);
+    addUnique(prefer,"matching tone, pacing, themes, and reader appeal");
+    if(refBook.enriched_subjects||refBook.subjects) addUnique(evidence,`reference subjects: ${String(refBook.enriched_subjects||refBook.subjects).split("|").slice(0,4).join(", ")}`);
+  }
+  if(mode==="tropes"){
+    TROPES.filter(t=>selTropes.has(t.id)).forEach(t=>{
+      if(t.id===priorityTrope) addUnique(must,t.label);
+      else addUnique(prefer,t.label);
+    });
+  }
+
+  const rules=[
+    ["Fantasy or magical elements",/fantasy|magic|magical|spell|witch|wizard|powers?|supernatural|portal|hidden world|secret world/,"prefer"],
+    ["Mystery / investigation",/mystery|murder|detective|clue|crime|investigation|missing|secret|suspect/,"prefer"],
+    ["Human girl / female protagonist",/human girl|girl main|girl protagonist|female protagonist|heroine|strong girl|girl with powers/,"must"],
+    ["Girl / female protagonist",/girl|female|heroine/,"prefer"],
+    ["Special powers / abilities",/powers?|abilities|gift|supernatural|magic|special/,"prefer"],
+    ["Sports element",/\b(sports?|basketball|football|soccer|baseball|athlete|team|game)\b/,"prefer"],
+    ["Romance element",/\b(romance|romantic|crush|dating|enemies to lovers|slow burn|love interest|falling in love)\b/,"prefer"],
+    ["Fast-paced",/\b(fast[-\s]?paced|quick|action|exciting|page.?turner|adventure|short chapters)\b/,"prefer"],
+    ["Accessible / reluctant-reader friendly",/\b(easy|easier|not too hard|reluctant|short|accessible|simple|quick read)\b/,"prefer"],
+    ["Realistic fiction",/realistic|contemporary|real life|school story|family story/,"prefer"],
+    ["Deep or emotional topics",/grief|loss|trauma|serious|deep|emotional|depression|abuse|poverty/,"prefer"],
+    ["Friendship / found family",/friendship|friends|found family|belonging/,"prefer"],
+    ["Avoid animal protagonists",/not animals?|no animals?|avoid animals?|not dragons?|no dragons?|human protagonist|human girl/,"avoid"],
+    ["Avoid heavy romance",/no romance|not romance|avoid romance|romance.?light|too much romance/,"avoid"],
+    ["Avoid slow pacing",/not slow|avoid slow|too slow|slow pacing|slow books/,"avoid"],
+    ["Avoid scary content",/not scary|avoid horror|too scary|not too scary/,"avoid"],
+    ["Avoid childish tone",/not childish|too young|babyish|feels young/,"avoid"]
+  ];
+  rules.forEach(([label,re,type])=>{
+    if(re.test(combined)){
+      if(type==="must") addUnique(must,label);
+      else if(type==="avoid") addUnique(avoid,label);
+      else addUnique(prefer,label);
+    }
+  });
+
+  // If the query says "no/not/avoid romance", keep the avoid signal and remove
+  // the positive romance boost. Same idea for "not scary" style requests.
+  if(/\b(no romance|not romance|avoid romance|romance[-\s]?light|too much romance)\b/.test(combined)){
+    for(let i=prefer.length-1;i>=0;i--) if(/romance/i.test(prefer[i])) prefer.splice(i,1);
+  }
+  if(/\b(not scary|avoid horror|too scary|not too scary)\b/.test(combined)){
+    for(let i=prefer.length-1;i>=0;i--) if(/horror|scary/i.test(prefer[i])) prefer.splice(i,1);
+  }
+
+  splitSignals(activeProfile?.tasteSignals).forEach(s=>addUnique(prefer,s));
+  splitSignals(activeProfile?.avoidSignals).forEach(s=>addUnique(avoid,s));
+  if(activeProfile?.advisoryNotes) addUnique(prefer,"librarian advisory notes");
+  if(activeProfile?.reluctant) addUnique(prefer,"reluctant-reader friendly pacing");
+  if(activeProfile?.likedBooks?.length) addUnique(prefer,`appeal from liked books: ${activeProfile.likedBooks.slice(0,3).join(", ")}`);
+  if(alreadyRead?.size) addUnique(avoid,`${alreadyRead.size} already-read title${alreadyRead.size===1?"":"s"} excluded`);
+  if(didntLike?.trim()) addUnique(avoid,`qualities similar to: "${didntLike.trim()}"`);
+  if(!must.length) addUnique(must,"relevant titles from the Fletcher catalog");
+  if(!prefer.length) addUnique(prefer,"strong reader appeal match");
+  if(!avoid.length) addUnique(avoid,"no extra exclusions");
+
+  return {comparisonExclusions,
+    mustHave:must.slice(0,8),
+    softPreferences:prefer.slice(0,12),
+    avoidSignals:avoid.slice(0,10),
+    evidence:evidence.slice(0,5),
+    originalQuery:mode==="similar"?(refBook?.title||query):mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(", "):query
+  };
+}
+
+
+// __ TABLE ANIMATION __
+const TBL_POS=[{fx:-185,fy:-72,rot:-4},{fx:0,fy:-75,rot:2},{fx:185,fy:-72,rot:-3},{fx:-185,fy:72,rot:3},{fx:0,fy:75,rot:-2},{fx:185,fy:72,rot:5}];
+const TBL_PAT=[c=>`<svg width="80" height="116" xmlns="http://www.w3.org/2000/svg">${[10,22,34,46,58,70,82,94,106].map(y=>`<line x1="0" y1="${y}" x2="80" y2="${y}" stroke="${c}" stroke-width="1"/>`).join('')}</svg>`,c=>`<svg width="80" height="116" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="80" y2="116" stroke="${c}" stroke-width="1"/><line x1="20" y1="0" x2="80" y2="88" stroke="${c}" stroke-width="1"/><line x1="40" y1="0" x2="80" y2="58" stroke="${c}" stroke-width="1"/></svg>`,c=>`<svg width="80" height="116" xmlns="http://www.w3.org/2000/svg">${[12,28,44,60,76,92,108].map(y=>[12,36,60].map(x=>`<circle cx="${x+(y%24===12?12:0)}" cy="${y}" r="3" fill="${c}"/>`).join('')).join('')}</svg>`];
+const TBL_CLR=['#1A3A5C','#5C1A1A','#1A3020','#3D2800','#2A1A40','#2A1010'];
+const TBL_SPN=['#0D2240','#3D0E0E','#0E1F14','#291A00','#1A0F2A','#1A0808'];
+let _tblRock=null,_tblStgInt=null,_tblStgIdx=0,_tblBkEls=[],_tblBooks=[];
+let tblOnTap=null;
+function tblSvg(s){return 'data:image/svg+xml;base64,'+btoa(s);}
+function tblBuildStack(){const a=document.getElementById('deckArea');if(!a||document.getElementById('tblStack'))return;const sw=document.createElement('div');sw.id='tblStack';sw.className='tbl-stack';[-7,-3,3,6].forEach((ang,i)=>{const c=document.createElement('div');c.className='tbl-stack-card';c.style.cssText=`background:${['#141210','#181510','#1C1710','#1E1A10'][i]};border:1px solid #2A2418;border-radius:5px;transform:translate(${[-5,-2,2,5][i]}px,${[-3,-1,1,2][i]}px) rotate(${ang}deg);`;sw.appendChild(c);});const top=document.createElement('div');top.className='tbl-stack-card';top.style.cssText='background:#201D12;border:1px solid #3A3020;border-radius:5px;display:flex;align-items:center;justify-content:center;transition:transform .3s ease;';top.innerHTML='<div style="text-align:center"><div style="font-size:22px;color:#E8B84B;font-weight:700;font-family:Fraunces,serif">F</div><div style="font-size:6px;color:#4A4030;letter-spacing:.14em;text-transform:uppercase;margin-top:5px;font-weight:700">Fletcher</div></div>';sw.appendChild(top);a.appendChild(sw);}
+function tblStartRock(f){tblStopRock();const sw=document.getElementById('tblStack');if(!sw)return;let d=1;_tblRock=setInterval(()=>{if(sw.lastElementChild)sw.lastElementChild.style.transform=`rotate(${d*(f?3:2)}deg)`;d*=-1;},f?320:700);}
+function tblStopRock(){if(_tblRock){clearInterval(_tblRock);_tblRock=null;}const sw=document.getElementById('tblStack');if(sw&&sw.lastElementChild)sw.lastElementChild.style.transform='rotate(0deg)';}
+function tblStartLoad(){const lbl=document.getElementById('tblLoadingLbl'),ov=document.getElementById('tableOverlay');if(lbl)lbl.classList.add('show');if(ov)ov.classList.add('dim');_tblStgIdx=0;const txt=document.getElementById('tblLoadingTxt');if(txt)txt.textContent=STAGE_MSGS[0];_tblStgInt=setInterval(()=>{_tblStgIdx=(_tblStgIdx+1)%STAGE_MSGS.length;const t=document.getElementById('tblLoadingTxt');if(t)t.textContent=STAGE_MSGS[_tblStgIdx];},1800);}
+function tblStopLoad(){const lbl=document.getElementById('tblLoadingLbl'),ov=document.getElementById('tableOverlay');if(lbl)lbl.classList.remove('show');if(ov)ov.classList.remove('dim');if(_tblStgInt){clearInterval(_tblStgInt);_tblStgInt=null;}}
+function tblDust(){const a=document.getElementById('deckArea');if(!a)return;for(let i=0;i<10;i++){const d=document.createElement('div');const dx=(Math.random()-.5)*80,dy=(Math.random()-.5)*60;d.style.cssText=`position:absolute;top:50%;left:50%;width:4px;height:4px;border-radius:50%;background:#A07C28;opacity:0;--dx:${dx}px;--dy:${dy}px;animation:dustFly .7s ease-out ${i*35}ms forwards;pointer-events:none;z-index:30;`;a.appendChild(d);setTimeout(()=>d.remove(),900+i*35);}}
+function tblRmStack(){const sw=document.getElementById('tblStack');if(sw){sw.style.transition='opacity .22s';sw.style.opacity='0';setTimeout(()=>sw.remove(),240);}}
+function tblMkBooks(books){const a=document.getElementById('deckArea');if(!a)return;a.querySelectorAll('.tbl-book,.tbl-sh').forEach(el=>el.remove());_tblBkEls=[];_tblBooks=books;books.forEach((b,i)=>{const p=TBL_POS[i];const sh=document.createElement('div');sh.className='tbl-sh';sh.id=`tblSh${i}`;sh.style.transform=`translate(calc(-50% + ${p.fx}px),calc(-50% + ${p.fy+62}px)) rotate(${p.rot}deg)`;a.appendChild(sh);const el=document.createElement('div');el.className='tbl-book';el.style.setProperty('--fx',p.fx+'px');el.style.setProperty('--fy',p.fy+'px');el.style.setProperty('--rot',p.rot+'deg');el.style.zIndex=i+2;const ci=i%TBL_CLR.length;const isbn=(b.isbn||'').replace(/[^0-9X]/g,'');const img=document.createElement('img');img.className='tbl-book-cover';img.alt=b.title||'';img.src=`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`;img.onerror=()=>{el.innerHTML='';const pu=tblSvg(TBL_PAT[i%TBL_PAT.length]('#fff'));el.innerHTML=`<div class="tbl-book-fb" style="background:${TBL_CLR[ci]}"><div class="tbl-book-spine" style="background:${TBL_SPN[ci]}"></div><div class="tbl-book-pat" style="background-image:url('${pu}');background-size:cover"></div><div class="tbl-book-top"><div class="tbl-book-title">${b.title||''}</div><div class="tbl-book-num">${ROMAN[i]||i+1}</div></div><div class="tbl-book-stamp">Fletcher Library</div></div>`;};el.appendChild(img);el.onclick=()=>{if(tblOnTap&&!el.classList.contains('have-it'))tblOnTap(b,i,TBL_CLR[ci]);};a.appendChild(el);_tblBkEls.push(el);});}
+function tblDeal(delay){_tblBkEls.forEach((el,i)=>{const p=TBL_POS[i];setTimeout(()=>{el.style.transform=`translate(calc(-50% + ${p.fx}px),calc(-50% + ${p.fy}px)) rotate(${p.rot}deg) scale(1)`;el.classList.add('dealt');setTimeout(()=>{const sh=document.getElementById(`tblSh${i}`);if(sh)sh.classList.add('show');},180);},delay+i*90);});}
+function tblExit(){_tblBkEls.forEach((el,i)=>{setTimeout(()=>el.classList.add('exiting'),i*28);const sh=document.getElementById(`tblSh${i}`);if(sh)sh.classList.remove('show');});}
+function tblSetActive(idx){_tblBkEls.forEach((el,j)=>{if(!el.classList.contains('have-it')){el.classList.toggle('tbl-active',j===idx);el.style.zIndex=j===idx?20:j+2;}});}
+function tblSyncHave(haveSet){_tblBkEls.forEach((el,i)=>{const b=_tblBooks[i];if(!b)return;const h=haveSet.has(b.title);el.classList.toggle('have-it',h);if(h)el.classList.remove('tbl-active');let badge=el.querySelector('.tbl-have-badge');if(h&&!badge){badge=document.createElement('div');badge.className='tbl-have-badge';badge.innerHTML='<span>Checked Out</span>';el.appendChild(badge);}else if(!h&&badge)badge.remove();});}
+// ── CANDIDATES ───────────────────────────────────────────────────────────
+function candidateViolations(b,structured){
+  const text=bookIntelligenceText(b).toLowerCase();
+  const v=[];
+  if(isComparisonExcludedBook(b,structured)) addUnique(v,"comparison title itself / same source series");
+  const avoids=structured?.avoidSignals||[];
+  if(avoids.some(x=>/animal|dragon/i.test(x)) && /dragon|animal|cat|dog|wolf|horse|rabbit|fox|wings of fire|warrior cats/i.test(text)) addUnique(v,"possible animal/dragon protagonist");
+  if(avoids.some(x=>/romance/i.test(x)) && /romance|love|crush|dating|kiss|boyfriend|girlfriend/i.test(text)) addUnique(v,"romance may be too prominent");
+  if(avoids.some(x=>/slow/i.test(x)) && /slow|lyrical|atmospheric|meditative|quiet/i.test(text)) addUnique(v,"possibly slow or atmospheric");
+  if(avoids.some(x=>/scary|horror/i.test(x)) && /horror|terrifying|scary|ghost|haunted|nightmare/i.test(text)) addUnique(v,"possibly scary");
+  if(avoids.some(x=>/childish|too young/i.test(x)) && /silly|wacky|zany|younger readers|elementary/i.test(text)) addUnique(v,"may skew young");
+  return v;
+}
+
+function candidateEvidence(b,structured){
+  const text=bookPositiveText(b).toLowerCase();
+  const matched=[],concerns=[];
+  (structured?.mustHave||[]).forEach(x=>{ if(textMatchesLabel(text,x)) addUnique(matched,x); });
+  (structured?.softPreferences||[]).forEach(x=>{ if(textMatchesLabel(text,x)) addUnique(matched,x); });
+  candidateViolations(b,structured).forEach(x=>addUnique(concerns,x));
+  const p=pageCount(b);
+  if((structured?.softPreferences||[]).some(x=>/accessible|reluctant|short|easy/i.test(x))){
+    if(p&&p<275) addUnique(matched,"shorter / accessible length");
+    if(p&&p>420) addUnique(concerns,"longer book; check difficulty");
+    if(/short chapters|fast-paced|quick read|reluctant/i.test(text)) addUnique(matched,"reluctant-reader signal");
+  }
+  return {matched:matched.slice(0,8),concerns:concerns.slice(0,6)};
+}
+
+function scoreCandidateIntelligence(b,queryTokens,likedTokens,structured,sameAuthor,sameSeries){
+  const subject=new Set(tokenize(b.enriched_subjects||b.subjects||""));
+  const summary=new Set(tokenize(b.enriched_summary||b.summary||""));
+  const profile=new Set(tokenize(fieldText(b.reader_appeal_profile,b.recommendation_profile,b.appeal_profile,b.appeal_factors,b.best_for,b.tone,b.pacing)));
+  const title=new Set(tokenize(b.title||""));
+  let score=0;
+  queryTokens.forEach(k=>{
+    if(subject.has(k)) score+=4;
+    if(profile.has(k)) score+=4;
+    if(title.has(k)) score+=2.5;
+    if(summary.has(k)) score+=1.25;
+  });
+  likedTokens.forEach(k=>{
+    if(subject.has(k)) score+=4.5;
+    if(profile.has(k)) score+=4;
+    if(summary.has(k)) score+=2;
+  });
+  if(sameAuthor.has(b.title)) score+=7;
+  if(sameSeries.has(b.title)) score+=14;
+
+  const evidence=candidateEvidence(b,structured);
+  score+=evidence.matched.length*5;
+  score-=evidence.concerns.length*14;
+
+  const p=pageCount(b);
+  if(activeReluctantHint(structured)){
+    if(p&&p<275) score+=6;
+    if(p&&p>420) score-=8;
+  }
+  return {...b,_s:score,_matched:evidence.matched,_concerns:evidence.concerns};
+}
+
+function activeReluctantHint(structured){
+  const txt=[...(structured?.softPreferences||[]),...(structured?.mustHave||[])].join(" ").toLowerCase();
+  return /reluctant|accessible|easy|short/.test(txt);
+}
+
+async function getCandidates(books,queryText,likedKws=[],n=55,excl=null,alreadyRead=new Set(),shown=new Set(),refAuthor=null,structured=null,bookEmbeddings=null,formatFilter=null){
+  // Hard format filter FIRST: a fiction search must never surface a graphic novel, and vice versa,
+  // regardless of semantic closeness. Catalog rows carry format = "fiction" | "graphic_novel".
+  // Rows with no format value (older catalogs) are treated as fiction so nothing is silently dropped.
+  let pool=books.filter(b=>b.title!==excl&&!alreadyRead.has(b.title)&&!shown.has(b.title));
+  if(formatFilter){
+    pool=pool.filter(b=>((b.format||"fiction").trim().toLowerCase())===formatFilter);
+  }
+  const comparisonFiltered=pool.filter(b=>!isComparisonExcludedBook(b,structured));
+  if(comparisonFiltered.length>=12) pool=comparisonFiltered;
+  const authorLast=refAuthor?refAuthor.split(',')[0].trim().toLowerCase():null;
+  const sameAuthor=new Set(authorLast?pool.filter(b=>(b.author||'').toLowerCase().includes(authorLast)).map(b=>b.title):[]);
+  const refBook_=excl?books.find(b=>b.title===excl):null;
+  const sameSeries=new Set(refBook_?.series?pool.filter(b=>b.series&&b.series===refBook_.series).map(b=>b.title):[]);
+  const qTokens=tokenize(queryText);
+  const likedTokens=likedKws||[];
+  let scored=pool.map(b=>scoreCandidateIntelligence(b,qTokens,likedTokens,structured,sameAuthor,sameSeries));
+
+  // Optional semantic layer: use precomputed book_embeddings.json plus the worker embedding endpoint.
+  // This restores meaning-based retrieval while keeping the transparent librarian scoring layer.
+  if(bookEmbeddings && Object.keys(bookEmbeddings).length>0){
+    try{
+      const res=await fetch(EMBED_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:queryText})});
+      if(!res.ok) throw new Error(`embed ${res.status}`);
+      const {embedding:qEmb}=await res.json();
+      scored=scored.map(b=>{
+        const bEmb=bookEmbeddings[b.title];
+        const sem=bEmb?cosine(qEmb,bEmb):0;
+        return {...b,_sem:sem,_s:b._s+(sem*42)};
+      });
+    }catch(err){
+      console.warn('Embedding retrieval failed; using librarian keyword/profile scoring fallback.',err);
+    }
+  }
+
+  // Keep strong series continuations, but otherwise prefer non-violating matches when enough exist.
+  const nonViolation=scored.filter(b=>(b._concerns||[]).length===0 || sameSeries.has(b.title));
+  if(nonViolation.length>=Math.min(18,n)) scored=nonViolation;
+
+  scored=scored.filter(b=>b._s>0||sameSeries.has(b.title));
+  if(!scored.length) scored=pool.map(b=>scoreCandidateIntelligence(b,qTokens,likedTokens,structured,sameAuthor,sameSeries));
+  return scored.sort((a,b)=>b._s-a._s).slice(0,n);
+}
+
+
+function sentenceEvidenceFromText(text,signals=[]){
+  const clean=String(text||"").replace(/\s+/g," ").trim();
+  if(!clean) return "";
+  const sentences=clean.split(/(?<=[.!?])\s+/).filter(s=>s.length>35);
+  const sigWords=signals.join(" ").toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>4);
+  const scored=sentences.map(s=>{
+    const low=s.toLowerCase();
+    const score=sigWords.reduce((n,w)=>n+(low.includes(w)?1:0),0);
+    return {s,score};
+  }).sort((a,b)=>b.score-a.score);
+  const best=(scored[0]?.score>0?scored[0].s:sentences[0]||clean).trim();
+  return best.length>260 ? best.slice(0,257).replace(/\s+\S*$/,"")+"..." : best;
+}
+
+function readableList(items,max=3){
+  const arr=(items||[]).filter(Boolean).slice(0,max);
+  if(arr.length===0) return "";
+  if(arr.length===1) return arr[0];
+  if(arr.length===2) return `${arr[0]} and ${arr[1]}`;
+  return `${arr.slice(0,-1).join(", ")}, and ${arr[arr.length-1]}`;
+}
+
+function isGenericReason(reason){
+  // DEPRECATED: Under the pre-RA contract this filtered short template phrases
+  // so the system could fall through to buildLibrarianFallbackReason. The new
+  // RA-trained prompt produces specific, appeal-factor-grounded reasons that
+  // we trust directly. Retained as a no-op for backward compatibility.
+  return false;
+}
+
+function buildLibrarianFallbackReason(book,structured=null){
+  // DEPRECATED: This generated the "backfilled" template reasons under the
+  // pre-RA contract that always padded results to 6. The new validateRecommendations
+  // trusts Claude's count and never invokes a fallback. Retained as a no-op for
+  // backward compatibility; remove once confirmed unused.
+  return "";
+}
+
+
+function validateRecommendations(recs,candidates,books,alreadyRead=new Set(),shown=new Set(),structured=null){
+  // Trust Claude's RA-trained restraint: include only the picks Claude returned,
+  // after verifying each is a real catalog candidate and not already shown/read.
+  // No padding to a target count, no generic fallback reasons, no deferred rescue.
+  // If Claude returns 2 strong picks, we surface 2 strong picks.
+  const candMap=new Map(candidates.map(b=>[String(b.title||"").toLowerCase().trim(),b]));
+  const used=new Set();
+  const final=[];
+
+  (recs||[]).forEach(r=>{
+    const key=String(r?.title||"").toLowerCase().trim();
+    if(!key||used.has(key)) return;
+    const b=candMap.get(key);
+    if(!b) return; // Prevent hallucinated or non-candidate titles.
+    if(alreadyRead.has(b.title)||shown.has(b.title)) return;
+    used.add(key);
+    const violations=candidateViolations(b,structured);
+    final.push({
+      ...b,
+      reason:r.reason||"",
+      _matched:b._matched||[],
+      _concerns:[...(b._concerns||[]),...violations].filter(Boolean)
+    });
+  });
+
+  return final;
+}
+
+// ── CLAUDE ── UPGRADED ───────────────────────────────────────────────────
+async function callClaude(candidates,ctx,excluded=[],priorityLabel=null,likedTitles=[],likedThemes="",prefNote="",reluctantNote="",didntLikeNote="",advisoryNote="",structured=null){
+
+  const list=candidates.map((b,i)=>{
+    const pages=pageCount(b);
+    const rl=pages?(pages<250?'Quick Read':pages<=350?'Standard':'Longer Read'):'Unknown length';
+    const series=b.series?`Series: ${b.series}`:'';
+    const subjects=(b.enriched_subjects||b.subjects||'').split('|').slice(0,6).filter(Boolean).join(', ');
+    const profile=(b.reader_appeal_profile||b.recommendation_profile||b.appeal_profile||b.appeal_factors||'').slice(0,380);
+    const summary=(b.enriched_summary||b.summary||'').slice(0,360);
+    const evidence=(b._matched||[]).slice(0,6).join('; ')||'general semantic/catalog match';
+    const concerns=(b._concerns||[]).slice(0,4).join('; ')||'none detected';
+    return `${i+1}. "${b.title}" by ${b.author}
+   Metadata: ${[pages?`${pages}pp`:null,rl,series].filter(Boolean).join(' · ')}
+   Subjects: ${subjects||'—'}
+   Reader appeal profile: ${profile||'—'}
+   Summary: ${summary||'—'}
+   Evidence signals: ${evidence}
+   Cautions: ${concerns}`;
+  }).join("\n\n");
+
+  const exclNote=excluded.length?`\n\nDo NOT recommend: ${excluded.join(", ")}`:"";
+  const prioNote=priorityLabel?`\n\nMust-have: "${priorityLabel}" — every pick should strongly feature this unless no catalog candidate does.`:"";
+  const likedNote=likedTitles.length?`\n\nThis student loved: ${likedTitles.join(", ")}. Infer the appeal factors behind those likes; do not simply recommend the same genre.`:"";
+  const advNote=advisoryNote?`\n\nLibrarian advisory notes:\n${advisoryNote}\nUse these notes as high-value human context about WHY the student likes or avoids books.`:"";
+  const structNote=structured?`\n\nStructured reader model:
+Hard requirements: ${structured.mustHave.join(", ")}
+Soft preferences: ${structured.softPreferences.join(", ")}
+Avoid/check signals: ${structured.avoidSignals.join(", ")}
+Use hard requirements and avoid/check signals as constraints. Soft preferences are boosts, not absolute rules.`:"";
+
+  const systemPrompt=`You are Fletcher Library's Readers' Advisory (RA) specialist for middle school readers (grades 6–8). Your practice is grounded in the Saricks/Pearl RA tradition: you match readers to books based on how the reading *feels*, not on topic alone. You are a controlled reranker — you may only recommend books from the candidate list. You never invent titles.
+
+== APPEAL FACTORS ==
+Evaluate each candidate against all six:
+1. PACING — fast/measured/leisurely; short chapters, cliffhangers, episodic vs. dense, incident density
+2. CHARACTERIZATION — character-driven vs. plot-driven; depth, voice, protagonist age/stage relative to the student
+3. STORY LINE — what the plot is doing: action, mystery, romance, coming-of-age arc, episodic vs. arc-driven, twists vs. comfort
+4. FRAME / SETTING — contemporary, historical, secondary-world fantasy, sci-fi, school story; atmospheric vs. sparse
+5. TONE — emotional register: hopeful, dark, humorous, melancholy, suspenseful, gentle, edgy, safe
+6. LANGUAGE / STYLE — spare vs. lyrical, dialogue-heavy, vocabulary load, sentence complexity, verse vs. prose
+
+== DOORWAYS ==
+Before selecting, infer the student's primary doorway — the entry point that matters most to them — from the request, liked titles, advisory notes, structured preferences, and reluctant-reader signal. The four doorways:
+- STORY — reader wants to be carried by plot; weight pacing and story line. Common for reluctant readers and action/adventure fans.
+- CHARACTER — reader wants someone to care about; weight characterization. Common for realistic fiction and friendship/identity narratives.
+- SETTING — reader wants to inhabit a world; weight frame/setting. Common for fantasy, sci-fi, historical readers.
+- LANGUAGE — reader is drawn by voice and style; weight language/style. Less common at this age but real, especially for verse-novel and lyrical-prose readers.
+
+A character-doorway reader abandons a fast-paced plot with thin characters. A story-doorway reader abandons a beautifully written character study with no momentum. Get the doorway right or the pick fails.
+
+== DECISION RULES ==
+1. Recommend only books from the candidate list. Never invent a title.
+2. "Like X" / "similar to X" / "another like X" — treat the named title or its main series as a comparison source, not a recommendation target, unless the student explicitly asks for more of that same series. Related works by the same author may be valid.
+3. Hard requirements (mustHave) and avoid signals are constraints — do not violate unless no candidate satisfies. Soft preferences are boosts, not rules.
+4. For reluctant readers, completion likelihood (pacing, length, voice accessibility) outweighs literary prestige. A finished accessible book beats an abandoned masterpiece.
+5. Tone safety matters: middle school RA respects emotional bandwidth. Flags like "not too sad," "not too scary," "not too violent" are treated as hard signals even when not in mustHave.
+6. If a candidate is thematically similar but violates an avoid signal, prefer a cleaner fit unless the catalog has none.
+7. Honesty over padding. Return up to 6 picks, but only as many as you genuinely match. If you have 3 strong fits and 2 stretches, return 5. If you have 2 strong fits and nothing else, return 2. Never pad to hit a number.
+
+== REASONS — WHAT MAKES A REASON VALID ==
+Each reason must:
+- Name the primary appeal factor that drove the match (pacing / characterization / story line / frame/setting / tone / language/style).
+- Cite specific evidence from the candidate's summary, appeal profile, or subjects — not generic claims.
+- Connect that evidence to the student's request, liked titles, or advisory notes.
+- Be 2–3 sentences. Voice should be librarian-to-librarian or librarian-to-student — substantive but accessible to a 12-year-old. Never marketing copy.
+
+Bad: "Great match for your interest in fantasy."
+Bad: "Strong catalog match based on Fletcher metadata."
+Good: "Pacing and story line match — short chapters and a constant chase structure like Percy Jackson, same chosen-one-from-an-ordinary-life setup. Egyptian mythology gives a fresh frame without losing the Greek-myth appeal."
+Good: "Character doorway — protagonist is a quiet, observant 7th grader navigating a new school, direct echo of the advisory note. Tone is hopeful rather than melancholy, which honors the 'not too sad' constraint."
+
+== OUTPUT ==
+Return only a valid JSON array, no markdown, no commentary.
+Shape: [{"title":"...","author":"...","reason":"..."}]`;
+
+  const userPrompt=`${ctx}${prioNote}${likedNote}${advNote}${structNote}${likedThemes}${prefNote}${reluctantNote}${didntLikeNote}${exclNote}
+
+Task:
+1. Infer the student's primary doorway (story / character / setting / language) from the request and notes above.
+2. Evaluate each catalog candidate against the six appeal factors, weighting toward that doorway.
+3. Select up to 6 matches — return fewer if the catalog supports fewer genuine fits. Do not pad.
+4. Write each reason per the system prompt rules: name the appeal factor, cite specific evidence from the candidate, connect to the student's context.
+
+Catalog candidates:
+${list}
+
+=== OUTPUT FORMAT — STRICT ===
+Respond with ONLY a JSON array. No preamble. No explanation. No markdown code fences. No commentary before or after.
+Your response must START with the character [ and END with the character ].
+If you cannot find any genuine matches in the catalog, return the empty array: []
+Do all your reasoning internally; output only the final JSON.
+
+Shape: [{"title":"...","author":"...","reason":"..."}]`;
+
+  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    model:"claude-sonnet-4-6",
+    max_tokens:1800,
+    system:systemPrompt,
+    messages:[{role:"user",content:userPrompt}]
+  })});
+
+  const raw=await res.text();
+  if(!res.ok) throw new Error(`Worker ${res.status}`);
+  let data;try{data=JSON.parse(raw);}catch(e){throw e;}
+  const text=data.content?.[0]?.text||"[]";
+
+  // Strip markdown code fences if Claude wrapped output in ```json ... ```
+  const clean=text.replace(/```json\s*|```/g,"").trim();
+
+  // Defensive extraction: locate the outermost JSON array even if Claude prepended
+  // commentary ("I'll work through this...") or appended an explanation. With the
+  // new RA prompt's multi-step reasoning, occasional preamble leakage is expected;
+  // we want graceful degradation, not a thrown error that bubbles up as "Search failed."
+  const firstBracket=clean.indexOf('[');
+  const lastBracket=clean.lastIndexOf(']');
+  if(firstBracket===-1||lastBracket<=firstBracket){
+    console.warn('[callClaude] No JSON array found in response. Raw text (first 500 chars):',clean.slice(0,500));
+    return [];
+  }
+  const jsonText=clean.slice(firstBracket,lastBracket+1);
+  try{
+    return JSON.parse(jsonText);
+  }catch(parseErr){
+    console.warn('[callClaude] JSON.parse failed after bracket extraction. Returning empty array. Extracted (first 500 chars):',jsonText.slice(0,500));
+    return [];
+  }
+}
+
+
+// ── COMPONENTS ───────────────────────────────────────────────────────────
+function Toasts({toasts}){ return <div className="toasts">{toasts.map(t=><div key={t.id} className={`toast ${t.type}`}>{t.msg}</div>)}</div>; }
+
+function CoverImg({isbn}){
+  const[failed,setFailed]=React.useState(false);
+  if(!isbn||failed) return <div className="cover">📖</div>;
+  return <img className="cover" src={`https://covers.openlibrary.org/b/isbn/${isbn.replace(/[^0-9X]/g,"")}-M.jpg`} alt="" onError={()=>setFailed(true)}/>;
+}
+
+function TypewriterText({text}){
+  const[displayed,setDisplayed]=React.useState("");
+  const[done,setDone]=React.useState(false);
+  React.useEffect(()=>{setDisplayed("");setDone(false);let i=0;const iv=setInterval(()=>{if(i<text.length){setDisplayed(text.slice(0,i+1));i++;}else{setDone(true);clearInterval(iv);}},16);return()=>clearInterval(iv);},[text]);
+  return <span className="rreason">{displayed}{!done&&<span className="cursor"/>}</span>;
+}
+
+function NoteField({title,onSave}){
+  const key=`note:${title}`;
+  const[note,setNote]=React.useState(()=>localStorage.getItem(key)||"");
+  const onChange=v=>{setNote(v);localStorage.setItem(key,v);};
+  return <textarea className="note-field" value={note} onChange={e=>onChange(e.target.value)} onBlur={()=>{if(note&&onSave)onSave();}} placeholder="Librarian notes…" rows={1} onFocus={e=>e.target.rows=3}/>;
+}
+
+function ConstraintPanel({structured}){
+  if(!structured) return null;
+  return <div className="constraint-panel">
+    <div className="constraint-title">How we read this request</div>
+    {structured.originalQuery&&<div className="constraint-query">"{structured.originalQuery}"</div>}
+    <div className="constraint-grid">
+      <div className="constraint-card must"><h4>Must Have</h4><div className="constraint-pills">{structured.mustHave.map((x,i)=><span key={i} className="cpill must">{x}</span>)}</div></div>
+      <div className="constraint-card prefer"><h4>Preferred</h4><div className="constraint-pills">{structured.softPreferences.map((x,i)=><span key={i} className="cpill prefer">{x}</span>)}</div></div>
+      <div className="constraint-card avoid"><h4>Avoid / Check</h4><div className="constraint-pills">{structured.avoidSignals.map((x,i)=><span key={i} className="cpill avoid">{x}</span>)}</div></div>
+    </div>
+  </div>;
+}
+
+function SavedListsPanel({savedLists,onOpen,onDelete,onPrint,onCopy}){
+  if(!savedLists.length) return <div className="saved-panel"><div className="saved-panel-title">Saved Lists</div><div className="saved-empty">No saved lists yet. Generate recommendations and click "Save List."</div></div>;
+  return <div className="saved-panel">
+    <div className="saved-panel-title">Saved Lists</div>
+    {savedLists.map(list=><div key={list.id} className="saved-item">
+      <div className="saved-item-title">{list.name}</div>
+      <div className="saved-item-meta">{new Date(list.createdAt).toLocaleDateString()} · {list.books?.length||0} titles{list.profileName?` · ${list.profileName}`:""}</div>
+      <div className="saved-books">{(list.books||[]).slice(0,5).map(b=><span key={b.title} className="saved-book-pill">{b.title}</span>)}{list.books?.length>5&&<span className="saved-book-pill">+{list.books.length-5} more</span>}</div>
+      <div className="saved-item-actions">
+        <button className="saved-act" onClick={()=>onOpen(list)}>Open</button>
+        <button className="saved-act" onClick={()=>onPrint(list)}>Print</button>
+        <button className="saved-act" onClick={()=>onCopy(list)}>Copy</button>
+        <button className="saved-act del" onClick={()=>onDelete(list.id)}>Delete</button>
+      </div>
+    </div>)}
+  </div>;
+}
+
+function ResultCard({book,index,activeProfile,onHeart,onNoteSave,onFeedback,feedbackState}){
+  const[expanded,setExpanded]=React.useState(false);
+  const isLiked=activeProfile?.likedBooks?.includes(book.title);
+  const summary=book.enriched_summary||book.summary;
+  const fb=feedbackState?.[book.title]||{};
+  const feedbackItems=[["good","Good Match",false],["notfit","Not a Fit",true],["hard","Too Hard",true],["mature","Content Check",true]];
+  return <div className="rcard" style={{animationDelay:`${index*0.06}s`}}>
+    <div className="rnum">{ROMAN[index]||index+1}</div>
+    {activeProfile&&<button className="heart-btn" onClick={()=>onHeart(book.title)} style={{color:isLiked?"#F87171":"var(--border2)"}}>{isLiked?"♥":"♡"}</button>}
+    <div className="rinner">
+      <CoverImg isbn={book.isbn}/>
+      <div className="rbody">
+        <div className="rtitle">{book.title}</div>
+        <div className="rmeta">{book.author}{book.series&&<span className="rseries">· {book.series}</span>}</div>
+        <TypewriterText text={book.reason||""}/>
+      </div>
+    </div>
+    {summary&&<>
+      <button className="expand-btn" onClick={()=>setExpanded(p=>!p)}><span className={`earrow${expanded?" open":""}`}>▶</span>{expanded?"Hide summary":"Read summary"}</button>
+      {expanded&&<div className="sum-box">{summary}</div>}
+    </>}
+    <NoteField title={book.title} onSave={onNoteSave}/>
+    <div className="feedback-row">{feedbackItems.map(([key,label,negative])=>(
+      <button key={key} className={`feedback-btn${fb[key]?" on"+(negative?" negative":""):""}`} onClick={()=>onFeedback&&onFeedback(book.title,key)}>{label}</button>
+    ))}</div>
+  </div>;
+}
+
+function BookSearch({books,exclude,onSelect,placeholder}){
+  const[inp,setInp]=React.useState("");const[sugg,setSugg]=React.useState([]);const[hi,setHi]=React.useState(-1);
+  const onChange=v=>{setInp(v);setHi(-1);if(v.length>1)setSugg(books.filter(b=>(b.title||"").toLowerCase().includes(v.toLowerCase())&&!exclude.has(b.title)).slice(0,6));else setSugg([]);};
+  const pick=b=>{onSelect(b);setInp("");setSugg([]);setHi(-1);};
+  const onKD=e=>{if(!sugg.length)return;if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,sugg.length-1));}else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}else if(e.key==="Enter"&&hi>=0){e.preventDefault();pick(sugg[hi]);}else if(e.key==="Escape"){setSugg([]);setHi(-1);}};
+  return <div className="dd-wrap"><input className="finput" style={{width:"100%"}} value={inp} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder={placeholder||"Type a title…"}/>{sugg.length>0&&<div className="dd">{sugg.map((b,i)=><div key={i} className={`dd-item${hi===i?" hi":""}`} onClick={()=>pick(b)}><span className="dd-title">{b.title}</span><span className="dd-author">{b.author}</span></div>)}</div>}</div>;
+}
+
+function MainInput({value,onChange,onEnter,suggestions,onSelect,clearSugg}){
+  const[hi,setHi]=React.useState(-1);
+  const onKD=e=>{if(suggestions.length){if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>Math.min(h+1,suggestions.length-1));}else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>Math.max(h-1,-1));}else if(e.key==="Enter"&&hi>=0){e.preventDefault();onSelect(suggestions[hi]);setHi(-1);}else if(e.key==="Enter"){e.preventDefault();clearSugg();onEnter();}else if(e.key==="Escape"){clearSugg();setHi(-1);}}else if(e.key==="Enter"){e.preventDefault();onEnter();}};
+  return <div className="dd-wrap"><input className="main-input" value={value} onChange={e=>onChange(e.target.value)} onKeyDown={onKD} placeholder="Start typing a title…"/>{suggestions.length>0&&<div className="dd">{suggestions.map((b,i)=><div key={i} className={`dd-item${hi===i?" hi":""}`} onClick={()=>{onSelect(b);setHi(-1);}}><span className="dd-title">{b.title}</span><span className="dd-author">{b.author}</span></div>)}</div>}</div>;
+}
+
+function ChipList({items,onRemove,gold}){
+  if(!items.length) return null;
+  return <div className="chips">{items.map((t,i)=><div key={i} className={`chip${gold?" gold":""}`}><span>{t}</span><button className="chip-x" onClick={()=>onRemove(t)}>×</button></div>)}</div>;
+}
+
+function ProfileSummary({profile,onClose}){
+  const taste=splitSignals(profile.tasteSignals),avoid=splitSignals(profile.avoidSignals);
+  return <div className="panel" style={{marginBottom:16}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+      <div className="panel-title" style={{marginBottom:0}}>Profile — {profile.initials} · {profile.grade}</div>
+      <button className="profile-btn" onClick={onClose}>Close</button>
+    </div>
+    {profile.notes&&<div className="sum-sec"><div className="sum-hd">Reading preferences</div><div className="sum-item" style={{fontStyle:"italic"}}>"{profile.notes}"</div></div>}
+    {profile.reluctant&&<div className="sum-sec"><div className="sum-hd">Reader type</div><div className="sum-item"><span className="reluctant-tag">⚡ Reluctant reader</span></div></div>}
+    {(profile.advisoryNotes||taste.length||avoid.length)&&<div className="sum-sec">
+      <div className="sum-hd">Reader advisory notes</div>
+      {profile.advisoryNotes&&<div className="sum-item" style={{fontStyle:"italic",marginBottom:8}}>"{profile.advisoryNotes}"</div>}
+      {taste.length>0&&<><div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:"var(--text3)",margin:"6px 0 4px"}}>Taste signals</div><div className="signal-pills">{taste.map(t=><span key={t} className="signal-pill">{t}</span>)}</div></>}
+      {avoid.length>0&&<><div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:"var(--text3)",margin:"8px 0 4px"}}>Avoid / caution</div><div className="signal-pills">{avoid.map(t=><span key={t} className="signal-pill avoid">{t}</span>)}</div></>}
+    </div>}
+    <div className="sum-sec"><div className="sum-hd">Liked books ({(profile.likedBooks||[]).length})</div>{(profile.likedBooks||[]).length?profile.likedBooks.map((t,i)=><div key={i} className="sum-item">❤ {t}</div>):<div className="sum-item" style={{color:"var(--text3)"}}>None recorded</div>}</div>
+    <div className="sum-sec"><div className="sum-hd">Already read ({(profile.alreadyRead||[]).length})</div>{(profile.alreadyRead||[]).length?profile.alreadyRead.map((t,i)=><div key={i} className="sum-item">✓ {t}</div>):<div className="sum-item" style={{color:"var(--text3)"}}>None recorded</div>}</div>
+  </div>;
+}
+
+function ProfileEditor({profile,books,onSave,onDelete,onCancel}){
+  const isNew=!profile.id;
+  const[initials,setInitials]=React.useState(profile.initials||"");
+  const[grade,setGrade]=React.useState(profile.grade||"6th");
+  const[notes,setNotes]=React.useState(profile.notes||"");
+  const[reluctant,setReluctant]=React.useState(profile.reluctant||false);
+  const[advisoryNotes,setAdvisoryNotes]=React.useState(profile.advisoryNotes||"");
+  const[tasteSignals,setTasteSignals]=React.useState(splitSignals(profile.tasteSignals).join(", "));
+  const[avoidSignals,setAvoidSignals]=React.useState(splitSignals(profile.avoidSignals).join(", "));
+  const[liked,setLiked]=React.useState(profile.likedBooks||[]);
+  const[read,setRead]=React.useState(profile.alreadyRead||[]);
+  const save=()=>{if(!initials.trim()){alert("Please enter initials.");return;}onSave({...profile,id:profile.id||uid(),initials:initials.trim().toUpperCase(),grade,notes,reluctant,advisoryNotes,tasteSignals:splitSignals(tasteSignals),avoidSignals:splitSignals(avoidSignals),likedBooks:liked,alreadyRead:read});};
+  return <div className="editor">
+    <div className="editor-title">{isNew?"New Student Profile":"Edit Student Profile"}</div>
+    <div className="ed-row">
+      <div className="field" style={{flex:"0 0 82px"}}><label>Initials</label><input className="finput" value={initials} onChange={e=>setInitials(e.target.value)} maxLength={5} placeholder="A.R." style={{textAlign:"center",fontWeight:700}}/></div>
+      <div className="field" style={{flex:"0 0 92px"}}><label>Grade</label><select className="finput" value={grade} onChange={e=>setGrade(e.target.value)} style={{background:"var(--card2)"}}>{GRADES.map(g=><option key={g}>{g}</option>)}</select></div>
+      <div className="field" style={{flex:1,minWidth:130}}><label>Reading preferences</label><input className="finput" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="e.g. loves fantasy, avoids romance…"/></div>
+    </div>
+    <div className={`toggle${reluctant?" on":""}`} onClick={()=>setReluctant(p=>!p)}>
+      <div className={`toggle-sw${reluctant?" on":""}`}><div className="toggle-knob"/></div>
+      <div><div className="toggle-lbl">⚡ Reluctant reader</div><div className="toggle-sub">Prioritize short, fast-paced books with high action</div></div>
+    </div>
+    <div className="advisory-box">
+      <div className="advisory-title">Reader Advisory Notes</div>
+      <div className="advisory-copy">Capture what this reader responds to. These notes go directly to Claude and improve recommendation quality.</div>
+      <textarea className="advisory-field" value={advisoryNotes} onChange={e=>setAdvisoryNotes(e.target.value)} placeholder="Example: Loved Amari because of the hidden magical world, girl protagonist, and mystery. Avoid animal protagonists and slow openings."/>
+      <div className="signal-row">
+        <div className="signal-col"><div className="signal-label">Taste signals (comma-separated)</div><input className="signal-input" value={tasteSignals} onChange={e=>setTasteSignals(e.target.value)} placeholder="hidden magic, fast pacing, girl protagonist"/></div>
+        <div className="signal-col"><div className="signal-label">Avoid / caution (comma-separated)</div><input className="signal-input" value={avoidSignals} onChange={e=>setAvoidSignals(e.target.value)} placeholder="animal protagonists, slow opening"/></div>
+      </div>
+    </div>
+    <div style={{marginBottom:12}}>
+      <div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:"var(--text3)",marginBottom:6}}>Liked books</div>
+      <BookSearch books={books} exclude={new Set(liked)} onSelect={b=>setLiked(prev=>[...prev,b.title])} placeholder="Add a book they enjoy…"/>
+      <ChipList items={liked} onRemove={t=>setLiked(prev=>prev.filter(x=>x!==t))} gold/>
+    </div>
+    <div style={{marginBottom:16}}>
+      <div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:"var(--text3)",marginBottom:6}}>Already read</div>
+      <BookSearch books={books} exclude={new Set(read)} onSelect={b=>setRead(prev=>[...prev,b.title])} placeholder="Add a book they've finished…"/>
+      <ChipList items={read} onRemove={t=>setRead(prev=>prev.filter(x=>x!==t))}/>
+    </div>
+    <div className="btn-row">
+      <div style={{display:"flex",gap:8}}><button className="btn btn-primary" onClick={save}>{isNew?"Save Profile":"Update Profile"}</button><button className="btn btn-secondary" onClick={onCancel}>Cancel</button></div>
+      {!isNew&&<button className="btn btn-danger" onClick={()=>onDelete(profile.id)}>Delete Profile</button>}
+    </div>
+  </div>;
+}
+
+function AnalyticsPanel({analytics}){
+  const topTropes=Object.entries(analytics.tropeSearches||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topBooks=Object.entries(analytics.recommendedBooks||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const sm=analytics.searchModes||{};
+  return <div className="panel" style={{marginBottom:16}}>
+    <div className="panel-title">Usage Statistics</div>
+    <div className="stats-row">{[["Total",analytics.totalSearches||0],["Find Similar",sm.similar||0],["By Trope",sm.tropes||0],["Describe It",sm.freetext||0]].map(([l,v])=>(<div key={l} className="stat-box"><div className="stat-n">{v}</div><div className="stat-l">{l}</div></div>))}</div>
+    <div className="stat-cols">
+      <div className="stat-col"><div className="stat-col-h">Top tropes</div>{topTropes.length?topTropes.map(([id,n])=>{const label=TROPES.find(t=>t.id===id)?.label||id;return <div key={id} className="stat-row"><span>{label}</span><span>{n}</span></div>;}): <span className="stat-empty">No searches yet</span>}</div>
+      <div className="stat-col"><div className="stat-col-h">Most recommended</div>{topBooks.length?topBooks.map(([title,n])=><div key={title} className="stat-row"><span style={{flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:8}}>{title}</span><span>{n}</span></div>):<span className="stat-empty">No data yet</span>}</div>
+    </div>
+  </div>;
+}
+
+function AboutPanel(){
+  return <div className="panel about-card" style={{marginBottom:16}}>
+    <div className="panel-title">About This Tool</div>
+    <p>The Fletcher Library Assistant uses AI-powered semantic search to match students with books from the Fletcher Middle School fiction catalog. Vector embeddings, enriched MARC data, and Claude AI work together to surface the most relevant titles — understanding meaning, not just keywords.</p>
+    <p><strong>Find Similar</strong> — Enter a book a student loved. <strong>By Trope</strong> — Browse narrative themes. <strong>Describe It</strong> — Write a freeform request. Student profiles with advisory notes, taste signals, and liked books all actively shape results.</p>
+    <div className="ftags">{["3,500+ Fiction Titles","Voyage AI Embeddings","Claude Sonnet","Enriched MARC Data","Student Profiles","Advisory Notes","Structured Judgment","Feedback System"].map(t=><span key={t} className="ftag">{t}</span>)}</div>
+  </div>;
+}
+
+function LoadingView({stageMsg}){
+  return <div className="loading-wrap">
+    <div className="loading-emblem"><div className="loading-emblem-txt">F</div></div>
+    <div className="loading-card">
+      <div className="lbars"><div className="lbar"/><div className="lbar"/><div className="lbar"/><div className="lbar"/></div>
+      <div className="ltext">{stageMsg}</div>
+    </div>
+  </div>;
+}
+
+
+
+function HistoryCover({isbn,patIdx}){
+  const[fail,setFail]=React.useState(false);
+  const ci=(patIdx||0)%TBL_CLR.length;
+  if(!isbn||fail){
+    const pu=tblSvg(TBL_PAT[(patIdx||0)%TBL_PAT.length]('#fff'));
+    return <div style={{width:42,height:60,flexShrink:0,borderRadius:'3px 5px 5px 3px',background:TBL_CLR[ci],position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',left:0,top:0,bottom:0,width:5,background:TBL_SPN[ci],borderRadius:'3px 0 0 3px'}}/>
+      <div style={{position:'absolute',inset:0,backgroundImage:`url('${pu}')`,backgroundSize:'cover',opacity:.14}}/>
+    </div>;
+  }
+  return <img style={{width:42,height:60,flexShrink:0,borderRadius:'3px 5px 5px 3px',objectFit:'cover',border:'1px solid var(--border)',display:'block'}}
+    src={`https://covers.openlibrary.org/b/isbn/${isbn.replace(/[^0-9X]/g,'')}-M.jpg`}
+    alt="" onError={()=>setFail(true)}/>;
+}
+
+function SessionHistoryPanel({books,onSelect,haveItSet,activeBook,onMarkCheckedOut}){
+  const[open,setOpen]=React.useState(false);
+  const[expandedTitle,setExpandedTitle]=React.useState(null);
+  const rl=pages=>{const p=parseInt(pages);if(!pages||isNaN(p))return null;return p<250?['quick','Quick Read']:p<=350?['standard','Standard']:['long','Long Haul'];};
+  const sets=React.useMemo(()=>{
+    const s={};
+    books.forEach(b=>{const n=b._setNum||1;if(!s[n])s[n]=[];s[n].push(b);});
+    return s;
+  },[books]);
+  const numSets=Object.keys(sets).length;
+  if(!books.length) return null;
+
+  const toggleExpand=(b)=>setExpandedTitle(t=>t===b.title?null:b.title);
+
+  const InlineDetail=({b,ci})=>{
+    const level=rl(b.pages);
+    const isChecked=haveItSet.has(b.title);
+    return <div style={{gridColumn:'1/-1',background:'var(--card2)',border:'1px solid var(--gold-bd)',borderRadius:10,padding:16,marginTop:-4,animation:'fadeUp .2s ease both'}}>
+      <div style={{display:'flex',gap:14,marginBottom:b.reason||b.summary?12:0}}>
+        <div style={{flexShrink:0}}>
+          <HistoryCover isbn={b.isbn} patIdx={books.indexOf(b)} large/>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:700,color:'var(--cream)',lineHeight:1.25,marginBottom:4}}>{b.title}</div>
+          <div style={{fontSize:12,color:'var(--text3)',fontFamily:"'Lora',serif",fontStyle:'italic',marginBottom:6}}>{b.author}</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:6,alignItems:'center'}}>
+            {level&&<span className={`rl-badge ${level[0]}`}>{level[1]}{b.pages&&` · ${b.pages}pp`}</span>}
+            {b.series&&<span style={{fontSize:10,color:'var(--gold)',fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:600}}>#{b.series}</span>}
+          </div>
+        </div>
+      </div>
+      {b.reason&&<div style={{fontSize:12,color:'var(--text2)',lineHeight:1.7,fontFamily:"'Lora',serif",fontStyle:'italic',borderLeft:'2px solid var(--gold-bd)',paddingLeft:10,marginBottom:b.summary?10:12}}>{b.reason}</div>}
+      {b.summary&&<div style={{fontSize:11,color:'var(--text3)',lineHeight:1.65,fontFamily:"'Lora',serif",background:'var(--card)',borderRadius:6,padding:'8px 10px',marginBottom:12}}>{b.summary}</div>}
+      <div style={{display:'flex',gap:8}}>
+        <button className="act-btn" onClick={()=>onMarkCheckedOut&&onMarkCheckedOut(b.title)}
+          style={{fontSize:10,padding:'5px 12px',background:isChecked?'var(--gold-dim)':'transparent',border:'1px solid var(--gold-bd)',color:isChecked?'var(--gold)':'var(--text3)',borderRadius:6,cursor:'pointer',letterSpacing:'.05em'}}>
+          {isChecked?'✓ Checked Out':'Mark Checked Out'}
+        </button>
+        <button className="act-btn" onClick={()=>setExpandedTitle(null)}
+          style={{fontSize:10,padding:'5px 12px',background:'transparent',border:'1px solid var(--border)',color:'var(--text3)',borderRadius:6,cursor:'pointer'}}>
+          Close
+        </button>
+      </div>
+    </div>;
+  };
+
+  return <div style={{marginTop:20,borderTop:'1px solid var(--border)',paddingTop:16}}>
+    <button onClick={()=>setOpen(p=>!p)} style={{background:'none',border:'none',cursor:'pointer',display:'flex',alignItems:'center',gap:10,padding:0,marginBottom:open?18:0,width:'100%',textAlign:'left'}}>
+      <span style={{color:'var(--gold)',fontSize:14,flexShrink:0}}>{open?'▾':'▸'}</span>
+      <span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--text3)'}}>Session Recommendations</span>
+      <span style={{background:'var(--gold-dim)',border:'1px solid var(--gold-bd)',color:'var(--gold)',borderRadius:20,padding:'1px 9px',fontSize:10,fontWeight:700,flexShrink:0}}>{books.length}</span>
+      <div style={{flex:1,height:1,background:'linear-gradient(to right,var(--gold-bd),transparent)'}}/>
+    </button>
+    {open&&<div>
+      {Object.entries(sets).sort((a,b)=>Number(a[0])-Number(b[0])).map(([setNum,setBooks])=><div key={setNum} style={{marginBottom:numSets>1?20:0}}>
+        {numSets>1&&<div style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
+          <span style={{fontFamily:"'Fraunces',serif",fontSize:11,fontWeight:700,letterSpacing:'.14em',textTransform:'uppercase',color:'var(--gold)'}}>Set {ROMAN[Number(setNum)-1]||setNum}</span>
+          <span style={{fontSize:10,color:'var(--text3)',fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{setBooks.length} titles</span>
+          <div style={{flex:1,height:1,background:'var(--border)'}}/>
+        </div>}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+          {setBooks.map((b,i)=>{
+            const ci=books.indexOf(b)%TBL_CLR.length;
+            const level=rl(b.pages);
+            const isChecked=haveItSet.has(b.title);
+            const isExpanded=expandedTitle===b.title;
+            return <React.Fragment key={b.title+i}>
+              <div onClick={()=>toggleExpand(b)}
+                style={{cursor:'pointer',background:'var(--card)',border:`1px solid ${isExpanded?'var(--gold)':'var(--border)'}`,borderRadius:10,padding:'10px 12px',opacity:isChecked?.45:1,transition:'border-color .15s,box-shadow .15s',boxShadow:isExpanded?'0 0 0 1px var(--gold-bd)':'none',position:'relative'}}
+                onMouseEnter={e=>{if(!isExpanded){e.currentTarget.style.borderColor='var(--gold-bd)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';}}}
+                onMouseLeave={e=>{if(!isExpanded){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.boxShadow='none';}}}>
+                {isChecked&&<span style={{position:'absolute',top:7,right:7,fontSize:7,fontWeight:700,color:'var(--gold)',letterSpacing:'.08em',textTransform:'uppercase',background:'var(--gold-dim)',border:'1px solid var(--gold-bd)',borderRadius:3,padding:'1px 5px'}}>Out</span>}
+                <div style={{display:'flex',gap:10,marginBottom:b.reason?6:0}}>
+                  <HistoryCover isbn={b.isbn} patIdx={books.indexOf(b)}/>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:700,color:'var(--cream)',lineHeight:1.25,marginBottom:3,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{b.title}</div>
+                    <div style={{fontSize:11,color:'var(--text3)',fontFamily:"'Lora',serif",fontStyle:'italic',marginBottom:6,overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{b.author}</div>
+                    {level&&<span className={`rl-badge ${level[0]}`} style={{fontSize:8,padding:'1px 7px'}}>{level[1]}</span>}
+                  </div>
+                </div>
+                {b.reason&&!isExpanded&&<div style={{fontSize:11,color:'var(--text2)',lineHeight:1.65,fontFamily:"'Lora',serif",fontStyle:'italic',borderLeft:'2px solid var(--gold-bd)',paddingLeft:8,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{b.reason}</div>}
+                {isExpanded&&<div style={{fontSize:10,color:'var(--gold)',fontFamily:"'Plus Jakarta Sans',sans-serif",marginTop:4,letterSpacing:'.05em'}}>▲ tap to close</div>}
+              </div>
+              {isExpanded&&i%2===1&&<InlineDetail b={b} ci={ci}/>}
+              {isExpanded&&i%2===0&&<InlineDetail b={b} ci={ci}/>}
+            </React.Fragment>;
+          })}
+        </div>
+      </div>)}
+    </div>}
+  </div>;
+}
+
+function TblCoverImg({isbn,color}){
+  const[fail,setFail]=React.useState(false);
+  if(!isbn||fail) return <div className="tbl-cover-fb" style={{background:color||'var(--card2)'}}>📖</div>;
+  return <img className="tbl-cover-big" src={`https://covers.openlibrary.org/b/isbn/${(isbn||'').replace(/[^0-9X]/g,'')}-M.jpg`} alt="" onError={()=>setFail(true)}/>;
+}
+function TblReadingLevel({pages}){
+  const p=parseInt(pages);if(!pages||isNaN(p))return null;
+  const[cls,lbl]=p<250?['quick','Quick Read']:p<=350?['standard','Standard']:['long','Long Haul'];
+  return <span className={`rl-badge ${cls}`}>{lbl} · {p}pp</span>;
+}
+
+// ── APP ──────────────────────────────────────────────────────────────────
+
+function EvaluationLab({results,query,onLoadPrompt,onToast}){
+  const[open,setOpen]=React.useState(()=>lsLoad("evalOpen",false));
+  const[selectedId,setSelectedId]=React.useState("pj_gods");
+  const[scores,setScores]=React.useState(()=>lsLoad("evalScores",{}));
+  const test=EVAL_TESTS.find(t=>t.id===selectedId)||EVAL_TESTS[0];
+  const currentRows=(results||[]).map((b,i)=>{
+    const key=`${selectedId}:${b.title}`;
+    return {book:b,rank:i+1,score:scores[key]};
+  });
+  const scored=currentRows.filter(r=>typeof r.score==="number");
+  const avg=scored.length?scored.reduce((s,r)=>s+r.score,0)/scored.length:null;
+  const strong=scored.filter(r=>r.score>=2).length;
+  const wrong=scored.filter(r=>r.score===0).length;
+
+  React.useEffect(()=>lsSave("evalOpen",open),[open]);
+
+  const setScore=(book,score)=>{
+    const key=`${selectedId}:${book.title}`;
+    const next={...scores,[key]:score};
+    setScores(next);lsSave("evalScores",next);
+  };
+
+  const exportRows=()=>{
+    if(!results?.length){onToast&&onToast("Run a search before exporting evaluation data","info");return;}
+    const rows=(results||[]).map((b,i)=>{
+      const key=`${selectedId}:${b.title}`;
+      return {
+        timestamp:new Date().toISOString(),
+        test_id:test.id,
+        test_label:test.label,
+        prompt:test.prompt,
+        rank:i+1,
+        title:b.title,
+        author:b.author||"",
+        score:typeof scores[key]==="number"?scores[key]:"",
+        reason:b.reason||"",
+        must:(test.must||[]).join(" | "),
+        prefer:(test.prefer||[]).join(" | "),
+        avoid:(test.avoid||[]).join(" | "),
+      };
+    });
+    exportEvaluationCsv(rows);
+    onToast&&onToast("Evaluation CSV exported ✓");
+  };
+
+  const resetScores=()=>{
+    const prefix=`${selectedId}:`;
+    const next={...scores};
+    Object.keys(next).forEach(k=>{if(k.startsWith(prefix)) delete next[k];});
+    setScores(next);lsSave("evalScores",next);
+  };
+
+  return <div className="eval-panel">
+    <div className="eval-head">
+      <div>
+        <div className="eval-title">Librarian Evaluation Lab</div>
+        <div className="eval-sub">Use this to test whether ReaderMatch is making strong, nuanced recommendations. Rate each result: 3 excellent, 2 acceptable, 1 weak, 0 wrong.</div>
+      </div>
+      <button className="eval-toggle" onClick={()=>setOpen(!open)}>{open?"Hide Test Lab":"Show Test Lab"}</button>
+    </div>
+
+    {open&&<div className="eval-grid">
+      <div className="eval-card">
+        <h4>Test Prompt</h4>
+        <select className="eval-select" value={selectedId} onChange={e=>setSelectedId(e.target.value)}>
+          {EVAL_TESTS.map(t=><option key={t.id} value={t.id}>{t.label}</option>)}
+        </select>
+        <textarea className="eval-textarea" value={test.prompt} readOnly style={{marginTop:10}}/>
+        <div className="eval-pill-row">
+          {(test.must||[]).map(x=><span key={x} className="eval-pill must">Must: {x}</span>)}
+          {(test.prefer||[]).map(x=><span key={x} className="eval-pill">Prefer: {x}</span>)}
+          {(test.avoid||[]).map(x=><span key={x} className="eval-pill avoid">Avoid: {x}</span>)}
+        </div>
+        <div className="eval-actions">
+          <button className="eval-btn primary" onClick={()=>onLoadPrompt(test.prompt)}>Load This Prompt</button>
+          <button className="eval-btn" onClick={exportRows}>Export Results</button>
+          <button className="eval-btn" onClick={resetScores}>Clear Scores</button>
+        </div>
+        <div className="eval-mini">Testing goal: results should satisfy the must-have conditions, honor avoid signals, and explain the match with concrete book evidence.</div>
+      </div>
+
+      <div className="eval-card">
+        <h4>Current Result Scores</h4>
+        {!results?.length&&<div className="eval-mini">Run one of the test prompts to score the recommendation set.</div>}
+        {results?.length>0&&<>
+          <div className="eval-results">
+            {currentRows.slice(0,6).map(({book,rank,score})=><div className="eval-result-row" key={`${rank}-${book.title}`}>
+              <div>
+                <div className="eval-book-title">{rank}. {book.title}</div>
+                <div className="eval-book-meta">{book.author||"Unknown author"}</div>
+              </div>
+              <div className="eval-score" title="0 wrong, 1 weak, 2 acceptable, 3 excellent">
+                {[0,1,2,3].map(n=><button key={n} className={`${score===n?"on":""} ${n===0?"bad":""}`} onClick={()=>setScore(book,n)}>{n}</button>)}
+              </div>
+            </div>)}
+          </div>
+          <div className="eval-summary">
+            <div className="eval-metric"><div className="eval-metric-n">{avg===null?"—":avg.toFixed(1)}</div><div className="eval-metric-l">Avg Score</div></div>
+            <div className="eval-metric"><div className="eval-metric-n">{strong}</div><div className="eval-metric-l">2+ Results</div></div>
+            <div className="eval-metric"><div className="eval-metric-n">{wrong}</div><div className="eval-metric-l">Wrong</div></div>
+          </div>
+        </>}
+      </div>
+    </div>}
+  </div>;
+}
+
+function App(){
+  const[books,setBooks]=React.useState([]);
+  const[bookCount,setBookCount]=React.useState(0);
+  const[bookEmbeddings,setBookEmbeddings]=React.useState(null);
+  const[loadError,setLoadError]=React.useState(false);
+  const[profiles,setProfiles]=React.useState(()=>lsLoad("profiles",[]));
+  const[activeProfileId,setActiveProfileId]=React.useState(null);
+  const[editing,setEditing]=React.useState(null);
+  const[showStats,setShowStats]=React.useState(false);
+  const[showAbout,setShowAbout]=React.useState(false);
+  const[showSummary,setShowSummary]=React.useState(false);
+  const[analytics,setAnalytics]=React.useState(()=>lsLoad("analytics",DEFAULT_ANALYTICS));
+  const[mode,setMode]=React.useState("similar");
+  const[formatFilter,setFormatFilter]=React.useState("fiction");
+  const[query,setQuery]=React.useState("");
+  const[selTropes,setSelTropes]=React.useState(new Set());
+  const[priorityTrope,setPriorityTrope]=React.useState(null);
+  const[alreadyRead,setAlreadyRead]=React.useState(new Set());
+  const[didntLike,setDidntLike]=React.useState("");
+  const[results,setResults]=React.useState(null);
+  const[loading,setLoading]=React.useState(false);
+  const[loadingMore,setLoadingMore]=React.useState(false);
+  const[stageMsg,setStageMsg]=React.useState(STAGE_MSGS[0]);
+  const[error,setError]=React.useState("");
+  const[suggestions,setSuggestions]=React.useState([]);
+  const[refBook,setRefBook]=React.useState(null);
+  const[shownTitles,setShownTitles]=React.useState(new Set());
+  const[toasts,setToasts]=React.useState([]);
+  const[searchHistory,setSearchHistory]=React.useState([]);
+  const[structuredRequest,setStructuredRequest]=React.useState(null);
+  const[feedback,setFeedback]=React.useState(()=>lsLoad("feedback",{}));
+  const[savedLists,setSavedLists]=React.useState(()=>lsLoad("savedLists",[]));
+  const[showSavedLists,setShowSavedLists]=React.useState(false);
+  const lastSearch=React.useRef(null);
+  const[activeBook,setActiveBook]=React.useState(null);
+  const[sessionHistory,setSessionHistory]=React.useState([]);
+  const[activeBookColor,setActiveBookColor]=React.useState('#1E1C2A');
+  const[haveItSet,setHaveItSet]=React.useState(new Set());
+  const[tblBatchLabel,setTblBatchLabel]=React.useState('');
+  const[tableVisible,setTableVisible]=React.useState(false);
+  const structuredRef=React.useRef(null);
+  const stageRef=React.useRef(null);
+  const resultsRef=React.useRef(null);
+
+  React.useEffect(()=>{
+    fetch(CSV_FILE).then(r=>{if(!r.ok)throw new Error();return r.text();})
+      .then(t=>Papa.parse(t,{header:true,skipEmptyLines:true,complete:r=>{setBooks(r.data);setBookCount(r.data.length);updateStatus('catalog','ready',`${r.data.length.toLocaleString()} titles loaded`);}}))
+      .catch(()=>{setLoadError(true);updateStatus('catalog','','Could not load catalog');});
+  },[]);
+
+  React.useEffect(()=>{
+    fetch('book_embeddings.json').then(r=>{if(!r.ok)throw new Error();return r.json();})
+      .then(d=>{setBookEmbeddings(d);updateStatus('embed','ready','Semantic search ready');})
+      .catch(()=>{setBookEmbeddings({});updateStatus('embed','','Keyword search active');});
+  },[]);
+
+  React.useEffect(()=>{
+    if(loading||loadingMore){let i=0;stageRef.current=setInterval(()=>{i=(i+1)%STAGE_MSGS.length;setStageMsg(STAGE_MSGS[i]);},2000);}
+    else{if(stageRef.current)clearInterval(stageRef.current);setStageMsg(STAGE_MSGS[0]);}
+    return()=>{if(stageRef.current)clearInterval(stageRef.current);};
+  },[loading,loadingMore]);
+
+  React.useEffect(()=>{
+    if(results?.length&&resultsRef.current) setTimeout(()=>resultsRef.current.scrollIntoView({behavior:'smooth',block:'start'}),150);
+  },[results]);
+
+  React.useEffect(()=>{
+    const el=document.getElementById('hero-btns');
+    if(!el||!ReactDOM.createRoot) return;
+    const root=ReactDOM.createRoot(el);
+    root.render(<>
+      <button className={`hero-btn${showAbout?" on":""}`} onClick={()=>{setShowAbout(p=>!p);setShowStats(false);}}>About</button>
+      <button className={`hero-btn${showStats?" on":""}`} onClick={()=>{setShowStats(p=>!p);setShowAbout(false);}}>Stats</button>
+    </>);
+  },[showAbout,showStats]);
+
+  React.useEffect(()=>{
+    tblOnTap=(book,idx,color)=>{setActiveBook(book);setActiveBookColor(color);tblSetActive(idx);};
+  },[]);
+  React.useEffect(()=>{tblSyncHave(haveItSet);},[haveItSet]);
+  React.useEffect(()=>{
+    if(loading&&tableVisible){tblMkBooks([]);tblBuildStack();tblStartRock(true);tblStartLoad();}
+    if(!loading&&tableVisible){tblStopLoad();tblStopRock();tblDust();tblRmStack();tblMkBooks(results||[]);setTimeout(()=>tblDeal(0),280);}
+  },[loading]);
+
+  const addToast=(msg,type='success')=>{const id=Date.now()+Math.random();setToasts(p=>[...p,{id,msg,type}]);setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),2800);};
+  const saveProfiles=p=>{setProfiles(p);lsSave("profiles",p);};
+  const saveAnalytics=a=>{setAnalytics(a);lsSave("analytics",a);};
+  const activeProfile=profiles.find(p=>p.id===activeProfileId)||null;
+
+  const selectProfile=id=>{setActiveProfileId(id);setEditing(null);setResults(null);setShownTitles(new Set());lastSearch.current=null;setShowSummary(false);setStructuredRequest(null);setAlreadyRead(id?new Set(profiles.find(p=>p.id===id)?.alreadyRead||[]):new Set());setTableVisible(false);setActiveBook(null);setHaveItSet(new Set());tblMkBooks([]);};
+  const toggleHeart=title=>{if(!activeProfile)return;const liked=activeProfile.likedBooks||[];const nowLiked=!liked.includes(title);const updated=nowLiked?[...liked,title]:liked.filter(t=>t!==title);saveProfiles(profiles.map(p=>p.id===activeProfileId?{...p,likedBooks:updated}:p));addToast(nowLiked?'❤ Added to liked books':'Removed from liked books');};
+  const markFeedback=(title,key)=>{const next={...feedback,[title]:{...(feedback[title]||{}),[key]:!(feedback[title]?.[key])}};setFeedback(next);lsSave("feedback",next);addToast("Feedback saved ✓");};
+
+  const saveCurrentList=()=>{
+    if(!results?.length){addToast("Generate recommendations first","info");return;}
+    const name=prompt("Name this list:",activeProfile?`${activeProfile.initials} — recommendations`:"Fletcher recommendations");
+    if(!name) return;
+    const list={id:uid(),name,createdAt:new Date().toISOString(),profileName:activeProfile?.initials||"",request:structuredRequest?.originalQuery||query||"",books:results};
+    const next=[list,...savedLists];setSavedLists(next);lsSave("savedLists",next);setShowSavedLists(true);addToast("List saved ✓");
+  };
+
+  const openSavedList=list=>{setResults(list.books||[]);setStructuredRequest(null);addToast("Saved list loaded");setTimeout(()=>resultsRef.current?.scrollIntoView({behavior:'smooth',block:'start'}),150);};
+  const deleteSavedList=id=>{const next=savedLists.filter(l=>l.id!==id);setSavedLists(next);lsSave("savedLists",next);addToast("List deleted");};
+  const printSavedList=list=>{const html=`<html><head><title>${list.name}</title><style>body{font-family:Georgia,serif;padding:32px;line-height:1.5}h1{font-size:26px;margin-bottom:4px}.meta{color:#666;font-size:13px;margin-bottom:24px}h2{font-size:18px;margin-top:20px}.book{break-inside:avoid;margin:18px 0;padding-bottom:14px;border-bottom:1px solid #ddd}</style></head><body><h1>Fletcher Library — Recommended Reads</h1><p class="meta">${list.name} · ${new Date(list.createdAt).toLocaleString()}</p>${(list.books||[]).map((b,i)=>`<div class="book"><h2>${i+1}. ${b.title}</h2><p><em>${b.author||""}</em></p><p>${b.reason||""}</p></div>`).join("")}</body></html>`;const w=window.open("","_blank");w.document.write(html);w.document.close();w.focus();w.print();};
+  const copySavedList=list=>{const text=(list.books||[]).map((b,i)=>`${i+1}. ${b.title} by ${b.author||""}\n   ${b.reason||""}`).join("\n\n");navigator.clipboard.writeText(text).then(()=>addToast('📋 List copied')).catch(()=>addToast('Could not copy','error'));};
+
+  const trackSearch=(m,tropes=[])=>{const a={...analytics,totalSearches:(analytics.totalSearches||0)+1,searchModes:{...analytics.searchModes,[m]:(analytics.searchModes[m]||0)+1},tropeSearches:{...analytics.tropeSearches}};tropes.forEach(t=>{a.tropeSearches[t]=(a.tropeSearches[t]||0)+1;});saveAnalytics(a);};
+  const trackRecs=recs=>{const a={...analytics,recommendedBooks:{...analytics.recommendedBooks}};recs.forEach(b=>{a.recommendedBooks[b.title]=(a.recommendedBooks[b.title]||0)+1;});saveAnalytics(a);};
+  const addToHistory=(label,m)=>setSearchHistory(p=>[{label,mode:m,id:Date.now()},...p.filter(e=>e.label!==label)].slice(0,5));
+
+  const getLikedKws=()=>{if(!activeProfile)return[];const objs=books.filter(b=>(activeProfile.likedBooks||[]).includes(b.title));const st=objs.map(b=>b.enriched_subjects||b.subjects||"").join(" ");const sm=objs.map(b=>b.enriched_summary||b.summary||"").join(" ");const rp=objs.map(b=>bookIntelligenceText(b)).join(" ");const adv=advisoryTextForProfile(activeProfile);return[...tokenize(st),...tokenize(st),...tokenize(st),...tokenize(sm),...tokenize(rp),...tokenize(adv),...tokenize(adv)];};
+  const getLikedThemes=()=>{if(!activeProfile?.likedBooks?.length)return"";const objs=books.filter(b=>activeProfile.likedBooks.includes(b.title));const all=objs.flatMap(b=>(b.enriched_subjects||b.subjects||"").split("|").map(s=>s.trim())).filter(Boolean);const unique=[...new Set(all)].slice(0,12);return unique.length?`\n\nThemes from books this student enjoyed: ${unique.join("; ")}. Prioritize books sharing these themes.`:"";};
+  const onQueryChange=val=>{setQuery(val);setRefBook(null);if(mode==="similar"&&val.length>1)setSuggestions(books.filter(b=>(b.title||"").toLowerCase().includes(val.toLowerCase())).slice(0,6));else setSuggestions([]);};
+  const toggleTrope=id=>{setSelTropes(prev=>{const n=new Set(prev);if(!n.has(id)){n.add(id);}else if(priorityTrope!==id){setPriorityTrope(id);}else{n.delete(id);setPriorityTrope(null);}return n;});};
+  const switchMode=m=>{setMode(m);setResults(null);setError("");setQuery("");setRefBook(null);setStructuredRequest(null);setSuggestions([]);setSelTropes(new Set());setPriorityTrope(null);setShownTitles(new Set());lastSearch.current=null;setTableVisible(false);setActiveBook(null);setHaveItSet(new Set());tblMkBooks([]);};
+
+  const buildParams=()=>{
+    let ctx="",excl=null,priorityLabel=null;
+    if(mode==="similar"){const ref=refBook||books.find(b=>(b.title||"").toLowerCase()===query.toLowerCase());if(!ref)return null;excl=ref.title;ctx=`A student loved "${ref.title}" by ${ref.author}.\n\nSummary: ${ref.enriched_summary||ref.summary||""}\n\nFind books with similar themes, characters, tone, and plot elements.`;}
+    else if(mode==="tropes"){if(!selTropes.size)return null;const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);if(priorityTrope)priorityLabel=TROPES.find(t=>t.id===priorityTrope)?.label;ctx=`A student wants books with: ${labels.join(", ")}. Find the best matches.`;}
+    else{if(!query.trim())return null;ctx=`A student wants: "${query}". Find the best matches.`;}
+    return{ctx,excl,priorityLabel};
+  };
+
+  const buildQueryText=()=>{
+    if(mode==="similar"&&refBook) return `${refBook.title} ${refBook.author} ${refBook.reader_appeal_profile||refBook.recommendation_profile||refBook.appeal_profile||""} ${refBook.enriched_subjects||refBook.subjects||""} ${refBook.enriched_summary||refBook.summary||""}`;
+    if(mode==="tropes"){
+      const labels=TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label);
+      return[...new Set(labels.flatMap(l=>{const id=TROPES.find(t=>t.label===l)?.id;return[...tokenize(l),...(TROPE_KEYWORDS[id]||[])]}))].join(' ');
+    }
+    return query;
+  };
+
+  const runSearch=async(params,shown,isMore=false)=>{
+    const{ctx,excl,priorityLabel}=params;
+    const structured=structuredRef.current||parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike});
+    const advisoryNote=advisoryTextForProfile(activeProfile);
+    const structuredQuery=`${buildQueryText()}\n\nHard requirements: ${structured.mustHave.join(", ")}\nSoft preferences: ${structured.softPreferences.join(", ")}\nAvoid/check: ${structured.avoidSignals.join(", ")}\n${advisoryNote}`;
+    const refAuthor=(mode==='similar'&&refBook)?refBook.author:null;
+    const cands=await getCandidates(books,structuredQuery,getLikedKws(),55,excl,alreadyRead,shown,refAuthor,structured,bookEmbeddings,formatFilter);
+    const prefNote=activeProfile?.notes?`\n\nStudent reading preferences: ${activeProfile.notes}. Please respect these.`:"";
+    const reluctantNote=activeProfile?.reluctant?`\n\nThis is a reluctant reader — prioritize high-completion-likelihood books: fast pacing, clear hook, accessible length, and short chapters when available.`:"";
+    const didntLikeNote=didntLike.trim()?`\n\nThe student did NOT enjoy: "${didntLike.trim()}". Avoid books with these qualities.`:"";
+    const recs=await callClaude(cands,ctx,[...alreadyRead,...shown],priorityLabel,activeProfile?.likedBooks||[],getLikedThemes(),prefNote,reluctantNote,didntLikeNote,advisoryNote,structured);
+    const enriched=validateRecommendations(recs,cands,books,alreadyRead,shown,structured);
+    setShownTitles(new Set([...shown,...enriched.map(b=>b.title)]));
+    if(isMore) setResults(p=>[...(p||[]),...enriched]);
+    else setResults(enriched);
+    trackRecs(enriched);
+
+    // Empty load-more: preserve the existing deck visual rather than wiping it.
+    // Without this guard, tblMkBooks([]) clears the noir table and the user sees nothing.
+    if(isMore && enriched.length===0){
+      addToast("No additional matches in the catalog — try a different angle or refine your search.","info");
+    }else{
+      tblMkBooks(enriched);
+    }
+
+    setTblBatchLabel(isMore?'Batch 2':'Batch 1');
+    setSessionHistory(prev=>{
+      const maxSet=prev.reduce((m,b)=>Math.max(m,b._setNum||0),0);
+      const setNum=isMore?maxSet+1:1;
+      const fresh=enriched.filter(b=>!prev.find(p=>p.title===b.title)).map(b=>({...b,_setNum:setNum}));
+      return isMore?[...prev,...fresh]:fresh;
+    });
+  };
+
+  const search=async()=>{
+    setError("");setResults(null);setLoading(true);setShownTitles(new Set());lastSearch.current=null;setStructuredRequest(null);
+    setActiveBook(null);setHaveItSet(new Set());setTableVisible(true);setSessionHistory([]);
+    try{
+      const params=buildParams();
+      if(!params){setError(mode==="similar"?"Please select a title from the suggestions.":mode==="tropes"?"Please select at least one trope.":"Please describe what the student is looking for.");setLoading(false);return;}
+      const structured=parseStructuredRequest({mode,query,refBook,selTropes,priorityTrope,activeProfile,alreadyRead,didntLike});
+      setStructuredRequest(structured);
+      structuredRef.current=structured;
+      lastSearch.current=params;
+      const histLabel=mode==="similar"?query:mode==="tropes"?TROPES.filter(t=>selTropes.has(t.id)).map(t=>t.label).join(', '):query;
+      addToHistory(histLabel,mode);
+      await runSearch(params,new Set());
+      trackSearch(mode,mode==="tropes"?[...selTropes]:[]);
+    }catch(e){console.error(e);setError("Search failed. Please check your connection and try again.");}
+    setLoading(false);
+  };
+
+  const searchMore=async()=>{
+    if(!lastSearch.current)return;
+    setLoadingMore(true);setActiveBook(null);
+    tblExit();
+    await new Promise(r=>setTimeout(r,6*28+200));
+    tblBuildStack();tblStartRock(true);tblStartLoad();
+    try{
+      await runSearch(lastSearch.current,shownTitles,true);
+      tblStopLoad();tblStopRock();tblDust();tblRmStack();
+      await new Promise(r=>setTimeout(r,280));
+      tblDeal(0);
+    }catch{setError("Search failed.");}
+    setLoadingMore(false);
+  };
+  const bookAccent=hex=>{if(!hex||!hex.startsWith('#'))return'var(--border)';const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},.4)`;};
+  const tblPrintList=()=>{
+    if(!results?.length)return;
+    const books=results.filter(b=>!haveItSet.has(b.title));
+    if(!books.length){addToast('All marked checked out','info');return;}
+    const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+    let rows='';
+    books.forEach((b,i)=>{
+      const p=parseInt(b.pages);
+      const rl=!b.pages||isNaN(p)?null:p<250?['ql','Quick Read']:p<=350?['st','Standard']:['lh','Long Haul'];
+      const lv=rl?'<span class="blv '+rl[0]+'">'+rl[1]+'·'+p+'pp</span>':'';
+      rows+='<div class="book"><div class="bnum">'+(ROMAN[i]||i+1)+'</div><div><div class="btit">'+(b.title||'')+'</div><div class="baut">'+(b.author||'')+'</div>'+lv+'<div class="brsn">'+(b.reason||'')+'</div></div></div>';
+    });
+    const css='body{font-family:Georgia,serif;padding:32px;max-width:680px;margin:0 auto}h1{font-size:24px}.meta{color:#666;font-size:13px;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #9B6540}.book{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid #E8D8B8;break-inside:avoid}.bnum{font-size:11px;font-weight:700;color:#9B6540;width:20px;flex-shrink:0}.btit{font-size:15px;font-weight:700;margin-bottom:2px}.baut{font-size:12px;color:#7A5A30;margin-bottom:6px;font-style:italic}.blv{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:20px;border:1px solid;display:inline-block;margin-bottom:6px}.ql{color:#2D7A4A;border-color:#2D7A4A}.st{color:#9B6540;border-color:#9B6540}.lh{color:#A0402A;border-color:#A0402A}.brsn{font-size:13px;color:#5A4030;line-height:1.6;font-style:italic}.footer{margin-top:24px;padding-top:12px;border-top:1px solid #E8D8B8;font-size:10px;color:#B0906A;text-align:center;text-transform:uppercase}';
+    const html='<html><head><title>Fletcher Library</title><style>'+css+'</style></head><body><h1>Fletcher Library</h1><div class="meta">Recommended · '+date+'</div>'+rows+'<div class="footer">The Fletcher Library Recommends</div></body></html>';
+    const w=window.open('','_blank');
+    w.document.write(html);w.document.close();w.focus();
+    setTimeout(()=>w.print(),400);
+  };
+  const copyResults=()=>{if(!results?.length)return;const text=results.map((b,i)=>`${ROMAN[i]||i+1}. ${b.title} by ${b.author}\n   ${b.reason||""}`).join('\n\n');navigator.clipboard.writeText(text).then(()=>addToast('📋 Copied')).catch(()=>addToast('Could not copy','error'));};
+  const saveProfile=p=>{const updated=profiles.find(x=>x.id===p.id)?profiles.map(x=>x.id===p.id?p:x):[...profiles,p];saveProfiles(updated);setActiveProfileId(p.id);setAlreadyRead(new Set(p.alreadyRead||[]));setEditing(null);addToast('Profile saved ✓');};
+  const deleteProfile=id=>{saveProfiles(profiles.filter(p=>p.id!==id));if(activeProfileId===id){setActiveProfileId(null);setAlreadyRead(new Set());}setEditing(null);addToast('Profile deleted');};
+
+  const loaded=bookCount>0;
+  const modeLbls={similar:"Similar",tropes:"Trope",freetext:"Describe"};
+
+  
+  const loadEvaluationPrompt=(prompt)=>{
+    switchMode("freetext");
+    setQuery(prompt);
+    setResults(null);
+    setError("");
+    setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}),50);
+    addToast("Evaluation prompt loaded");
+  };
+
+  return <div className="page">
+    <Toasts toasts={toasts}/>
+
+    {showAbout&&<AboutPanel/>}
+
+    <EvaluationLab results={results} query={query} onLoadPrompt={loadEvaluationPrompt} onToast={addToast}/>
+    {showStats&&<AnalyticsPanel analytics={analytics}/>}
+    {loadError&&<div className="error-msg">⚠ Could not load {CSV_FILE}. Make sure it's in your repository.</div>}
+
+    {loaded&&<>
+      {/* PROFILES */}
+      <div className="gold-divider"><span>Student Profile</span></div>
+      <div className="section">
+        <div className="pills">
+          <button className={`pill${!activeProfileId?" on":""}`} onClick={()=>selectProfile(null)}>No Profile</button>
+          {profiles.map(p=><div key={p.id} style={{display:"flex",alignItems:"center"}}>
+            <button className={`pill${activeProfileId===p.id?" on-l":""}`} onClick={()=>selectProfile(p.id)}>{p.initials} <span style={{fontSize:11,opacity:.6,marginLeft:2}}>{p.grade}</span></button>
+            {activeProfileId===p.id&&<button className="pill-edit" onClick={()=>setEditing(editing?.id===p.id?null:p)}>✎</button>}
+          </div>)}
+          {profiles.length<10&&<button className="pill-add" onClick={()=>setEditing({initials:"",grade:"6th",notes:"",reluctant:false,advisoryNotes:"",tasteSignals:[],avoidSignals:[],likedBooks:[],alreadyRead:[]})}>+ New Profile</button>}
+        </div>
+        {activeProfile&&<div className="profile-meta">
+          {activeProfile.notes&&<span className="profile-note">"{activeProfile.notes}"</span>}
+          <button className="profile-btn" onClick={()=>setShowSummary(p=>!p)}>{showSummary?"Hide":"View profile"}</button>
+          {activeProfile.reluctant&&<span className="reluctant-tag">⚡ Reluctant</span>}
+          {(activeProfile.advisoryNotes||splitSignals(activeProfile.tasteSignals).length>0)&&<span className="advisory-badge">✦ Advisory notes active</span>}
+        </div>}
+      </div>
+
+      {showSummary&&activeProfile&&<ProfileSummary profile={activeProfile} onClose={()=>setShowSummary(false)}/>}
+      {editing&&<ProfileEditor profile={editing} books={books} onSave={saveProfile} onDelete={deleteProfile} onCancel={()=>setEditing(null)}/>}
+
+      {!editing&&<>
+        {/* SEARCH HISTORY */}
+        {searchHistory.length>0&&<div className="history">
+          <div className="sec-label" style={{marginBottom:8}}>Recent searches</div>
+          <div className="hchips">{searchHistory.map(h=><div key={h.id} className="hchip" onClick={()=>{switchMode(h.mode);if(h.mode!=="tropes")setQuery(h.label);}}><span className="hmode">{modeLbls[h.mode]}</span><span>{h.label.length>42?h.label.slice(0,42)+'…':h.label}</span></div>)}</div>
+        </div>}
+
+        {/* SEARCH MODE TABS */}
+        <div className="gold-divider"><span>Find Books</span></div>
+
+        {/* FORMAT TOGGLE — hard filter; fiction and graphic novels are separate searches */}
+        <div style={{display:'flex',justifyContent:'center',gap:0,margin:'0 0 18px',
+          border:'1px solid var(--gold-bd)',borderRadius:8,overflow:'hidden',maxWidth:420,marginLeft:'auto',marginRight:'auto'}}>
+          {[['fiction','Fiction'],['graphic_novel','Graphic Novels']].map(([val,lbl])=>(
+            <button key={val} onClick={()=>setFormatFilter(val)}
+              style={{flex:1,padding:'10px 14px',border:'none',cursor:'pointer',
+                fontFamily:"'Lora',serif",fontSize:14,fontWeight:formatFilter===val?700:400,
+                background:formatFilter===val?'var(--gold)':'transparent',
+                color:formatFilter===val?'#1a1410':'var(--text2)',transition:'all .2s ease'}}>
+              {lbl}
+            </button>
+          ))}
+        </div>
+
+        <div className="mode-tabs">
+          <button className={`mode-tab${mode==="similar"?" on":""}`} onClick={()=>switchMode("similar")}>
+            <span className="mode-tab-icon">🔍</span>
+            <span className="mode-tab-label">Find Similar</span>
+            <span className="mode-tab-desc">A student loved a book — find more like it</span>
+          </button>
+          <button className={`mode-tab${mode==="tropes"?" on":""}`} onClick={()=>switchMode("tropes")}>
+            <span className="mode-tab-icon">✦</span>
+            <span className="mode-tab-label">By Trope</span>
+            <span className="mode-tab-desc">Select themes and narrative elements</span>
+          </button>
+          <button className={`mode-tab${mode==="freetext"?" on":""}`} onClick={()=>switchMode("freetext")}>
+            <span className="mode-tab-icon">✍</span>
+            <span className="mode-tab-label">Describe It</span>
+            <span className="mode-tab-desc">Describe what the student wants in plain language</span>
+          </button>
+        </div>
+
+        {mode==="similar"&&<div className="inp-sec"><div className="sec-label">Book title</div><MainInput value={query} onChange={onQueryChange} onEnter={search} suggestions={suggestions} onSelect={b=>{setRefBook(b);setQuery(b.title);setSuggestions([]);}} clearSugg={()=>setSuggestions([])}/><div className="inp-hint">Select a title from the suggestions, then click Find Books</div></div>}
+        {mode==="freetext"&&<div className="inp-sec"><div className="sec-label">Describe what the student is looking for</div><textarea className="main-textarea" value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();search();}}} rows={3} placeholder='e.g. "A fantasy with a strong female lead who discovers she has hidden powers"'/><div className="inp-hint">Press Enter to search · Shift+Enter for a new line</div></div>}
+        {mode==="tropes"&&<div className="inp-sec"><p className="trope-hint">Select one or more tropes · Click again to mark as must-have (★)</p>{CATS.map(cat=><div key={cat} className="trope-sec"><div className="trope-cat">{cat}</div><div className="trope-chips">{TROPES.filter(t=>t.cat===cat).map(t=>{const on=selTropes.has(t.id),isPrio=priorityTrope===t.id;return <button key={t.id} onClick={()=>toggleTrope(t.id)} className={`tchip${isPrio?" prio":on?" sel":""}`}>{isPrio?"★ ":""}{t.label}</button>;})}</div></div>)}</div>}
+
+        <div className="inp-sec"><div className="sec-label">Exclude already read</div><BookSearch books={books} exclude={alreadyRead} onSelect={b=>setAlreadyRead(prev=>new Set([...prev,b.title]))} placeholder="Add a title to exclude…"/><ChipList items={[...alreadyRead]} onRemove={t=>setAlreadyRead(prev=>{const n=new Set(prev);n.delete(t);return n;})}/></div>
+
+        {activeProfile?.likedBooks?.length>0&&<div className="liked-banner"><span style={{fontSize:16,marginTop:2}}>❤</span><div className="liked-body"><strong>Influencing recommendations</strong>{activeProfile.likedBooks.join(", ")}</div></div>}
+
+        <div className="inp-sec"><div className="sec-label">What didn't the student enjoy? <span style={{color:"var(--text3)",fontWeight:400,textTransform:"none",letterSpacing:0,fontSize:12}}>(optional)</span></div><input className="main-input" value={didntLike} onChange={e=>setDidntLike(e.target.value)} placeholder='e.g. "too slow, too much romance"'/></div>
+
+        {error&&<div className="error-msg"><span>⚠</span>{error}</div>}
+        <button className="search-btn" onClick={search} disabled={loading||loadingMore}>Find Books</button>
+
+        {structuredRequest&&!loading&&<ConstraintPanel structured={structuredRequest}/>}
+
+        {tableVisible&&<div style={{marginTop:16}}>
+          <div className="fletcher-table" id="fletcherTable">
+            <div className="table-clip">
+              <svg className="table-svg" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <rect width="640" height="300" fill="#9B6540"/>
+                <path d="M0,14 Q160,10 320,15 Q480,20 640,14" stroke="#7A4D28" strokeWidth="2.5" fill="none" opacity="0.5"/>
+                <path d="M0,42 Q160,38 320,43 Q480,48 640,42" stroke="#B07848" strokeWidth="1.5" fill="none" opacity="0.4"/>
+                <path d="M0,88 Q160,92 320,87 Q480,82 640,89" stroke="#C4885C" strokeWidth="1.5" fill="none" opacity="0.35"/>
+                <path d="M0,137 Q160,133 320,138 Q480,143 640,137" stroke="#B07848" strokeWidth="1.5" fill="none" opacity="0.38"/>
+                <path d="M0,189 Q160,193 320,188 Q480,183 640,190" stroke="#C4885C" strokeWidth="1.5" fill="none" opacity="0.36"/>
+                <path d="M0,244 Q160,240 320,245 Q480,250 640,244" stroke="#B07848" strokeWidth="1.5" fill="none" opacity="0.38"/>
+                <ellipse cx="105" cy="88" rx="24" ry="15" stroke="#6B4020" strokeWidth="1.5" fill="none" opacity="0.28"/>
+                <ellipse cx="530" cy="200" rx="19" ry="12" stroke="#6B4020" strokeWidth="1.5" fill="none" opacity="0.24"/>
+                <rect width="640" height="300" fill="url(#tsheen)"/>
+                <defs><radialGradient id="tsheen" cx="50%" cy="35%" r="65%"><stop offset="0%" stopColor="rgba(255,255,255,0.1)"/><stop offset="55%" stopColor="rgba(255,255,255,0.02)"/><stop offset="100%" stopColor="rgba(0,0,0,0.22)"/></radialGradient></defs>
+              </svg>
+              <div className="table-vignette"></div>
+            </div>
+            <div className="table-overlay" id="tableOverlay"></div>
+            <div className="tbl-lbl" id="tblLoadingLbl">
+              <div className="tbl-dots"><div className="tbl-dot"/><div className="tbl-dot"/><div className="tbl-dot"/></div>
+              <div className="tbl-ltxt" id="tblLoadingTxt">Scanning…</div>
+            </div>
+            <div id="deckArea"></div>
+          </div>
+          <div className="tbl-info-area" style={{borderColor:activeBook?bookAccent(activeBookColor):'var(--border)'}}>
+            {!activeBook&&<div className="tbl-info-empty">{results&&results.length>0?'Tap a book to see the full recommendation':'Searching…'}</div>}
+            {activeBook&&<div className="tbl-info-card">
+              <TblCoverImg isbn={activeBook.isbn} color={activeBookColor}/>
+              <div className="tbl-info-right">
+                <div className="tbl-badges">
+                  <span className="fletcher-rec-badge">The Fletcher Library Recommends</span>
+                  <TblReadingLevel pages={activeBook.pages}/>
+                </div>
+                <div>
+                  <div className="tbl-info-title">{activeBook.title}</div>
+                  <div className="tbl-info-author">{activeBook.author}{activeBook.series&&` · ${activeBook.series}`}</div>
+                </div>
+                <div className="tbl-info-divider" style={{background:bookAccent(activeBookColor)}}></div>
+                <div className="tbl-info-reason" style={{borderLeftColor:bookAccent(activeBookColor)}}>{activeBook.reason}</div>
+                <div className="tbl-info-actions">
+                  <button className={`tbl-have-btn${haveItSet.has(activeBook.title)?' on':''}`} onClick={()=>{const t=activeBook.title;setHaveItSet(p=>{const n=new Set(p);n.has(t)?n.delete(t):n.add(t);return n;});}}>
+                    {haveItSet.has(activeBook.title)?'✓ Marked as checked out':'Mark as checked out'}
+                  </button>
+                  {activeProfile&&<button className="tbl-heart-sm" onClick={()=>toggleHeart(activeBook.title)}>{activeProfile.likedBooks?.includes(activeBook.title)?'♥':'♡'}</button>}
+                </div>
+              </div>
+            </div>}
+          </div>
+          {results&&results.length>0&&results.length<6&&!loading&&!loadingMore&&<div style={{
+            margin:'14px 0 0',
+            padding:'10px 14px',
+            background:'rgba(232,184,75,0.07)',
+            border:'1px solid var(--gold-bd)',
+            borderRadius:4,
+            fontFamily:"'Lora',serif",
+            fontSize:13,
+            fontStyle:'italic',
+            color:'var(--text2)',
+            lineHeight:1.55,
+            textAlign:'center'
+          }}>
+            <strong style={{fontStyle:'normal',color:'var(--gold)'}}>{results.length}</strong> strong {results.length===1?'match':'matches'} in the catalog for this request.{' '}
+            Use <strong style={{fontStyle:'normal'}}>Load more</strong> to expand the search, or refine the query for a different angle.
+          </div>}
+          {results&&results.length>0&&!loading&&<div className="tbl-bottom">
+            {!loadingMore&&<button className="act-btn primary" onClick={searchMore}>Load more →</button>}
+            <button className="act-btn" onClick={tblPrintList}>Print list</button>
+            <button className="act-btn" onClick={copyResults}>Copy</button>
+            <button className="act-btn primary" onClick={saveCurrentList}>Save List</button>
+            {tblBatchLabel&&<span className="tbl-batch">{tblBatchLabel}</span>}
+          </div>}
+          <div style={{textAlign:"center",marginTop:12}}>
+            <button className="profile-btn" onClick={()=>setShowSavedLists(p=>!p)}>{showSavedLists?"Hide saved lists":"View saved lists"}{savedLists.length>0?` (${savedLists.length})`:""}</button>
+          </div>
+        </div>}
+
+        {(!results||results.length===0)&&savedLists.length>0&&!loading&&<div style={{textAlign:"center",margin:"20px 0"}}><button className="profile-btn" onClick={()=>setShowSavedLists(p=>!p)}>{showSavedLists?"Hide":"View saved lists"} ({savedLists.length})</button></div>}
+
+        {showSavedLists&&<SavedListsPanel savedLists={savedLists} onOpen={openSavedList} onDelete={deleteSavedList} onPrint={printSavedList} onCopy={copySavedList}/>}
+        {sessionHistory.length>0&&<SessionHistoryPanel
+          books={sessionHistory}
+          onSelect={(b,color)=>{setActiveBook(b);setActiveBookColor(color||TBL_CLR[0]);tblSetActive(results?results.findIndex(r=>r.title===b.title):-1);}}
+          haveItSet={haveItSet}
+          activeBook={activeBook}
+          onMarkCheckedOut={title=>setHaveItSet(prev=>{const n=new Set(prev);n.has(title)?n.delete(title):n.add(title);return n;})}
+        />}
+
+        {results&&results.length===0&&!loading&&<div className="empty"><p className="empty-title">No matching titles found.</p><p className="empty-sub">Try broadening your search or switching modes.</p><div className="empty-actions"><div className="echip" onClick={()=>switchMode("freetext")}>Try describing it</div><div className="echip" onClick={()=>switchMode("tropes")}>Browse by trope</div><div className="echip" onClick={()=>setResults(null)}>Start over</div></div></div>}
+      </>}
+    </>}
+  </div>;
+}
+
+const rootEl=document.getElementById("root");
+if(ReactDOM.createRoot){ReactDOM.createRoot(rootEl).render(<App/>);}
+else{ReactDOM.render(<App/>,rootEl);}
+</script>
+</body>
+</html>

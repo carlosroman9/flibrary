@@ -1,0 +1,87 @@
+# OPALS MARC Cleaner rules.
+# Edit this file to change cleaning behaviour; code reads it via load_rules().
+
+initial_tasks:
+  delete_fields: ["040", "042", "084", "940"]
+  ensure_isbn10_and_isbn13: true
+  holdings_defaults:
+    q_default: hdbk
+  category_holds:
+    fiction:        {sub3: "14f",  subk: FIC}
+    nonfiction:     {sub3: "14nf", subk: NF}
+    graphic_novels: {sub3: "14gn", subk: NF}
+    everyone:       {sub3: "14e",  subk: E}
+
+subjects:
+  use_lc_to_sears_csv: true
+  lc_to_sears_csv_filename: lc_to_sears.csv
+  juvenile_fiction_to_fiction: true
+  convert_655_to_650: true
+  converted_655_keep_source: true
+  # 655 with a $2 (e.g. lcgft) becomes 650 _7 $2 <this value>.
+  # 655 _0 (LCSH) becomes 650 _0; anything else becomes 650 _4 (local).
+  genre_650_source: sears
+
+reading_levels:
+  add_521_for_non_follett: true
+  csv_filename: reading_levels.csv
+  fountas_pinnell: {pattern: "Fountas & Pinnell", sub_b: "F&P level"}
+  reading_level: {indicator2: "0"}
+  interest_level: {indicator2: "2", sub_b: "Follett Content Solutions"}
+  lexile: {indicator2: "8", sub_b: Lexile}
+
+diacritics:
+  fix_follett_brace_codes: true
+
+prices:
+  strip_usd_in_852_3_and_9: true
+  adjust_852_9_price: true
+  processing_add: 3
+  format: 2dp
+  rounding_mode: ceil
+
+extra_isbns:
+  use_csv: true
+  csv_filename: extra_isbns.csv
+  # ISBNs of other formats (776) and from online lookups go in this 020 subfield.
+  # "z" = cancelled/invalid for this item, so OPALS will not match on them.
+  related_isbn_subfield: z
+
+online_lookups:
+  enabled: false
+  timeout_seconds: 8
+
+categories:
+  overrides:
+    use_csv: true
+    csv_filename: category_overrides.csv
+  detection:
+    graphic_novels:
+      any_655a_contains: ["graphic novel"]
+      any_650a_contains: ["graphic novels"]
+      any_082a_prefix: ["741.5"]
+      any_852h_prefix: ["GN", "741.5"]
+    everyone:
+      any_650a_contains: ["picture books", "easy readers"]
+      any_852h_equals: ["E"]
+    fiction:
+      check_082_for_fic: true
+      check_650v_for_Fiction: true
+      check_655_contains_fiction: true
+
+detection:
+  follett_markers:
+    any_003_in: [ICrlF]
+    any_040_d_in: [ICrlF]
+    any_940_contains: [FCS, Follett]
+
+# Records carrying this stamp were already cleaned and are passed through untouched.
+stamp:
+  enabled: true
+  tag: "999"
+  subfield: a
+  text: OPALS MARC Cleaner
+
+report:
+  # The HTML report shows at most this many change-log rows; the CSV always has all of them.
+  max_change_rows: 5000
